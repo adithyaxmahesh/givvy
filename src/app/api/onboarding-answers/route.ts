@@ -2,10 +2,26 @@ import { NextRequest, NextResponse } from 'next/server';
 import { getAuthUser } from '@/lib/auth';
 import { createAdminClient } from '@/lib/supabase/admin';
 
-const QUESTIONS_KEYS = [
+const ALLOWED_KEYS = [
+  // Startup keys
+  'company_description',
+  'location',
+  'startup_website',
+  'stage',
+  'funding',
+  'revenue',
+  'talent_needs',
+  // Talent keys
+  'talent_category',
+  'specialties',
+  'specialty_other',
+  'experience_years',
+  'experience_description',
+  // Shared
+  'how_hear',
+  // Legacy
   'why_join',
   'experience',
-  'how_hear',
   'anything_else',
 ] as const;
 
@@ -18,7 +34,7 @@ export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
     const answers: Record<string, string> = {};
-    for (const key of QUESTIONS_KEYS) {
+    for (const key of ALLOWED_KEYS) {
       const val = body[key];
       if (typeof val === 'string' && val.trim()) {
         answers[key] = val.trim().slice(0, 2000);
