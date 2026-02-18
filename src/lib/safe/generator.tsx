@@ -1,0 +1,372 @@
+import React from 'react';
+import {
+  Document,
+  Page,
+  Text,
+  View,
+  StyleSheet,
+} from '@react-pdf/renderer';
+import { renderToBuffer } from '@react-pdf/renderer';
+import { YC_POST_MONEY_SAFE, YC_MFN_SAFE, renderTemplate } from './templates';
+
+// ─── Styles ──────────────────────────────────────────────────────────────────
+
+const styles = StyleSheet.create({
+  page: {
+    padding: 60,
+    fontFamily: 'Helvetica',
+    fontSize: 10,
+    lineHeight: 1.6,
+    color: '#1a1a2e',
+  },
+  header: {
+    textAlign: 'center',
+    marginBottom: 30,
+    borderBottomWidth: 2,
+    borderBottomColor: '#7c3aed',
+    paddingBottom: 20,
+  },
+  headerTitle: {
+    fontSize: 20,
+    fontFamily: 'Helvetica-Bold',
+    color: '#7c3aed',
+    marginBottom: 4,
+  },
+  headerSubtitle: {
+    fontSize: 12,
+    color: '#6b7280',
+    fontFamily: 'Helvetica',
+  },
+  partiesSection: {
+    marginBottom: 24,
+    padding: 16,
+    backgroundColor: '#f5f3ff',
+    borderRadius: 4,
+  },
+  partiesTitle: {
+    fontSize: 13,
+    fontFamily: 'Helvetica-Bold',
+    color: '#4c1d95',
+    marginBottom: 10,
+  },
+  partyRow: {
+    flexDirection: 'row',
+    marginBottom: 6,
+  },
+  partyLabel: {
+    width: 100,
+    fontFamily: 'Helvetica-Bold',
+    fontSize: 10,
+    color: '#374151',
+  },
+  partyValue: {
+    flex: 1,
+    fontSize: 10,
+    color: '#1f2937',
+  },
+  termsSection: {
+    marginBottom: 24,
+  },
+  termsTitle: {
+    fontSize: 13,
+    fontFamily: 'Helvetica-Bold',
+    color: '#4c1d95',
+    marginBottom: 10,
+    borderBottomWidth: 1,
+    borderBottomColor: '#e5e7eb',
+    paddingBottom: 6,
+  },
+  termRow: {
+    flexDirection: 'row',
+    marginBottom: 4,
+    paddingVertical: 3,
+  },
+  termLabel: {
+    width: 160,
+    fontFamily: 'Helvetica-Bold',
+    fontSize: 10,
+    color: '#374151',
+  },
+  termValue: {
+    flex: 1,
+    fontSize: 10,
+    color: '#1f2937',
+  },
+  bodyText: {
+    fontSize: 10,
+    lineHeight: 1.6,
+    color: '#374151',
+    marginBottom: 12,
+    textAlign: 'justify',
+  },
+  sectionTitle: {
+    fontSize: 11,
+    fontFamily: 'Helvetica-Bold',
+    color: '#1f2937',
+    marginTop: 16,
+    marginBottom: 8,
+  },
+  signatureSection: {
+    marginTop: 40,
+    borderTopWidth: 1,
+    borderTopColor: '#e5e7eb',
+    paddingTop: 20,
+  },
+  signatureTitle: {
+    fontSize: 13,
+    fontFamily: 'Helvetica-Bold',
+    color: '#4c1d95',
+    marginBottom: 20,
+  },
+  signatureBlock: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+  },
+  signatureColumn: {
+    width: '45%',
+  },
+  signatureLabel: {
+    fontSize: 10,
+    fontFamily: 'Helvetica-Bold',
+    color: '#374151',
+    marginBottom: 6,
+  },
+  signatureLine: {
+    borderBottomWidth: 1,
+    borderBottomColor: '#9ca3af',
+    marginBottom: 4,
+    height: 30,
+  },
+  signatureSubtext: {
+    fontSize: 8,
+    color: '#6b7280',
+    marginBottom: 2,
+  },
+  footer: {
+    position: 'absolute',
+    bottom: 30,
+    left: 60,
+    right: 60,
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    borderTopWidth: 1,
+    borderTopColor: '#e5e7eb',
+    paddingTop: 8,
+  },
+  footerText: {
+    fontSize: 8,
+    color: '#9ca3af',
+  },
+});
+
+// ─── Types ───────────────────────────────────────────────────────────────────
+
+export interface SAFEDocumentData {
+  companyName: string;
+  founderName: string;
+  founderTitle: string;
+  investorName: string;
+  investorTitle: string;
+  investmentAmount: string;
+  valuationCap: string;
+  discountRate: string;
+  equityPercent: string;
+  vestingMonths: number;
+  cliffMonths: number;
+  state: string;
+  date: string;
+  template: 'yc-standard' | 'yc-mfn' | 'custom';
+  proRata: boolean;
+  mfnClause: boolean;
+}
+
+// ─── SAFE PDF Component ──────────────────────────────────────────────────────
+
+export function SAFEDocument({ data }: { data: SAFEDocumentData }) {
+  const templateText = data.template === 'yc-mfn' ? YC_MFN_SAFE : YC_POST_MONEY_SAFE;
+
+  const rendered = renderTemplate(templateText, {
+    company_name: data.companyName,
+    investor_name: data.investorName,
+    investor_title: data.investorTitle,
+    founder_name: data.founderName,
+    founder_title: data.founderTitle,
+    investment_amount: data.investmentAmount,
+    valuation_cap: data.valuationCap,
+    discount_rate: data.discountRate,
+    state: data.state,
+    date: data.date,
+  });
+
+  const paragraphs = rendered
+    .split('\n\n')
+    .map((p) => p.trim())
+    .filter(Boolean);
+
+  return (
+    <Document>
+      <Page size="LETTER" style={styles.page}>
+        {/* Header */}
+        <View style={styles.header}>
+          <Text style={styles.headerTitle}>
+            SAFE (Simple Agreement for Future Equity)
+          </Text>
+          <Text style={styles.headerSubtitle}>
+            {data.template === 'yc-mfn'
+              ? 'Most Favored Nation — '
+              : 'Post-Money Valuation Cap — '}
+            Generated by EquityExchange
+          </Text>
+        </View>
+
+        {/* Parties */}
+        <View style={styles.partiesSection}>
+          <Text style={styles.partiesTitle}>Parties</Text>
+          <View style={styles.partyRow}>
+            <Text style={styles.partyLabel}>Company:</Text>
+            <Text style={styles.partyValue}>{data.companyName}</Text>
+          </View>
+          <View style={styles.partyRow}>
+            <Text style={styles.partyLabel}>Founder:</Text>
+            <Text style={styles.partyValue}>
+              {data.founderName} — {data.founderTitle}
+            </Text>
+          </View>
+          <View style={styles.partyRow}>
+            <Text style={styles.partyLabel}>Investor:</Text>
+            <Text style={styles.partyValue}>
+              {data.investorName} — {data.investorTitle}
+            </Text>
+          </View>
+          <View style={styles.partyRow}>
+            <Text style={styles.partyLabel}>Date:</Text>
+            <Text style={styles.partyValue}>{data.date}</Text>
+          </View>
+        </View>
+
+        {/* Key Terms */}
+        <View style={styles.termsSection}>
+          <Text style={styles.termsTitle}>Key Terms</Text>
+          <View style={styles.termRow}>
+            <Text style={styles.termLabel}>Investment Amount:</Text>
+            <Text style={styles.termValue}>{data.investmentAmount}</Text>
+          </View>
+          <View style={styles.termRow}>
+            <Text style={styles.termLabel}>Valuation Cap:</Text>
+            <Text style={styles.termValue}>{data.valuationCap}</Text>
+          </View>
+          <View style={styles.termRow}>
+            <Text style={styles.termLabel}>Discount Rate:</Text>
+            <Text style={styles.termValue}>{data.discountRate}%</Text>
+          </View>
+          <View style={styles.termRow}>
+            <Text style={styles.termLabel}>Equity:</Text>
+            <Text style={styles.termValue}>{data.equityPercent}%</Text>
+          </View>
+          <View style={styles.termRow}>
+            <Text style={styles.termLabel}>Vesting:</Text>
+            <Text style={styles.termValue}>
+              {data.vestingMonths} months with {data.cliffMonths}-month cliff
+            </Text>
+          </View>
+          <View style={styles.termRow}>
+            <Text style={styles.termLabel}>Pro Rata Rights:</Text>
+            <Text style={styles.termValue}>
+              {data.proRata ? 'Yes' : 'No'}
+            </Text>
+          </View>
+          {data.mfnClause && (
+            <View style={styles.termRow}>
+              <Text style={styles.termLabel}>MFN Clause:</Text>
+              <Text style={styles.termValue}>Included</Text>
+            </View>
+          )}
+          <View style={styles.termRow}>
+            <Text style={styles.termLabel}>Governing Law:</Text>
+            <Text style={styles.termValue}>State of {data.state}</Text>
+          </View>
+        </View>
+
+        {/* Full Agreement Text */}
+        <View>
+          <Text style={styles.termsTitle}>Full Agreement</Text>
+          {paragraphs.map((paragraph, index) => {
+            const isHeading =
+              paragraph === paragraph.toUpperCase() &&
+              paragraph.length < 80;
+            return isHeading ? (
+              <Text key={index} style={styles.sectionTitle}>
+                {paragraph}
+              </Text>
+            ) : (
+              <Text key={index} style={styles.bodyText}>
+                {paragraph}
+              </Text>
+            );
+          })}
+        </View>
+
+        {/* Signatures */}
+        <View style={styles.signatureSection}>
+          <Text style={styles.signatureTitle}>Signatures</Text>
+          <View style={styles.signatureBlock}>
+            <View style={styles.signatureColumn}>
+              <Text style={styles.signatureLabel}>
+                COMPANY: {data.companyName}
+              </Text>
+              <View style={styles.signatureLine} />
+              <Text style={styles.signatureSubtext}>
+                {data.founderName}
+              </Text>
+              <Text style={styles.signatureSubtext}>
+                {data.founderTitle}
+              </Text>
+              <Text style={styles.signatureSubtext}>Date: ____________</Text>
+            </View>
+            <View style={styles.signatureColumn}>
+              <Text style={styles.signatureLabel}>
+                INVESTOR: {data.investorName}
+              </Text>
+              <View style={styles.signatureLine} />
+              <Text style={styles.signatureSubtext}>
+                {data.investorName}
+              </Text>
+              <Text style={styles.signatureSubtext}>
+                {data.investorTitle}
+              </Text>
+              <Text style={styles.signatureSubtext}>Date: ____________</Text>
+            </View>
+          </View>
+        </View>
+
+        {/* Footer */}
+        <View style={styles.footer} fixed>
+          <Text style={styles.footerText}>
+            EquityExchange — Confidential
+          </Text>
+          <Text
+            style={styles.footerText}
+            render={({ pageNumber, totalPages }) =>
+              `Page ${pageNumber} of ${totalPages}`
+            }
+          />
+        </View>
+      </Page>
+    </Document>
+  );
+}
+
+// ─── PDF Buffer Generation ───────────────────────────────────────────────────
+
+/**
+ * Render a SAFE document to a PDF buffer that can be saved to storage
+ * or streamed as a download response.
+ */
+export async function generateSAFEPDF(
+  data: SAFEDocumentData
+): Promise<Buffer> {
+  const buffer = await renderToBuffer(
+    <SAFEDocument data={data} />
+  );
+  return Buffer.from(buffer);
+}
