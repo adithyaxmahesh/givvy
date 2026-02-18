@@ -30,38 +30,54 @@ function setSessionCookie(response: NextResponse, user: SessionUser): void {
   });
 }
 
+interface SignupResult {
+  user: SessionUser | null;
+  error: string | null;
+}
+
 async function trySupabaseSignup(data: {
   email: string;
   password: string;
   full_name: string;
   role: 'founder' | 'talent';
-}): Promise<SessionUser | null> {
+}): Promise<SignupResult> {
   const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
   const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
 
   if (!supabaseUrl || !supabaseKey) {
-    console.warn('[auth/signup] Supabase env vars not set, skipping Supabase signup');
-    return null;
+    return { user: null, error: 'Server configuration error: database not connected' };
   }
 
   try {
-    const { createServerSupabase } = await import('@/lib/supabase/server');
+    const { createClient } = await import('@supabase/supabase-js');
     const { tryCreateAdminClient } = await import('@/lib/supabase/admin');
 
-    const supabase = await createServerSupabase();
+    const supabase = createClient(supabaseUrl, supabaseKey);
     const { data: authData, error } = await supabase.auth.signUp({
       email: data.email,
       password: data.password,
-      options: { data: { full_name: data.full_name, role: data.role } },
+      options: {
+        data: { full_name: data.full_name, role: data.role },
+      },
     });
 
     if (error) {
-      console.error('[auth/signup] Supabase signUp error:', error.message);
-      return null;
+      console.error('[auth/signup] Supabase signUp error:', error.message, error.status);
+      if (error.message.includes('already registered')) {
+        return { user: null, error: 'An account with this email already exists' };
+      }
+      return { user: null, error: error.message };
     }
+
     if (!authData.user) {
-      console.error('[auth/signup] Supabase signUp returned no user');
-      return null;
+      return { user: null, error: 'Signup failed — no user returned from auth provider' };
+    }
+
+    // Supabase returns a "fake" user with empty identities for duplicate emails
+    // when email confirmations are enabled (security feature to prevent enumeration)
+    const identities = authData.user.identities;
+    if (identities && identities.length === 0) {
+      return { user: null, error: 'An account with this email already exists' };
     }
 
     const admin = tryCreateAdminClient();
@@ -86,20 +102,21 @@ async function trySupabaseSignup(data: {
       } catch (e) {
         console.warn('[auth/signup] Failed to upsert profile:', e);
       }
-    } else {
-      console.warn('[auth/signup] No admin client available, skipping email confirm & profile upsert');
     }
 
     return {
-      id: authData.user.id,
-      email: authData.user.email!,
-      full_name: data.full_name,
-      role: data.role,
-      avatar_url: null,
+      user: {
+        id: authData.user.id,
+        email: authData.user.email!,
+        full_name: data.full_name,
+        role: data.role,
+        avatar_url: null,
+      },
+      error: null,
     };
   } catch (e) {
     console.error('[auth/signup] Unexpected Supabase error:', e);
-    return null;
+    return { user: null, error: 'Unexpected server error during signup' };
   }
 }
 
@@ -128,13 +145,9 @@ export async function POST(request: NextRequest) {
 
     const { full_name, email, password, role } = parsed.data;
 
-    // Try Supabase first
-    let sessionUser = await trySupabaseSignup({
-      email,
-      password,
-      full_name,
-      role,
-    });
+    const result = await trySupabaseSignup({ email, password, full_name, role });
+
+    let sessionUser = result.user;
 
     // Only fall back to local/demo store in development
     if (!sessionUser && process.env.NODE_ENV !== 'production') {
@@ -148,9 +161,10 @@ export async function POST(request: NextRequest) {
     }
 
     if (!sessionUser) {
+      const status = result.error?.includes('already exists') ? 409 : 500;
       return NextResponse.json(
-        { error: 'Failed to create account. Please check your details and try again.' },
-        { status: 500 }
+        { error: result.error || 'Failed to create account. Please try again.' },
+        { status }
       );
     }
 

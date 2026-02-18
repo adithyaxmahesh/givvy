@@ -25,43 +25,53 @@ function setSessionCookie(response: NextResponse, user: SessionUser): void {
   });
 }
 
+interface LoginResult {
+  user: SessionUser | null;
+  error: string | null;
+}
+
 async function trySupabaseLogin(
   email: string,
   password: string
-): Promise<SessionUser | null> {
+): Promise<LoginResult> {
   const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
   const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
 
   if (!supabaseUrl || !supabaseKey) {
-    console.warn('[auth/login] Supabase env vars not set, skipping Supabase login');
-    return null;
+    return { user: null, error: 'Server configuration error: database not connected' };
   }
 
   try {
-    const { createServerSupabase } = await import('@/lib/supabase/server');
-    const supabase = await createServerSupabase();
+    const { createClient } = await import('@supabase/supabase-js');
+    const supabase = createClient(supabaseUrl, supabaseKey);
     const { data, error } = await supabase.auth.signInWithPassword({
       email,
       password,
     });
 
     if (error) {
-      console.error('[auth/login] Supabase signIn error:', error.message);
-      return null;
+      console.error('[auth/login] Supabase signIn error:', error.message, error.status);
+      if (error.message === 'Email not confirmed') {
+        return { user: null, error: 'Please confirm your email address before signing in' };
+      }
+      return { user: null, error: 'Invalid email or password' };
     }
-    if (!data.user) return null;
+    if (!data.user) return { user: null, error: 'Invalid email or password' };
 
     return {
-      id: data.user.id,
-      email: data.user.email!,
-      full_name: (data.user.user_metadata?.full_name as string) || '',
-      role:
-        (data.user.user_metadata?.role as 'founder' | 'talent') || 'talent',
-      avatar_url: (data.user.user_metadata?.avatar_url as string) || null,
+      user: {
+        id: data.user.id,
+        email: data.user.email!,
+        full_name: (data.user.user_metadata?.full_name as string) || '',
+        role:
+          (data.user.user_metadata?.role as 'founder' | 'talent') || 'talent',
+        avatar_url: (data.user.user_metadata?.avatar_url as string) || null,
+      },
+      error: null,
     };
   } catch (e) {
     console.error('[auth/login] Unexpected Supabase error:', e);
-    return null;
+    return { user: null, error: 'Unexpected server error' };
   }
 }
 
@@ -89,8 +99,8 @@ export async function POST(request: NextRequest) {
 
     const { email, password } = parsed.data;
 
-    // Try Supabase first
-    let sessionUser = await trySupabaseLogin(email, password);
+    const result = await trySupabaseLogin(email, password);
+    let sessionUser = result.user;
 
     // Fall back to local/demo store only in development
     if (!sessionUser) {
@@ -99,7 +109,7 @@ export async function POST(request: NextRequest) {
 
     if (!sessionUser) {
       return NextResponse.json(
-        { error: 'Invalid email or password' },
+        { error: result.error || 'Invalid email or password' },
         { status: 401 }
       );
     }
