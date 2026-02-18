@@ -33,3 +33,4 @@ Then run `MIGRATION.sql` in the Supabase SQL editor.
 ## Stack
 
 Next.js 14 · Supabase · Tailwind · Framer Motion · OpenAI · Resend
+# givvy
