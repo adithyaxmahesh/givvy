@@ -3,17 +3,13 @@
 import { useAuth } from '@/lib/auth-context';
 import {
   formatPercent,
+  formatDate,
   getStatusColor,
+  getInitials,
+  getAvatarColor,
 } from '@/lib/utils';
 import type { Deal, DealStatus } from '@/lib/types';
-import { motion } from 'framer-motion';
-import {
-  ArrowRight,
-  FileText,
-  Loader2,
-  Search,
-  Sparkles,
-} from 'lucide-react';
+import { ArrowRight, Loader2, Search } from 'lucide-react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useCallback, useEffect, useState } from 'react';
@@ -28,20 +24,15 @@ const STATUS_TABS: { id: FilterTab; label: string }[] = [
   { id: 'completed', label: 'Completed' },
 ];
 
-function SkeletonCard() {
+function SkeletonRow() {
   return (
-    <div className="glass-card p-6 space-y-4">
-      <div className="flex items-start gap-4">
-        <div className="skeleton h-10 w-10 rounded-xl" />
-        <div className="flex-1 space-y-2">
-          <div className="skeleton h-5 w-3/4 rounded" />
-          <div className="skeleton h-4 w-1/2 rounded" />
-        </div>
+    <div className="px-5 py-4 flex items-center gap-4">
+      <div className="skeleton h-8 w-8 rounded-full" />
+      <div className="flex-1 space-y-2">
+        <div className="skeleton h-4 w-40 rounded" />
+        <div className="skeleton h-3 w-28 rounded" />
       </div>
-      <div className="flex gap-2">
-        <div className="skeleton h-6 w-16 rounded-full" />
-        <div className="skeleton h-6 w-20 rounded-full" />
-      </div>
+      <div className="skeleton h-5 w-16 rounded-full" />
     </div>
   );
 }
@@ -99,19 +90,19 @@ export default function DealsPage() {
     : deals;
 
   return (
-    <div className="min-h-screen bg-[#fafafa]">
+    <div className="min-h-screen bg-[var(--color-bg,#FAFAF8)]">
       <div className="section-container py-8 space-y-6">
         {/* Header */}
         <div>
-          <h1 className="text-3xl font-bold text-gray-900">Deals</h1>
-          <p className="text-gray-500 mt-1">
+          <h1 className="text-2xl font-bold text-[#1A1A1A]">Deals</h1>
+          <p className="text-[#6B6B6B] mt-1 text-sm">
             Manage and track all your equity deals in one place.
           </p>
         </div>
 
-        {/* Filter tabs */}
-        <div className="flex flex-col sm:flex-row sm:items-center gap-4">
-          <div className="flex gap-1 bg-gray-100 rounded-xl p-1 overflow-x-auto">
+        {/* Underline filter tabs + search */}
+        <div className="flex flex-col gap-4">
+          <div className="flex gap-6 border-b border-[#E8E8E6] overflow-x-auto">
             {STATUS_TABS.map((t) => (
               <button
                 key={t.id}
@@ -121,10 +112,10 @@ export default function DealsPage() {
                   e.stopPropagation();
                   setStatusFilter(t.id);
                 }}
-                className={`px-4 py-2 rounded-lg text-sm font-semibold whitespace-nowrap transition-all ${
+                className={`pb-3 text-sm font-medium whitespace-nowrap transition-colors border-b-2 -mb-px ${
                   statusFilter === t.id
-                    ? 'bg-white text-brand-700 shadow-sm'
-                    : 'text-gray-500 hover:text-gray-700'
+                    ? 'text-[#1A1A1A] border-brand-600'
+                    : 'text-[#6B6B6B] border-transparent hover:text-[#1A1A1A]'
                 }`}
               >
                 {t.label}
@@ -132,7 +123,7 @@ export default function DealsPage() {
             ))}
           </div>
 
-          <div className="relative flex-1 max-w-sm">
+          <div className="relative max-w-sm">
             <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
             <input
               type="text"
@@ -145,92 +136,89 @@ export default function DealsPage() {
         </div>
 
         {error && (
-          <div className="p-4 rounded-xl bg-red-50 border border-red-100 text-sm text-red-700">
+          <div className="p-4 rounded-lg bg-red-50 border border-red-200 text-sm text-red-700">
             {error}
+          </div>
+        )}
+
+        {/* Table header (visible on sm+) */}
+        {!loading && filtered.length > 0 && (
+          <div className="hidden sm:flex items-center gap-4 px-5 text-xs font-medium text-[#9CA3AF] uppercase tracking-wide">
+            <div className="w-8 shrink-0" />
+            <div className="flex-1 min-w-0">Startup</div>
+            <div className="w-28 shrink-0">Talent</div>
+            <div className="w-24 shrink-0">Status</div>
+            <div className="w-16 shrink-0 text-right">Equity</div>
+            <div className="w-24 shrink-0 text-right">Date</div>
+            <div className="w-6 shrink-0" />
           </div>
         )}
 
         {/* Content */}
         {loading ? (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
-            {Array.from({ length: 6 }).map((_, i) => (
-              <SkeletonCard key={i} />
+          <div className="bg-white rounded-lg border border-[#E8E8E6] divide-y divide-[#E8E8E6]">
+            {Array.from({ length: 5 }).map((_, i) => (
+              <SkeletonRow key={i} />
             ))}
           </div>
         ) : filtered.length === 0 ? (
-          <div className="glass-card p-12 text-center">
-            <FileText className="h-12 w-12 text-gray-300 mx-auto mb-4" />
-            <h3 className="text-lg font-semibold text-gray-900">
+          <div className="py-16 text-center">
+            <p className="font-medium text-[#1A1A1A]">
               {search ? 'No matching deals' : 'No deals yet'}
-            </h3>
-            <p className="text-sm text-gray-500 mt-2 max-w-md mx-auto">
+            </p>
+            <p className="text-sm text-[#6B6B6B] mt-1 max-w-md mx-auto">
               {search
                 ? 'Try adjusting your search term.'
                 : 'Start by browsing the marketplace and connecting with startups or talent.'}
             </p>
             {!search && (
-              <Link href="/marketplace" className="btn-primary mt-6 inline-flex">
+              <Link href="/marketplace" className="btn-primary mt-4 inline-flex">
                 Browse Marketplace
               </Link>
             )}
           </div>
         ) : (
-          <motion.div
-            className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5"
-            initial="hidden"
-            animate="visible"
-            variants={{ visible: { transition: { staggerChildren: 0.04 } } }}
-          >
+          <div className="bg-white rounded-lg border border-[#E8E8E6] divide-y divide-[#E8E8E6]">
             {filtered.map((deal) => (
-              <DealCard key={deal.id} deal={deal} />
+              <DealRow key={deal.id} deal={deal} />
             ))}
-          </motion.div>
+          </div>
         )}
       </div>
     </div>
   );
 }
 
-function DealCard({ deal }: { deal: Deal }) {
+function DealRow({ deal }: { deal: Deal }) {
+  const startupName = deal.startup?.name ?? 'Unknown Startup';
   const talentName = (deal.talent as any)?.user?.full_name ?? 'Unknown Talent';
+
   return (
-    <motion.div
-      variants={{ hidden: { opacity: 0, y: 12 }, visible: { opacity: 1, y: 0 } }}
-    >
-      <Link href={`/deals/${deal.id}`}>
-        <div className="glass-card p-6 card-hover cursor-pointer h-full flex flex-col">
-          <div className="flex items-start gap-4">
-            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-brand-50 text-lg shrink-0">
-              {deal.startup?.logo_emoji ?? '🤝'}
-            </div>
-            <div className="min-w-0 flex-1">
-              <h3 className="font-semibold text-gray-900 truncate">
-                {deal.startup?.name ?? 'Unknown Startup'}
-              </h3>
-              <p className="text-sm text-gray-500 truncate">{talentName}</p>
-            </div>
-          </div>
-
-          <div className="mt-4 flex flex-wrap items-center gap-2">
-            <span className={`badge ${getStatusColor(deal.status)} capitalize`}>
-              {deal.status.replace('-', ' ')}
-            </span>
-            <span className="badge bg-brand-50 text-brand-700">
-              {formatPercent(deal.equity_percent)} equity
-            </span>
-            {deal.match_score > 0 && (
-              <span className="badge bg-emerald-50 text-emerald-700 flex items-center gap-1">
-                <Sparkles className="h-3 w-3" />
-                {deal.match_score}% match
-              </span>
-            )}
-          </div>
-
-          <div className="mt-auto pt-4 flex items-center justify-end text-sm font-medium text-brand-600">
-            View Deal <ArrowRight className="h-3.5 w-3.5 ml-1" />
-          </div>
+    <Link href={`/deals/${deal.id}`} className="block">
+      <div className="px-5 py-4 flex items-center gap-4 hover:bg-gray-50 transition-colors cursor-pointer">
+        <div
+          className={`flex h-8 w-8 items-center justify-center rounded-full text-xs font-bold shrink-0 ${getAvatarColor(startupName)}`}
+        >
+          {getInitials(startupName)}
         </div>
-      </Link>
-    </motion.div>
+        <div className="flex-1 min-w-0">
+          <p className="text-sm font-medium text-[#1A1A1A] truncate">{startupName}</p>
+          <p className="text-xs text-[#6B6B6B] truncate sm:hidden">{talentName}</p>
+        </div>
+        <div className="hidden sm:block w-28 shrink-0">
+          <p className="text-sm text-[#6B6B6B] truncate">{talentName}</p>
+        </div>
+        <span className={`badge ${getStatusColor(deal.status)} capitalize shrink-0`}>
+          {deal.status.replace('-', ' ')}
+        </span>
+        <span className="hidden sm:block w-16 text-sm text-[#1A1A1A] font-medium tabular-nums text-right shrink-0">
+          {formatPercent(deal.equity_percent)}
+        </span>
+        <span className="hidden sm:block w-24 text-xs text-[#9CA3AF] text-right shrink-0">
+          {formatDate(deal.created_at)}
+        </span>
+        <ArrowRight className="h-4 w-4 text-[#6B6B6B] shrink-0" />
+      </div>
+    </Link>
   );
 }
