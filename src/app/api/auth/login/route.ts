@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { z } from 'zod';
+import { createClient } from '@supabase/supabase-js';
 import {
   createSessionToken,
   SESSION_COOKIE,
@@ -42,7 +43,6 @@ async function trySupabaseLogin(
   }
 
   try {
-    const { createClient } = await import('@supabase/supabase-js');
     const supabase = createClient(supabaseUrl, supabaseKey);
     const { data, error } = await supabase.auth.signInWithPassword({
       email,

@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { z } from 'zod';
+import { createClient } from '@supabase/supabase-js';
 import {
   createSessionToken,
   SESSION_COOKIE,
@@ -8,6 +9,7 @@ import {
   toSessionUser,
   type SessionUser,
 } from '@/lib/auth';
+import { tryCreateAdminClient } from '@/lib/supabase/admin';
 import { sendWelcomeEmail } from '@/lib/email/send';
 
 const signupSchema = z.object({
@@ -49,8 +51,6 @@ async function trySupabaseSignup(data: {
   }
 
   try {
-    const { createClient } = await import('@supabase/supabase-js');
-    const { tryCreateAdminClient } = await import('@/lib/supabase/admin');
 
     const supabase = createClient(supabaseUrl, supabaseKey);
     const { data: authData, error } = await supabase.auth.signUp({
