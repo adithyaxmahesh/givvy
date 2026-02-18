@@ -18,6 +18,7 @@ import {
   LogOut,
   Loader2,
   Briefcase,
+  Shield,
 } from 'lucide-react';
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
@@ -34,6 +35,8 @@ const navLinks = [
   { label: 'Deals', href: '/deals', icon: FileText },
   { label: 'Portfolio', href: '/dashboard/portfolio', icon: TrendingUp },
 ];
+
+const ADMIN_EMAILS = ['adithyamahesh123@gmail.com'];
 
 const profileMenuItems = [
   { label: 'Dashboard', href: '/dashboard', icon: LayoutDashboard },
@@ -256,6 +259,19 @@ function Navbar() {
                           );
                         })}
                       </div>
+
+                      {user && ADMIN_EMAILS.includes(user.email.toLowerCase()) && (
+                        <div className="border-t border-gray-100 py-1.5">
+                          <Link
+                            href="/admin"
+                            onClick={() => setProfileMenuOpen(false)}
+                            className="flex items-center gap-3 px-4 py-2.5 text-sm text-gray-700 hover:bg-gray-50 transition-colors"
+                          >
+                            <Shield className="h-4 w-4 text-gray-400" />
+                            Admin Portal
+                          </Link>
+                        </div>
+                      )}
 
                       <div className="border-t border-gray-100 py-1.5">
                         <button

@@ -15,6 +15,12 @@ export const SESSION_COOKIE = 'ee_session';
 
 export const DEMO_EMAILS = ['founder@demo.com', 'talent@demo.com'];
 
+export const ADMIN_EMAILS = ['adithyamahesh123@gmail.com'];
+
+export function isAdmin(email: string): boolean {
+  return ADMIN_EMAILS.includes(email.toLowerCase());
+}
+
 // ─── Demo Mode Detection ────────────────────────────────────────────────────────
 
 export function isDemoMode(): boolean {

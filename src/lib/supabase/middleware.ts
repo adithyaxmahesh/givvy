@@ -1,6 +1,6 @@
 import { NextResponse, type NextRequest } from 'next/server';
 
-const PROTECTED_PATHS = ['/dashboard', '/deals', '/onboarding', '/safe'];
+const PROTECTED_PATHS = ['/dashboard', '/deals', '/onboarding', '/safe', '/admin'];
 const AUTH_PAGES = ['/login', '/signup'];
 const SESSION_COOKIE = 'ee_session';
 
@@ -42,6 +42,18 @@ async function verifyTokenQuick(token: string): Promise<boolean> {
   }
 }
 
+const ADMIN_EMAILS = ['adithyamahesh123@gmail.com'];
+
+function decodeTokenEmail(token: string): string | null {
+  try {
+    const [encodedPayload] = token.split('.');
+    const payload = JSON.parse(atob(encodedPayload.replace(/-/g, '+').replace(/_/g, '/')));
+    return payload.email?.toLowerCase() ?? null;
+  } catch {
+    return null;
+  }
+}
+
 export async function updateSession(request: NextRequest) {
   const { pathname } = request.nextUrl;
   const sessionToken = request.cookies.get(SESSION_COOKIE)?.value;
@@ -54,9 +66,27 @@ export async function updateSession(request: NextRequest) {
     (p) => pathname === p || pathname.startsWith(`${p}/`)
   );
 
+  const isAdminRoute =
+    pathname === '/admin' || pathname.startsWith('/admin/');
+
   const tokenValid = sessionToken
     ? await verifyTokenQuick(sessionToken)
     : false;
+
+  if (isAdminRoute) {
+    if (!tokenValid) {
+      const loginUrl = new URL('/login', request.url);
+      loginUrl.searchParams.set('redirect', pathname);
+      const response = NextResponse.redirect(loginUrl);
+      if (sessionToken) response.cookies.delete(SESSION_COOKIE);
+      return response;
+    }
+    const email = sessionToken ? decodeTokenEmail(sessionToken) : null;
+    if (!email || !ADMIN_EMAILS.includes(email)) {
+      return NextResponse.redirect(new URL('/dashboard', request.url));
+    }
+    return NextResponse.next();
+  }
 
   if (isProtected && !tokenValid) {
     const loginUrl = new URL('/login', request.url);
