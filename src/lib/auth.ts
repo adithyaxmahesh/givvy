@@ -36,6 +36,7 @@ export interface SessionUser {
   full_name: string;
   role: 'founder' | 'talent';
   avatar_url: string | null;
+  verified?: boolean;
 }
 
 interface StoredUser {
