@@ -8,13 +8,13 @@ import {
   FileText,
   Star,
   Briefcase,
+  Building2,
   Users,
   TrendingUp,
   Shield,
   Zap,
   Clock,
   HandCoins,
-  Quote,
   ChevronDown,
   CheckCircle2,
 } from 'lucide-react';
@@ -22,7 +22,7 @@ import Link from 'next/link';
 import { useEffect, useState } from 'react';
 import { cn, getInitials, getStageColor, formatPercent } from '@/lib/utils';
 import { useAuth } from '@/lib/auth-context';
-import { testimonials, faqItems } from '@/lib/data';
+import { faqItems } from '@/lib/data';
 
 const fadeInUp = {
   hidden: { opacity: 0, y: 20 },
@@ -39,11 +39,11 @@ const stagger = {
   visible: { transition: { staggerChildren: 0.08 } },
 };
 
-const stats = [
-  { value: '500+', label: 'Startups', icon: Briefcase },
-  { value: '1,200+', label: 'Professionals', icon: Users },
-  { value: '$50M+', label: 'Equity Deals', icon: TrendingUp },
-  { value: '94%', label: 'Match Rate', icon: Sparkles },
+const pillars = [
+  { label: 'For early-stage startups', icon: Briefcase },
+  { label: 'Equity-first compensation', icon: TrendingUp },
+  { label: 'Global talent network', icon: Users },
+  { label: 'YC-standard SAFEs', icon: Shield },
 ];
 
 const steps = [
@@ -206,7 +206,7 @@ export default function LandingPage() {
             </motion.div>
           </motion.div>
 
-          {/* Stats bar */}
+          {/* Pillars */}
           <motion.div
             initial="hidden"
             animate="visible"
@@ -214,19 +214,18 @@ export default function LandingPage() {
             className="mt-24 max-w-3xl mx-auto"
           >
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-6">
-              {stats.map((s) => {
-                const Icon = s.icon;
+              {pillars.map((p) => {
+                const Icon = p.icon;
                 return (
                   <motion.div
-                    key={s.label}
+                    key={p.label}
                     variants={fadeInUp}
                     className="text-center"
                   >
                     <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-brand-50 mx-auto mb-3">
                       <Icon className="h-5 w-5 text-brand-600" />
                     </div>
-                    <p className="text-2xl font-bold text-gray-900">{s.value}</p>
-                    <p className="text-xs text-gray-500 font-medium mt-0.5">{s.label}</p>
+                    <p className="text-sm font-semibold text-gray-700">{p.label}</p>
                   </motion.div>
                 );
               })}
@@ -560,7 +559,7 @@ export default function LandingPage() {
         </div>
       </section>
 
-      {/* ━━━ TESTIMONIALS (compact strip) ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */}
+      {/* ━━━ WHY GIVVY ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */}
       <section className="py-28 bg-white">
         <div className="section-container">
           <motion.div
@@ -570,11 +569,17 @@ export default function LandingPage() {
             variants={stagger}
             className="text-center mb-14"
           >
+            <motion.span
+              variants={fadeInUp}
+              className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-brand-50 text-brand-600 text-xs font-semibold uppercase tracking-wider mb-4"
+            >
+              Why Givvy?
+            </motion.span>
             <motion.h2
               variants={fadeInUp}
               className="text-3xl sm:text-4xl font-bold text-gray-900"
             >
-              Trusted by founders &amp; talent
+              Built for both sides of the deal
             </motion.h2>
           </motion.div>
 
@@ -583,28 +588,71 @@ export default function LandingPage() {
             whileInView="visible"
             viewport={{ once: true, margin: '-60px' }}
             variants={stagger}
-            className="grid md:grid-cols-3 gap-6"
+            className="grid md:grid-cols-2 gap-6"
           >
-            {testimonials.map((t) => (
-              <motion.div
-                key={t.name}
-                variants={fadeInUp}
-                className="glass-card p-6 card-hover flex flex-col"
-              >
-                <div className="flex items-center gap-3 mb-4">
-                  <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-brand-100 text-lg shrink-0">
-                    {t.avatar_emoji}
-                  </div>
-                  <div>
-                    <p className="text-sm font-semibold text-gray-900">{t.name}</p>
-                    <p className="text-xs text-gray-500">{t.role}, {t.company}</p>
-                  </div>
+            <motion.div variants={fadeInUp} className="glass-card p-8 card-hover">
+              <div className="flex items-center gap-3 mb-6">
+                <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-brand-600 text-white shadow-brand">
+                  <Building2 className="h-6 w-6" />
                 </div>
-                <p className="text-sm text-gray-600 leading-relaxed flex-1">
-                  &ldquo;{t.quote}&rdquo;
-                </p>
-              </motion.div>
-            ))}
+                <h3 className="text-xl font-bold text-gray-900">For Founders</h3>
+              </div>
+              <ul className="space-y-4">
+                <li className="flex items-start gap-3">
+                  <CheckCircle2 className="h-5 w-5 text-brand-600 shrink-0 mt-0.5" />
+                  <div>
+                    <p className="text-sm font-semibold text-gray-900">Keep your runway intact</p>
+                    <p className="text-sm text-gray-500">Hire lawyers, engineers, marketers, and more without spending cash.</p>
+                  </div>
+                </li>
+                <li className="flex items-start gap-3">
+                  <CheckCircle2 className="h-5 w-5 text-brand-600 shrink-0 mt-0.5" />
+                  <div>
+                    <p className="text-sm font-semibold text-gray-900">Access vetted professionals</p>
+                    <p className="text-sm text-gray-500">Every applicant goes through an approval process before they can join.</p>
+                  </div>
+                </li>
+                <li className="flex items-start gap-3">
+                  <CheckCircle2 className="h-5 w-5 text-brand-600 shrink-0 mt-0.5" />
+                  <div>
+                    <p className="text-sm font-semibold text-gray-900">SAFE agreements, built in</p>
+                    <p className="text-sm text-gray-500">Generate YC-standard SAFEs with vesting and milestone terms in minutes.</p>
+                  </div>
+                </li>
+              </ul>
+            </motion.div>
+
+            <motion.div variants={fadeInUp} className="glass-card p-8 card-hover">
+              <div className="flex items-center gap-3 mb-6">
+                <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-indigo-600 text-white shadow-lg shadow-indigo-200">
+                  <Briefcase className="h-6 w-6" />
+                </div>
+                <h3 className="text-xl font-bold text-gray-900">For Talent</h3>
+              </div>
+              <ul className="space-y-4">
+                <li className="flex items-start gap-3">
+                  <CheckCircle2 className="h-5 w-5 text-indigo-600 shrink-0 mt-0.5" />
+                  <div>
+                    <p className="text-sm font-semibold text-gray-900">Build an equity portfolio</p>
+                    <p className="text-sm text-gray-500">Work with multiple startups and accumulate equity across companies you believe in.</p>
+                  </div>
+                </li>
+                <li className="flex items-start gap-3">
+                  <CheckCircle2 className="h-5 w-5 text-indigo-600 shrink-0 mt-0.5" />
+                  <div>
+                    <p className="text-sm font-semibold text-gray-900">Get in early</p>
+                    <p className="text-sm text-gray-500">Join pre-seed and seed startups before they raise, at the most favorable terms.</p>
+                  </div>
+                </li>
+                <li className="flex items-start gap-3">
+                  <CheckCircle2 className="h-5 w-5 text-indigo-600 shrink-0 mt-0.5" />
+                  <div>
+                    <p className="text-sm font-semibold text-gray-900">Legally protected</p>
+                    <p className="text-sm text-gray-500">Every deal is backed by a SAFE with clear vesting schedules and milestone-based unlocks.</p>
+                  </div>
+                </li>
+              </ul>
+            </motion.div>
           </motion.div>
         </div>
       </section>
@@ -694,13 +742,13 @@ export default function LandingPage() {
             variants={fadeInUp}
             className="text-3xl sm:text-5xl font-bold text-white mb-5"
           >
-            Ready to build the future?
+            Fill the gaps. Stay liquid.
           </motion.h2>
           <motion.p
             variants={fadeInUp}
             className="text-brand-200 max-w-lg mx-auto mb-10 text-lg"
           >
-            Join hundreds of startups and professionals already closing equity deals on Givvy.
+            Start closing equity deals on Givvy — the talent marketplace built for startups.
           </motion.p>
           <motion.div variants={fadeInUp}>
             <Link
