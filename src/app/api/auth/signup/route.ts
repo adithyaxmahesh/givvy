@@ -19,6 +19,8 @@ const signupSchema = z.object({
   role: z.enum(['founder', 'talent'], {
     errorMap: () => ({ message: 'Role must be founder or talent' }),
   }),
+  linkedin: z.string().max(500).optional(),
+  website: z.string().max(500).optional(),
 });
 
 function setSessionCookie(response: NextResponse, user: SessionUser): void {
@@ -42,6 +44,8 @@ async function trySupabaseSignup(data: {
   password: string;
   full_name: string;
   role: 'founder' | 'talent';
+  linkedin?: string;
+  website?: string;
 }): Promise<SignupResult> {
   const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
   const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
@@ -89,18 +93,20 @@ async function trySupabaseSignup(data: {
       } catch (e) {
         console.warn('[auth/signup] Failed to auto-confirm email:', e);
       }
-      try {
-        await admin.from('profiles').upsert(
-          {
-            id: authData.user.id,
-            email: data.email,
-            full_name: data.full_name,
-            role: data.role,
-          },
-          { onConflict: 'id' }
-        );
-      } catch (e) {
-        console.warn('[auth/signup] Failed to upsert profile:', e);
+
+      const { error: profileError } = await admin.from('profiles').upsert(
+        {
+          id: authData.user.id,
+          email: data.email,
+          full_name: data.full_name,
+          role: data.role,
+          verified: false,
+        },
+        { onConflict: 'id' }
+      );
+      if (profileError) {
+        console.error('[auth/signup] Profile upsert failed:', profileError.message);
+        return { user: null, error: 'Account created but profile setup failed. Please try logging in.' };
       }
     }
 
@@ -143,9 +149,16 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const { full_name, email, password, role } = parsed.data;
+    const { full_name, email, password, role, linkedin, website } = parsed.data;
 
-    const result = await trySupabaseSignup({ email, password, full_name, role });
+    const result = await trySupabaseSignup({
+      email,
+      password,
+      full_name,
+      role,
+      linkedin: linkedin?.trim() || undefined,
+      website: website?.trim() || undefined,
+    });
 
     let sessionUser = result.user;
 

@@ -1,6 +1,7 @@
 'use client';
 
 import { useAuth } from '@/lib/auth-context';
+import { useRequireApproval } from '@/hooks/useRequireApproval';
 import { getInitials } from '@/lib/utils';
 import {
   Bell,
@@ -57,6 +58,7 @@ const notificationSettings = [
 export default function SettingsPage() {
   const { user, loading: authLoading } = useAuth();
   const router = useRouter();
+  useRequireApproval();
   const [activeTab, setActiveTab] = useState<SettingsTab>('profile');
 
   useEffect(() => {

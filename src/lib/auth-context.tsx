@@ -18,17 +18,20 @@ export interface AuthUser {
   full_name: string;
   role: 'founder' | 'talent';
   avatar_url: string | null;
+  verified?: boolean;
 }
 
 interface AuthContextValue {
   user: AuthUser | null;
   loading: boolean;
-  login: (email: string, password: string) => Promise<void>;
+  login: (email: string, password: string) => Promise<AuthUser | undefined>;
   signup: (data: {
     email: string;
     password: string;
     full_name: string;
     role: 'founder' | 'talent';
+    linkedin?: string;
+    website?: string;
   }) => Promise<void>;
   logout: () => Promise<void>;
   refresh: () => Promise<void>;
@@ -49,7 +52,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       const res = await fetch('/api/auth/session', { credentials: 'include' });
       if (res.ok) {
         const data = await res.json();
-        setUser(data.user ?? null);
+        const u = data.user ?? null;
+        setUser(u ? { ...u, verified: u.verified === true } : null);
       } else {
         setUser(null);
       }
@@ -90,6 +94,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       password: string;
       full_name: string;
       role: 'founder' | 'talent';
+      linkedin?: string;
+      website?: string;
     }) => {
       const res = await fetch('/api/auth/signup', {
         method: 'POST',

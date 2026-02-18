@@ -1,6 +1,7 @@
 'use client';
 
 import { useAuth } from '@/lib/auth-context';
+import { useRequireApproval } from '@/hooks/useRequireApproval';
 import {
   formatPercent,
   formatDate,
@@ -40,6 +41,7 @@ function SkeletonRow() {
 export default function DealsPage() {
   const { user, loading: authLoading } = useAuth();
   const router = useRouter();
+  useRequireApproval();
 
   const [deals, setDeals] = useState<Deal[]>([]);
   const [loading, setLoading] = useState(true);

@@ -1,6 +1,6 @@
 import { NextResponse, type NextRequest } from 'next/server';
 
-const PROTECTED_PATHS = ['/dashboard', '/deals', '/onboarding', '/safe', '/admin'];
+const PROTECTED_PATHS = ['/dashboard', '/deals', '/onboarding', '/pending', '/safe', '/admin'];
 const AUTH_PAGES = ['/login', '/signup'];
 const SESSION_COOKIE = 'ee_session';
 

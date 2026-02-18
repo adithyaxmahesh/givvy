@@ -10,7 +10,7 @@ export async function GET(request: NextRequest) {
     const sb = createAdminClient();
     const { data, error: dbErr } = await sb
       .from('profiles')
-      .select('*')
+      .select('id, email, full_name, role, verified, avatar_url, linkedin, website, onboarding_answers, created_at')
       .order('created_at', { ascending: false });
 
     if (dbErr) throw dbErr;

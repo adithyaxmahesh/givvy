@@ -1,6 +1,7 @@
 'use client';
 
 import { useAuth } from '@/lib/auth-context';
+import { useRequireApproval } from '@/hooks/useRequireApproval';
 import {
   getStatusColor,
   formatPercent,
@@ -43,6 +44,7 @@ const PIPELINE_STAGES = [
 export default function DashboardPage() {
   const { user, loading: authLoading } = useAuth();
   const router = useRouter();
+  useRequireApproval();
 
   const [deals, setDeals] = useState<Deal[]>([]);
   const [notifications, setNotifications] = useState<NotificationItem[]>([]);
@@ -405,6 +407,9 @@ export default function DashboardPage() {
             <div className="bg-white rounded-xl border border-[#E8E8E6] divide-y divide-[#E8E8E6]">
               <QuickLink href="/marketplace" label="Browse Marketplace" sub="Find startups & talent" />
               <QuickLink href="/deals" label="All Deals" sub="Manage your pipeline" />
+              {user.role === 'founder' && (
+                <QuickLink href="/dashboard/roles/new" label="Post a Role" sub="Hire talent with equity" />
+              )}
               <QuickLink href="/dashboard/portfolio" label="Portfolio" sub="Track equity holdings" />
               <QuickLink href="/dashboard/settings" label="Settings" sub="Account & preferences" />
             </div>

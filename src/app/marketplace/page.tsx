@@ -1,6 +1,7 @@
 'use client';
 
 import { useAuth } from '@/lib/auth-context';
+import { useRequireApproval } from '@/hooks/useRequireApproval';
 import { getInitials, getAvatarColor, getStageColor } from '@/lib/utils';
 import type { Startup, TalentProfile } from '@/lib/types';
 import {
@@ -52,6 +53,7 @@ function SkeletonCard() {
 
 export default function MarketplacePage() {
   const { user, loading: authLoading } = useAuth();
+  useRequireApproval();
 
   const [tab, setTab] = useState<Tab>('startups');
   const [search, setSearch] = useState('');

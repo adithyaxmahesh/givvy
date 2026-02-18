@@ -9,6 +9,7 @@ import {
   toSessionUser,
   type SessionUser,
 } from '@/lib/auth';
+import { tryCreateAdminClient } from '@/lib/supabase/admin';
 
 const loginSchema = z.object({
   email: z.string().email('Invalid email address'),
@@ -58,14 +59,49 @@ async function trySupabaseLogin(
     }
     if (!data.user) return { user: null, error: 'Invalid email or password' };
 
+    const fullName = (data.user.user_metadata?.full_name as string) || '';
+    const role = (data.user.user_metadata?.role as 'founder' | 'talent') || 'talent';
+    const avatarUrl = (data.user.user_metadata?.avatar_url as string) || null;
+
+    // Ensure profile row exists (defensive sync for users who signed up
+    // before the profile upsert was reliable)
+    const admin = tryCreateAdminClient();
+    if (admin) {
+      await admin.from('profiles').upsert(
+        {
+          id: data.user.id,
+          email: data.user.email!,
+          full_name: fullName,
+          role,
+        },
+        { onConflict: 'id' }
+      ).then(({ error: pErr }) => {
+        if (pErr) console.warn('[auth/login] Profile sync failed:', pErr.message);
+      });
+    }
+
+    let verified = false;
+    if (admin) {
+      try {
+        const { data: profile } = await admin
+          .from('profiles')
+          .select('verified')
+          .eq('id', data.user.id)
+          .single();
+        verified = profile?.verified === true;
+      } catch {
+        // keep false
+      }
+    }
+
     return {
       user: {
         id: data.user.id,
         email: data.user.email!,
-        full_name: (data.user.user_metadata?.full_name as string) || '',
-        role:
-          (data.user.user_metadata?.role as 'founder' | 'talent') || 'talent',
-        avatar_url: (data.user.user_metadata?.avatar_url as string) || null,
+        full_name: fullName,
+        role,
+        avatar_url: avatarUrl,
+        verified,
       },
       error: null,
     };

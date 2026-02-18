@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getAuthUser, DEMO_EMAILS } from '@/lib/auth';
+import { requireVerified } from '@/app/api/admin/_guard';
 import { dealSchema } from '@/lib/validations';
 import { mockDeals } from '@/lib/data';
 
@@ -14,8 +15,8 @@ function getAdminClient() {
 
 export async function GET(request: NextRequest) {
   try {
-    const user = getAuthUser(request.headers.get('cookie'));
-    if (!user) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    const { user, error: guardError } = await requireVerified(request);
+    if (guardError) return guardError;
 
     const { searchParams } = new URL(request.url);
     const status = searchParams.get('status');
@@ -74,8 +75,8 @@ export async function GET(request: NextRequest) {
 
 export async function POST(request: NextRequest) {
   try {
-    const user = getAuthUser(request.headers.get('cookie'));
-    if (!user) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    const { user, error: guardError } = await requireVerified(request);
+    if (guardError) return guardError;
 
     const body = await request.json();
     const parsed = dealSchema.safeParse(body);

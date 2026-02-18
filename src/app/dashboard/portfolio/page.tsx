@@ -1,6 +1,7 @@
 'use client';
 
 import { useAuth } from '@/lib/auth-context';
+import { useRequireApproval } from '@/hooks/useRequireApproval';
 import {
   formatCurrency,
   formatPercent,
@@ -27,6 +28,7 @@ function SkeletonBlock({ className }: { className?: string }) {
 export default function PortfolioPage() {
   const { user, loading: authLoading } = useAuth();
   const router = useRouter();
+  useRequireApproval();
 
   const [deals, setDeals] = useState<Deal[]>([]);
   const [loading, setLoading] = useState(true);

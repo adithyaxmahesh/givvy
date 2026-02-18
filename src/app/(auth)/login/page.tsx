@@ -33,8 +33,12 @@ function LoginForm() {
     setIsLoading(true);
 
     try {
-      await login(email, password);
-      router.push(redirectTo);
+      const user = await login(email, password);
+      if (user?.verified) {
+        router.push(redirectTo);
+      } else {
+        router.push('/pending');
+      }
     } catch (err: any) {
       setError(err.message || 'Invalid email or password');
     } finally {

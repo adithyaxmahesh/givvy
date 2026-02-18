@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { getAuthUser } from '@/lib/auth';
+import { requireVerified } from '@/app/api/admin/_guard';
 import { startupSchema } from '@/lib/validations';
 import { mockStartups } from '@/lib/data';
 
@@ -60,8 +60,8 @@ export async function GET(request: NextRequest) {
 
 export async function POST(request: NextRequest) {
   try {
-    const user = getAuthUser(request.headers.get('cookie'));
-    if (!user) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    const { user, error: guardError } = await requireVerified(request);
+    if (guardError) return guardError;
 
     const body = await request.json();
     const parsed = startupSchema.safeParse(body);
@@ -79,9 +79,18 @@ export async function POST(request: NextRequest) {
         .insert({ ...parsed.data, founder_id: user.id })
         .select()
         .single();
-      if (!error) return NextResponse.json({ data }, { status: 201 });
+
+      if (error) {
+        console.error('[startups] Insert failed:', error.message, error.details);
+        return NextResponse.json(
+          { error: `Failed to create startup: ${error.message}` },
+          { status: 500 }
+        );
+      }
+      return NextResponse.json({ data }, { status: 201 });
     }
 
+    // Demo/dev fallback only when Supabase is not configured
     return NextResponse.json(
       { data: { id: crypto.randomUUID(), ...parsed.data, founder_id: user.id } },
       { status: 201 }

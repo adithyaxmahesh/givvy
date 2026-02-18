@@ -15,6 +15,8 @@ import {
   Building2,
   Briefcase,
   CheckCircle2,
+  Linkedin,
+  Globe,
 } from 'lucide-react';
 
 // ─── Types ──────────────────────────────────────────────────────────────────────
@@ -24,6 +26,8 @@ interface FormErrors {
   email?: string;
   password?: string;
   role?: string;
+  linkedin?: string;
+  website?: string;
 }
 
 // ─── Signup Page ────────────────────────────────────────────────────────────────
@@ -35,6 +39,8 @@ export default function SignupPage() {
   const [fullName, setFullName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [linkedin, setLinkedin] = useState('');
+  const [website, setWebsite] = useState('');
   const [role, setRole] = useState<'founder' | 'talent' | null>(null);
   const [error, setError] = useState('');
   const [fieldErrors, setFieldErrors] = useState<FormErrors>({});
@@ -60,6 +66,13 @@ export default function SignupPage() {
       errors.role = 'Please select a role';
     }
 
+    if (linkedin.trim() && !/^https?:\/\/.+\..+/.test(linkedin.trim())) {
+      errors.linkedin = 'Please enter a valid URL';
+    }
+    if (website.trim() && !/^https?:\/\/.+\..+/.test(website.trim())) {
+      errors.website = 'Please enter a valid URL';
+    }
+
     setFieldErrors(errors);
     return Object.keys(errors).length === 0;
   };
@@ -78,10 +91,10 @@ export default function SignupPage() {
         password,
         full_name: fullName.trim(),
         role: role!,
+        linkedin: linkedin.trim() || undefined,
+        website: website.trim() || undefined,
       });
-      router.push(
-        role === 'founder' ? '/onboarding/founder' : '/onboarding/talent'
-      );
+      router.push('/onboarding/questions');
     } catch (err: any) {
       setError(err.message || 'Failed to create account');
     } finally {
@@ -273,6 +286,60 @@ export default function SignupPage() {
                   {password.length}/8
                 </p>
               </div>
+            </div>
+
+            {/* LinkedIn (optional) */}
+            <div>
+              <label
+                htmlFor="linkedin"
+                className="block text-sm font-medium text-gray-700 mb-1.5"
+              >
+                LinkedIn <span className="text-gray-400">(optional)</span>
+              </label>
+              <div className="relative">
+                <Linkedin className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
+                <input
+                  id="linkedin"
+                  type="url"
+                  value={linkedin}
+                  onChange={(e) => {
+                    setLinkedin(e.target.value);
+                    if (fieldErrors.linkedin) setFieldErrors((p) => ({ ...p, linkedin: undefined }));
+                  }}
+                  placeholder="https://linkedin.com/in/username"
+                  className={`input-field pl-10 ${fieldErrors.linkedin ? 'border-red-300 focus:border-red-500' : ''}`}
+                />
+              </div>
+              {fieldErrors.linkedin && (
+                <p className="mt-1.5 text-xs text-red-600">{fieldErrors.linkedin}</p>
+              )}
+            </div>
+
+            {/* Website (optional) */}
+            <div>
+              <label
+                htmlFor="website"
+                className="block text-sm font-medium text-gray-700 mb-1.5"
+              >
+                Website <span className="text-gray-400">(optional)</span>
+              </label>
+              <div className="relative">
+                <Globe className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
+                <input
+                  id="website"
+                  type="url"
+                  value={website}
+                  onChange={(e) => {
+                    setWebsite(e.target.value);
+                    if (fieldErrors.website) setFieldErrors((p) => ({ ...p, website: undefined }));
+                  }}
+                  placeholder="https://yourwebsite.com"
+                  className={`input-field pl-10 ${fieldErrors.website ? 'border-red-300 focus:border-red-500' : ''}`}
+                />
+              </div>
+              {fieldErrors.website && (
+                <p className="mt-1.5 text-xs text-red-600">{fieldErrors.website}</p>
+              )}
             </div>
 
             {/* Role selector */}

@@ -3,12 +3,22 @@
 import { useEffect, useState } from 'react';
 import {
   CheckCircle2,
+  ChevronDown,
+  ChevronUp,
+  ExternalLink,
   Loader2,
   Search,
   ShieldCheck,
   ShieldX,
   XCircle,
 } from 'lucide-react';
+
+const ONBOARDING_LABELS: Record<string, string> = {
+  why_join: 'Why join?',
+  experience: 'Experience / background',
+  how_hear: 'How did you hear about us?',
+  anything_else: 'Anything else?',
+};
 
 interface User {
   id: string;
@@ -17,6 +27,9 @@ interface User {
   role: string;
   verified: boolean;
   avatar_url: string | null;
+  linkedin: string | null;
+  website: string | null;
+  onboarding_answers: Record<string, string> | null;
   created_at: string;
 }
 
@@ -78,7 +91,7 @@ export default function AdminUsersPage() {
           <h1 className="text-2xl font-bold text-gray-900">Users</h1>
           <p className="text-sm text-gray-500 mt-1">
             {users.length} total &middot;{' '}
-            {users.filter((u) => u.verified).length} verified
+            {users.filter((u) => u.verified).length} approved
           </p>
         </div>
       </div>
@@ -100,6 +113,7 @@ export default function AdminUsersPage() {
             <tr className="border-b border-gray-100 bg-gray-50/50">
               <th className="text-left px-5 py-3 font-medium text-gray-500">User</th>
               <th className="text-left px-5 py-3 font-medium text-gray-500">Role</th>
+              <th className="text-left px-5 py-3 font-medium text-gray-500">Links</th>
               <th className="text-left px-5 py-3 font-medium text-gray-500">Joined</th>
               <th className="text-left px-5 py-3 font-medium text-gray-500">Status</th>
               <th className="text-right px-5 py-3 font-medium text-gray-500">Action</th>
@@ -107,67 +121,16 @@ export default function AdminUsersPage() {
           </thead>
           <tbody className="divide-y divide-gray-100">
             {filtered.map((user) => (
-              <tr key={user.id} className="hover:bg-gray-50/50 transition-colors">
-                <td className="px-5 py-4">
-                  <div className="flex items-center gap-3">
-                    <div className="h-8 w-8 rounded-lg bg-gray-100 flex items-center justify-center text-xs font-bold text-gray-600 shrink-0">
-                      {user.full_name
-                        .split(' ')
-                        .map((n) => n[0])
-                        .join('')
-                        .slice(0, 2)
-                        .toUpperCase()}
-                    </div>
-                    <div>
-                      <p className="font-medium text-gray-900">{user.full_name}</p>
-                      <p className="text-xs text-gray-500">{user.email}</p>
-                    </div>
-                  </div>
-                </td>
-                <td className="px-5 py-4">
-                  <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium capitalize bg-gray-100 text-gray-700">
-                    {user.role}
-                  </span>
-                </td>
-                <td className="px-5 py-4 text-gray-500">
-                  {new Date(user.created_at).toLocaleDateString()}
-                </td>
-                <td className="px-5 py-4">
-                  {user.verified ? (
-                    <span className="inline-flex items-center gap-1 text-xs font-medium text-emerald-700">
-                      <CheckCircle2 className="h-3.5 w-3.5" /> Verified
-                    </span>
-                  ) : (
-                    <span className="inline-flex items-center gap-1 text-xs font-medium text-amber-600">
-                      <XCircle className="h-3.5 w-3.5" /> Pending
-                    </span>
-                  )}
-                </td>
-                <td className="px-5 py-4 text-right">
-                  <button
-                    onClick={() => toggleVerified(user)}
-                    disabled={updating === user.id}
-                    className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium transition-colors disabled:opacity-50 ${
-                      user.verified
-                        ? 'bg-red-50 text-red-700 hover:bg-red-100'
-                        : 'bg-emerald-50 text-emerald-700 hover:bg-emerald-100'
-                    }`}
-                  >
-                    {updating === user.id ? (
-                      <Loader2 className="h-3 w-3 animate-spin" />
-                    ) : user.verified ? (
-                      <ShieldX className="h-3 w-3" />
-                    ) : (
-                      <ShieldCheck className="h-3 w-3" />
-                    )}
-                    {user.verified ? 'Revoke' : 'Approve'}
-                  </button>
-                </td>
-              </tr>
+              <UserRow
+                key={user.id}
+                user={user}
+                updating={updating === user.id}
+                onToggleVerified={() => toggleVerified(user)}
+              />
             ))}
             {filtered.length === 0 && (
               <tr>
-                <td colSpan={5} className="px-5 py-12 text-center text-gray-400">
+                <td colSpan={6} className="px-5 py-12 text-center text-gray-400">
                   No users found.
                 </td>
               </tr>
@@ -176,5 +139,136 @@ export default function AdminUsersPage() {
         </table>
       </div>
     </div>
+  );
+}
+
+function UserRow({
+  user,
+  updating,
+  onToggleVerified,
+}: {
+  user: User;
+  updating: boolean;
+  onToggleVerified: () => void;
+}) {
+  const [expanded, setExpanded] = useState(false);
+  const answers = user.onboarding_answers && Object.keys(user.onboarding_answers).length > 0;
+
+  return (
+    <>
+      <tr className="hover:bg-gray-50/50 transition-colors">
+        <td className="px-5 py-4">
+          <div className="flex items-center gap-3">
+            <div className="h-8 w-8 rounded-lg bg-gray-100 flex items-center justify-center text-xs font-bold text-gray-600 shrink-0">
+              {user.full_name
+                .split(' ')
+                .map((n) => n[0])
+                .join('')
+                .slice(0, 2)
+                .toUpperCase()}
+            </div>
+            <div>
+              <p className="font-medium text-gray-900">{user.full_name}</p>
+              <p className="text-xs text-gray-500">{user.email}</p>
+            </div>
+          </div>
+        </td>
+        <td className="px-5 py-4">
+          <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium capitalize bg-gray-100 text-gray-700">
+            {user.role}
+          </span>
+        </td>
+        <td className="px-5 py-4">
+          <div className="flex flex-wrap gap-1.5">
+            {user.linkedin ? (
+              <a
+                href={user.linkedin.startsWith('http') ? user.linkedin : `https://${user.linkedin}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-0.5 text-xs text-brand-600 hover:underline"
+              >
+                LinkedIn <ExternalLink className="h-3 w-3" />
+              </a>
+            ) : (
+              <span className="text-xs text-gray-400">—</span>
+            )}
+            {user.website ? (
+              <a
+                href={user.website.startsWith('http') ? user.website : `https://${user.website}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-0.5 text-xs text-brand-600 hover:underline"
+              >
+                Website <ExternalLink className="h-3 w-3" />
+              </a>
+            ) : (
+              user.linkedin ? null : <span className="text-xs text-gray-400">—</span>
+            )}
+          </div>
+        </td>
+        <td className="px-5 py-4 text-gray-500">
+          {new Date(user.created_at).toLocaleDateString()}
+        </td>
+        <td className="px-5 py-4">
+          {user.verified ? (
+            <span className="inline-flex items-center gap-1 text-xs font-medium text-emerald-700">
+              <CheckCircle2 className="h-3.5 w-3.5" /> Approved
+            </span>
+          ) : (
+            <span className="inline-flex items-center gap-1 text-xs font-medium text-amber-600">
+              <XCircle className="h-3.5 w-3.5" /> Pending
+            </span>
+          )}
+        </td>
+        <td className="px-5 py-4 text-right">
+          <div className="flex items-center justify-end gap-2">
+            {answers && (
+              <button
+                type="button"
+                onClick={() => setExpanded((e) => !e)}
+                className="inline-flex items-center gap-1 text-xs text-gray-500 hover:text-gray-700"
+              >
+                {expanded ? <ChevronUp className="h-4 w-4" /> : <ChevronDown className="h-4 w-4" />}
+                Q&A
+              </button>
+            )}
+            <button
+              onClick={onToggleVerified}
+              disabled={updating}
+              className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium transition-colors disabled:opacity-50 ${
+                user.verified
+                  ? 'bg-red-50 text-red-700 hover:bg-red-100'
+                  : 'bg-emerald-50 text-emerald-700 hover:bg-emerald-100'
+              }`}
+            >
+              {updating ? (
+                <Loader2 className="h-3 w-3 animate-spin" />
+              ) : user.verified ? (
+                <ShieldX className="h-3 w-3" />
+              ) : (
+                <ShieldCheck className="h-3 w-3" />
+              )}
+              {user.verified ? 'Revoke' : 'Approve'}
+            </button>
+          </div>
+        </td>
+      </tr>
+      {expanded && answers && user.onboarding_answers && (
+        <tr className="bg-gray-50/70">
+          <td colSpan={6} className="px-5 py-4">
+            <div className="space-y-2 text-sm">
+              {Object.entries(user.onboarding_answers).map(([key, value]) => (
+                <div key={key}>
+                  <p className="font-medium text-gray-600 text-xs uppercase tracking-wide mt-2 first:mt-0">
+                    {ONBOARDING_LABELS[key] ?? key}
+                  </p>
+                  <p className="text-gray-800 whitespace-pre-wrap">{value || '—'}</p>
+                </div>
+              ))}
+            </div>
+          </td>
+        </tr>
+      )}
+    </>
   );
 }

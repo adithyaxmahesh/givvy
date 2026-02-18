@@ -1,6 +1,7 @@
 'use client';
 
 import { useAuth } from '@/lib/auth-context';
+import { useRequireApproval } from '@/hooks/useRequireApproval';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
   ArrowLeft,
@@ -91,6 +92,7 @@ const initialForm: FormData = {
 export default function TalentOnboardingPage() {
   const { user, loading: authLoading } = useAuth();
   const router = useRouter();
+  useRequireApproval();
 
   const [step, setStep] = useState(1);
   const [form, setForm] = useState<FormData>(initialForm);
