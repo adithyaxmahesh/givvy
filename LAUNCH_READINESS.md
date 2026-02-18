@@ -1,4 +1,4 @@
-# EquityExchange — Launch Readiness Audit
+# Givvy — Launch Readiness Audit
 
 *Perspective: ex-founder of a billion-dollar startup (e.g. Mercor). What’s missing or broken to be ready for real users and real growth?*
 
@@ -48,17 +48,17 @@ The product is a **two-sided equity-for-talent marketplace**: founders post star
 
 ### 7. **Demo credentials on login page**
 
-- **Issue:** Login page says “Try: founder@demo.com / talent@demo.com (password: password123)”. Auth uses **Supabase** only; those accounts only work if they exist in your Supabase project.
+- **Issue:** Login page says “Try: demo accounts ([removed for security])”. Auth uses **Supabase** only; those accounts only work if they exist in your Supabase project.
 - **Action:** Either (a) remove the demo hint for production, or (b) create those two users in Supabase (Dashboard → Authentication → Users) and optionally seed matching rows in `profiles` / `startups` / `talent_profiles` for demos.
 
 ### 8. **Email links point to hardcoded domain**
 
-- **Issue:** `lib/email/send.ts` uses `https://equityexchange.io/...` in CTA links. In dev or custom domain this is wrong.
+- **Issue:** `lib/email/send.ts` uses `https://givvy.io/...` in CTA links. In dev or custom domain this is wrong.
 - **Action:** Use `process.env.NEXT_PUBLIC_APP_URL` (or similar) for all links in emails. You already have `NEXT_PUBLIC_APP_URL` in `.env.local`; wire it into the email templates.
 
 ### 9. **Resend “From” domain**
 
-- **Issue:** `FROM_ADDRESS = 'EquityExchange <noreply@equityexchange.io>'`. Sending from your own domain requires verifying the domain in Resend.
+- **Issue:** `FROM_ADDRESS = 'Givvy <noreply@givvy.io>'`. Sending from your own domain requires verifying the domain in Resend.
 - **Action:** For launch, use Resend’s sandbox domain or verify your domain; update `FROM_ADDRESS` accordingly.
 
 ### 10. **No rate limiting**

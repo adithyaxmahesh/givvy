@@ -1,6 +1,6 @@
-import { createClient } from '@supabase/supabase-js';
+import { createClient, SupabaseClient } from '@supabase/supabase-js';
 
-export function createAdminClient() {
+export function createAdminClient(): SupabaseClient {
   const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
   const serviceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
 
@@ -16,4 +16,12 @@ export function createAdminClient() {
       persistSession: false,
     },
   });
+}
+
+export function tryCreateAdminClient(): SupabaseClient | null {
+  try {
+    return createAdminClient();
+  } catch {
+    return null;
+  }
 }

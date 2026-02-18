@@ -618,7 +618,7 @@ export const mockMessages: Message[] = [
     created_at: '2025-10-05T09:00:00Z',
     sender: {
       id: 'system',
-      full_name: 'EquityExchange',
+      full_name: 'Givvy',
       avatar_url: null,
     },
   },
@@ -662,7 +662,7 @@ export const mockMessages: Message[] = [
     created_at: '2025-09-15T14:00:00Z',
     sender: {
       id: 'system',
-      full_name: 'EquityExchange',
+      full_name: 'Givvy',
       avatar_url: null,
     },
   },
@@ -901,7 +901,7 @@ export const testimonials = [
     role: 'CTO & Co-Founder',
     company: 'DataWeave',
     quote:
-      'EquityExchange helped us find a brilliant ML engineer who joined for equity instead of a $200K salary. Six months later, she built the core of our recommendation engine. Best hire we ever made.',
+      'Givvy helped us find a brilliant ML engineer who joined for equity instead of a $200K salary. Six months later, she built the core of our recommendation engine. Best hire we ever made.',
     avatar_emoji: '👩‍💻',
   },
   {
@@ -909,7 +909,7 @@ export const testimonials = [
     role: 'Senior Product Designer',
     company: 'Freelance',
     quote:
-      'I have always wanted to work with startups but could not afford the salary cut. EquityExchange let me keep my consulting income while building equity in 3 companies I believe in. My portfolio is already up 2x.',
+      'I have always wanted to work with startups but could not afford the salary cut. Givvy let me keep my consulting income while building equity in 3 companies I believe in. My portfolio is already up 2x.',
     avatar_emoji: '🎨',
   },
   {
@@ -926,14 +926,14 @@ export const testimonials = [
 
 export const faqItems = [
   {
-    question: 'How does equity-for-talent work on EquityExchange?',
+    question: 'How does equity-for-talent work on Givvy?',
     answer:
       'Founders post open roles with equity compensation ranges. Talent professionals browse opportunities and express interest. Our AI matching engine connects the best fits, and both parties negotiate terms through our platform. Once agreed, we generate a legally compliant SAFE agreement that protects both sides.',
   },
   {
     question: 'What is a SAFE agreement and how is it generated?',
     answer:
-      'A SAFE (Simple Agreement for Future Equity) is a legal instrument created by Y Combinator that gives the holder the right to equity in a future priced round. EquityExchange generates SAFE documents based on the latest YC templates, pre-filled with your negotiated terms—valuation cap, discount rate, vesting schedule, and more.',
+      'A SAFE (Simple Agreement for Future Equity) is a legal instrument created by Y Combinator that gives the holder the right to equity in a future priced round. Givvy generates SAFE documents based on the latest YC templates, pre-filled with your negotiated terms—valuation cap, discount rate, vesting schedule, and more.',
   },
   {
     question: 'How does the AI matching engine work?',
@@ -946,8 +946,8 @@ export const faqItems = [
       'All equity agreements are structured as legally binding SAFE documents. Vesting schedules with cliff periods protect both founders and talent. Milestone-based equity unlocks ensure value is delivered before equity is earned. Our platform also maintains a full audit trail of all deal terms and changes.',
   },
   {
-    question: 'What does it cost to use EquityExchange?',
+    question: 'What does it cost to use Givvy?',
     answer:
-      'EquityExchange is free for talent to browse and apply to opportunities. Founders can post up to 3 open roles on the free tier. Our Pro plan ($49/month) includes unlimited roles, priority AI matching, advanced analytics, and premium SAFE templates. We also charge a 2% success fee on completed deals.',
+      'Givvy is free for talent to browse and apply to opportunities. Founders can post up to 3 open roles on the free tier. Our Pro plan ($49/month) includes unlimited roles, priority AI matching, advanced analytics, and premium SAFE templates. We also charge a 2% success fee on completed deals.',
   },
 ] as const;

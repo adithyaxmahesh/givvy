@@ -7,7 +7,7 @@ function getSessionSecret(): string {
   if (!secret && process.env.NODE_ENV === 'production') {
     throw new Error('SESSION_SECRET environment variable is required in production');
   }
-  return secret || 'equity-exchange-dev-secret-change-in-production';
+  return secret || 'givvy-dev-secret-change-in-production';
 }
 const PASSWORD_SALT = 'ee-salt-v1';
 

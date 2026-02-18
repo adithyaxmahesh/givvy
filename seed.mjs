@@ -58,19 +58,19 @@ async function upsert(table, rows) {
 }
 
 async function main() {
-  console.log('=== EquityExchange Production Seed ===\n');
+  console.log('=== Givvy Production Seed ===\n');
 
   // Step 1: Create auth users
   console.log('1. Creating auth users...');
   const users = [
     { email: 'founder@demo.com', password: 'password123', meta: { full_name: 'Alex Chen', role: 'founder' } },
     { email: 'talent@demo.com', password: 'password123', meta: { full_name: 'Jordan Rivera', role: 'talent' } },
-    { email: 'sarah.chen@equityexchange.io', password: 'password123', meta: { full_name: 'Sarah Chen', role: 'talent' } },
-    { email: 'marcus.j@equityexchange.io', password: 'password123', meta: { full_name: 'Marcus Johnson', role: 'talent' } },
-    { email: 'elena.r@equityexchange.io', password: 'password123', meta: { full_name: 'Elena Rodriguez', role: 'talent' } },
-    { email: 'david.park@equityexchange.io', password: 'password123', meta: { full_name: 'David Park', role: 'talent' } },
-    { email: 'priya.patel@equityexchange.io', password: 'password123', meta: { full_name: 'Priya Patel', role: 'founder' } },
-    { email: 'james.w@equityexchange.io', password: 'password123', meta: { full_name: 'James Wilson', role: 'founder' } },
+    { email: 'sarah.chen@givvy.io', password: 'password123', meta: { full_name: 'Sarah Chen', role: 'talent' } },
+    { email: 'marcus.j@givvy.io', password: 'password123', meta: { full_name: 'Marcus Johnson', role: 'talent' } },
+    { email: 'elena.r@givvy.io', password: 'password123', meta: { full_name: 'Elena Rodriguez', role: 'talent' } },
+    { email: 'david.park@givvy.io', password: 'password123', meta: { full_name: 'David Park', role: 'talent' } },
+    { email: 'priya.patel@givvy.io', password: 'password123', meta: { full_name: 'Priya Patel', role: 'founder' } },
+    { email: 'james.w@givvy.io', password: 'password123', meta: { full_name: 'James Wilson', role: 'founder' } },
   ];
 
   const authUsers = {};

@@ -36,7 +36,7 @@ export default function AdminLayout({ children }: { children: ReactNode }) {
           </div>
           <div>
             <p className="text-sm font-bold text-gray-900 leading-tight">Admin</p>
-            <p className="text-[10px] text-gray-400 uppercase tracking-wider">EquityExchange</p>
+            <p className="text-[10px] text-gray-400 uppercase tracking-wider">Givvy</p>
           </div>
         </div>
 

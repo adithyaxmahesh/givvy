@@ -29,6 +29,14 @@ async function trySupabaseLogin(
   email: string,
   password: string
 ): Promise<SessionUser | null> {
+  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
+  const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+
+  if (!supabaseUrl || !supabaseKey) {
+    console.warn('[auth/login] Supabase env vars not set, skipping Supabase login');
+    return null;
+  }
+
   try {
     const { createServerSupabase } = await import('@/lib/supabase/server');
     const supabase = await createServerSupabase();
@@ -37,7 +45,11 @@ async function trySupabaseLogin(
       password,
     });
 
-    if (error || !data.user) return null;
+    if (error) {
+      console.error('[auth/login] Supabase signIn error:', error.message);
+      return null;
+    }
+    if (!data.user) return null;
 
     return {
       id: data.user.id,
@@ -47,7 +59,8 @@ async function trySupabaseLogin(
         (data.user.user_metadata?.role as 'founder' | 'talent') || 'talent',
       avatar_url: (data.user.user_metadata?.avatar_url as string) || null,
     };
-  } catch {
+  } catch (e) {
+    console.error('[auth/login] Unexpected Supabase error:', e);
     return null;
   }
 }
@@ -76,8 +89,10 @@ export async function POST(request: NextRequest) {
 
     const { email, password } = parsed.data;
 
-    // Try Supabase first, then fall back to local/demo store
+    // Try Supabase first
     let sessionUser = await trySupabaseLogin(email, password);
+
+    // Fall back to local/demo store only in development
     if (!sessionUser) {
       sessionUser = tryLocalLogin(email, password);
     }

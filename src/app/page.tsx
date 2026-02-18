@@ -700,7 +700,7 @@ export default function LandingPage() {
             variants={fadeInUp}
             className="text-brand-200 max-w-lg mx-auto mb-10 text-lg"
           >
-            Join hundreds of startups and professionals already closing equity deals on EquityExchange.
+            Join hundreds of startups and professionals already closing equity deals on Givvy.
           </motion.p>
           <motion.div variants={fadeInUp}>
             <Link

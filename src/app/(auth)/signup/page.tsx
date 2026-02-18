@@ -135,7 +135,7 @@ export default function SignupPage() {
               <Sparkles className="h-6 w-6 text-white" />
             </div>
             <p className="text-sm font-semibold text-brand-600 mb-1">
-              EquityExchange
+              Givvy
             </p>
             <h1 className="text-2xl font-bold text-gray-900">
               Create your account

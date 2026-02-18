@@ -113,7 +113,7 @@ function Navbar() {
             <Sparkles className="h-4 w-4 text-white" />
           </div>
           <span className="text-lg font-bold text-gray-900 hidden sm:block">
-            Equity<span className="text-brand-600">Exchange</span>
+            Giv<span className="text-brand-600">vy</span>
           </span>
         </Link>
 
@@ -513,9 +513,9 @@ function Footer() {
         <div className="mt-12 pt-8 border-t border-gray-800">
           <p className="text-xs text-gray-500 leading-relaxed max-w-3xl">
             <strong className="text-gray-400">Securities Disclaimer:</strong>{' '}
-            EquityExchange facilitates introductions between startups and talent.
+            Givvy facilitates introductions between startups and talent.
             Equity agreements, including SAFE notes and equity grants, are
-            between the parties involved. EquityExchange does not provide
+            between the parties involved. Givvy does not provide
             investment advice, legal counsel, or act as a broker-dealer. All
             equity arrangements should be reviewed by qualified legal and
             financial professionals.
@@ -530,11 +530,11 @@ function Footer() {
               <Sparkles className="h-3.5 w-3.5 text-white" />
             </div>
             <span className="text-sm font-semibold text-gray-400">
-              Equity<span className="text-brand-400">Exchange</span>
+              Giv<span className="text-brand-400">vy</span>
             </span>
           </div>
           <p className="text-xs text-gray-500">
-            &copy; 2026 EquityExchange. All rights reserved.
+            &copy; 2026 Givvy. All rights reserved.
           </p>
         </div>
       </div>
@@ -567,7 +567,7 @@ export default function RootLayout({ children }: { children: ReactNode }) {
   return (
     <html lang="en" className="scroll-smooth">
       <head>
-        <title>EquityExchange - Hire Top Talent. Pay with Equity.</title>
+        <title>Givvy - Hire Top Talent. Pay with Equity.</title>
         <meta
           name="description"
           content="The global talent marketplace where startups hire world-class engineers, designers, and marketers with equity compensation. SAFE-powered agreements, AI matching, and milestone-based vesting."
@@ -575,15 +575,15 @@ export default function RootLayout({ children }: { children: ReactNode }) {
         <meta name="viewport" content="width=device-width, initial-scale=1" />
 
         <meta property="og:type" content="website" />
-        <meta property="og:title" content="EquityExchange - Hire Top Talent. Pay with Equity." />
+        <meta property="og:title" content="Givvy - Hire Top Talent. Pay with Equity." />
         <meta
           property="og:description"
           content="The global talent marketplace where startups hire world-class talent with equity. SAFE agreements, AI matching, milestone vesting."
         />
-        <meta property="og:site_name" content="EquityExchange" />
+        <meta property="og:site_name" content="Givvy" />
 
         <meta name="twitter:card" content="summary_large_image" />
-        <meta name="twitter:title" content="EquityExchange - Hire Top Talent. Pay with Equity." />
+        <meta name="twitter:title" content="Givvy - Hire Top Talent. Pay with Equity." />
         <meta
           name="twitter:description"
           content="The global talent marketplace where startups hire world-class talent with equity."

@@ -2,11 +2,11 @@ import { Resend } from 'resend';
 
 // ─── Configuration ───────────────────────────────────────────────────────────
 
-const FROM_ADDRESS = 'EquityExchange <noreply@equityexchange.io>';
+const FROM_ADDRESS = 'Givvy <noreply@givvy.io>';
 
 /** Base URL for links in emails (dashboard, deals, etc.). Use NEXT_PUBLIC_APP_URL in production. */
 function getBaseUrl(): string {
-  return (process.env.NEXT_PUBLIC_APP_URL || 'https://equityexchange.io').replace(/\/$/, '');
+  return (process.env.NEXT_PUBLIC_APP_URL || 'https://givvy.vercel.app').replace(/\/$/, '');
 }
 
 function getResendClient(): Resend | null {
@@ -25,7 +25,7 @@ export function wrapHtml(content: string): string {
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>EquityExchange</title>
+  <title>Givvy</title>
 </head>
 <body style="margin:0;padding:0;background-color:#f9fafb;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;">
   <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background-color:#f9fafb;">
@@ -36,7 +36,7 @@ export function wrapHtml(content: string): string {
           <tr>
             <td style="background:linear-gradient(135deg,#7c3aed 0%,#a855f7 50%,#6d28d9 100%);padding:32px 40px;text-align:center;">
               <h1 style="margin:0;font-size:24px;font-weight:700;color:#ffffff;letter-spacing:-0.5px;">
-                EquityExchange
+                Givvy
               </h1>
               <p style="margin:4px 0 0;font-size:13px;color:#e9d5ff;">
                 The Equity-for-Talent Marketplace
@@ -53,10 +53,10 @@ export function wrapHtml(content: string): string {
           <tr>
             <td style="padding:24px 40px;background-color:#f3f0ff;border-top:1px solid #ede9fe;text-align:center;">
               <p style="margin:0;font-size:12px;color:#7c3aed;">
-                &copy; ${new Date().getFullYear()} EquityExchange. All rights reserved.
+                &copy; ${new Date().getFullYear()} Givvy. All rights reserved.
               </p>
               <p style="margin:8px 0 0;font-size:11px;color:#9ca3af;">
-                You're receiving this email because you have an EquityExchange account.
+                You're receiving this email because you have a Givvy account.
               </p>
             </td>
           </tr>
@@ -112,7 +112,7 @@ export async function sendWelcomeEmail(
 ): Promise<{ success: boolean; id?: string }> {
   const html = wrapHtml(`
     <h2 style="margin:0 0 16px;font-size:22px;color:#1a1a2e;">
-      Welcome to EquityExchange, ${name}! 🚀
+      Welcome to Givvy, ${name}! 🚀
     </h2>
     <p style="margin:0 0 16px;font-size:15px;color:#374151;line-height:1.6;">
       You've joined the premier marketplace where startups find exceptional talent
@@ -134,7 +134,7 @@ export async function sendWelcomeEmail(
     </p>
   `);
 
-  return sendEmail(to, 'Welcome to EquityExchange! 🚀', html);
+  return sendEmail(to, 'Welcome to Givvy! 🚀', html);
 }
 
 export async function sendMatchNotification(

@@ -12,7 +12,7 @@ async function verifyTokenQuick(token: string): Promise<boolean> {
     const [encodedPayload, providedSignature] = parts;
     const secret =
       process.env.SESSION_SECRET ||
-      'equity-exchange-dev-secret-change-in-production';
+      'givvy-dev-secret-change-in-production';
 
     const encoder = new TextEncoder();
     const key = await crypto.subtle.importKey(

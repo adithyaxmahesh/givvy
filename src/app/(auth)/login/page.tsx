@@ -73,7 +73,7 @@ function LoginForm() {
               <Sparkles className="h-6 w-6 text-white" />
             </div>
             <p className="text-sm font-semibold text-brand-600 mb-1">
-              EquityExchange
+              Givvy
             </p>
             <h1 className="text-2xl font-bold text-gray-900">Welcome back</h1>
             <p className="text-sm text-gray-500 mt-1">
@@ -166,10 +166,6 @@ function LoginForm() {
             </Link>
           </p>
 
-          {/* Subtle demo credentials */}
-          <p className="text-center text-xs text-gray-400 mt-4 leading-relaxed">
-            Try it out: founder@demo.com or talent@demo.com (password: password123)
-          </p>
         </div>
       </motion.div>
     </div>

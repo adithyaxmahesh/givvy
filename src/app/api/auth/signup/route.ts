@@ -36,9 +36,17 @@ async function trySupabaseSignup(data: {
   full_name: string;
   role: 'founder' | 'talent';
 }): Promise<SessionUser | null> {
+  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
+  const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+
+  if (!supabaseUrl || !supabaseKey) {
+    console.warn('[auth/signup] Supabase env vars not set, skipping Supabase signup');
+    return null;
+  }
+
   try {
     const { createServerSupabase } = await import('@/lib/supabase/server');
-    const { createAdminClient } = await import('@/lib/supabase/admin');
+    const { tryCreateAdminClient } = await import('@/lib/supabase/admin');
 
     const supabase = await createServerSupabase();
     const { data: authData, error } = await supabase.auth.signUp({
@@ -47,25 +55,40 @@ async function trySupabaseSignup(data: {
       options: { data: { full_name: data.full_name, role: data.role } },
     });
 
-    if (error || !authData.user) return null;
+    if (error) {
+      console.error('[auth/signup] Supabase signUp error:', error.message);
+      return null;
+    }
+    if (!authData.user) {
+      console.error('[auth/signup] Supabase signUp returned no user');
+      return null;
+    }
 
-    const admin = createAdminClient();
-    try {
-      await admin.auth.admin.updateUserById(authData.user.id, {
-        email_confirm: true,
-      });
-    } catch {}
-    try {
-      await admin.from('profiles').upsert(
-        {
-          id: authData.user.id,
-          email: data.email,
-          full_name: data.full_name,
-          role: data.role,
-        },
-        { onConflict: 'id' }
-      );
-    } catch {}
+    const admin = tryCreateAdminClient();
+    if (admin) {
+      try {
+        await admin.auth.admin.updateUserById(authData.user.id, {
+          email_confirm: true,
+        });
+      } catch (e) {
+        console.warn('[auth/signup] Failed to auto-confirm email:', e);
+      }
+      try {
+        await admin.from('profiles').upsert(
+          {
+            id: authData.user.id,
+            email: data.email,
+            full_name: data.full_name,
+            role: data.role,
+          },
+          { onConflict: 'id' }
+        );
+      } catch (e) {
+        console.warn('[auth/signup] Failed to upsert profile:', e);
+      }
+    } else {
+      console.warn('[auth/signup] No admin client available, skipping email confirm & profile upsert');
+    }
 
     return {
       id: authData.user.id,
@@ -74,7 +97,8 @@ async function trySupabaseSignup(data: {
       role: data.role,
       avatar_url: null,
     };
-  } catch {
+  } catch (e) {
+    console.error('[auth/signup] Unexpected Supabase error:', e);
     return null;
   }
 }
@@ -104,28 +128,28 @@ export async function POST(request: NextRequest) {
 
     const { full_name, email, password, role } = parsed.data;
 
-    // Check local store first to prevent duplicates
-    if (findUserByEmail(email)) {
-      return NextResponse.json(
-        { error: 'An account with this email already exists' },
-        { status: 409 }
-      );
-    }
-
-    // Try Supabase first, fall back to local store
+    // Try Supabase first
     let sessionUser = await trySupabaseSignup({
       email,
       password,
       full_name,
       role,
     });
-    if (!sessionUser) {
+
+    // Only fall back to local/demo store in development
+    if (!sessionUser && process.env.NODE_ENV !== 'production') {
+      if (findUserByEmail(email)) {
+        return NextResponse.json(
+          { error: 'An account with this email already exists' },
+          { status: 409 }
+        );
+      }
       sessionUser = tryLocalSignup({ email, password, full_name, role });
     }
 
     if (!sessionUser) {
       return NextResponse.json(
-        { error: 'Failed to create account. Please try again.' },
+        { error: 'Failed to create account. Please check your details and try again.' },
         { status: 500 }
       );
     }

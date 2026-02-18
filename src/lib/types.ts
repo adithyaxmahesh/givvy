@@ -1,4 +1,4 @@
-// EquityExchange - Core Type Definitions
+// Givvy - Core Type Definitions
 
 // ─── Enums / Union Types ───────────────────────────────────────────────────────
 

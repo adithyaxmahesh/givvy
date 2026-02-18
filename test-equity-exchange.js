@@ -2,7 +2,7 @@ const { chromium } = require('playwright');
 const fs = require('fs');
 const path = require('path');
 
-async function testEquityExchange() {
+async function testGivvy() {
   const browser = await chromium.launch({ headless: false });
   const context = await browser.newContext({
     viewport: { width: 1920, height: 1080 }
@@ -20,7 +20,7 @@ async function testEquityExchange() {
     errors: []
   };
 
-  console.log('\n=== Starting EquityExchange Test Sequence ===\n');
+  console.log('\n=== Starting Givvy Test Sequence ===\n');
 
   try {
     // Step 1: Navigate to landing page
@@ -32,7 +32,7 @@ async function testEquityExchange() {
     const heroSection = await page.locator('text=/get started|join|sign up/i').first().isVisible().catch(() => false);
     const hasContent = await page.content();
     
-    if (hasContent.includes('EquityExchange') || hasContent.includes('startup') || heroSection) {
+    if (hasContent.includes('Givvy') || hasContent.includes('startup') || heroSection) {
       console.log('✓ Landing page loaded successfully');
       results.passed.push('Landing page loaded with content');
     } else {
@@ -349,4 +349,4 @@ async function testEquityExchange() {
   console.log('\n=== TEST COMPLETE ===\n');
 }
 
-testEquityExchange();
+testGivvy();

@@ -1,5 +1,5 @@
 -- ============================================================================
--- EquityExchange — Full Database Migration
+-- Givvy — Full Database Migration
 -- Paste this entire file into the Supabase SQL Editor and click "Run".
 -- Safe to re‑run: uses IF NOT EXISTS / IF EXISTS throughout.
 -- ============================================================================
@@ -521,5 +521,5 @@ create policy "notifications_insert_auth" on notifications
 
 
 -- ============================================================================
--- Done! Your EquityExchange database is ready.
+-- Done! Your Givvy database is ready.
 -- ============================================================================
