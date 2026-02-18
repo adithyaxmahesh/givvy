@@ -162,9 +162,9 @@ export default function LandingPage() {
               variants={fadeInUp}
               className="text-5xl sm:text-6xl lg:text-[4.5rem] font-extrabold tracking-tight leading-[1.08] mb-6 text-gray-900"
             >
-              Hire the best talent.
+              Hire with equity,
               <br />
-              <span className="gradient-text">Pay with equity.</span>
+              <span className="gradient-text">not runway.</span>
             </motion.h1>
 
             <motion.p
