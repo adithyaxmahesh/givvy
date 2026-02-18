@@ -83,7 +83,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       }
 
       const data = await res.json();
-      setUser(data.user);
+      const u = data.user ? { ...data.user, verified: data.user.verified === true } : null;
+      setUser(u);
+      return u ?? undefined;
     },
     []
   );
