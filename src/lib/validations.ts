@@ -229,6 +229,23 @@ export const matchingRequestSchema = z.object({
   location: z.string().optional(),
 });
 
+// ─── Post Schema ────────────────────────────────────────────────────────────
+
+export const postSchema = z.object({
+  type: z.enum(['seeking', 'offering'], {
+    required_error: 'Please select a post type',
+  }),
+  title: z.string().min(1, 'Title is required').max(200),
+  description: z
+    .string()
+    .max(5000, 'Description must be 5000 characters or less')
+    .default(''),
+  category: z.string().max(100).default(''),
+  equity_min: z.coerce.number().min(0).max(100).default(0),
+  equity_max: z.coerce.number().min(0).max(100).default(0),
+  tags: z.array(z.string()).default([]),
+});
+
 // ─── Inferred Types ────────────────────────────────────────────────────────────
 
 export type SignupInput = z.infer<typeof signupSchema>;
@@ -240,3 +257,4 @@ export type DealInput = z.infer<typeof dealSchema>;
 export type MilestoneInput = z.infer<typeof milestoneSchema>;
 export type MessageInput = z.infer<typeof messageSchema>;
 export type MatchingRequestInput = z.infer<typeof matchingRequestSchema>;
+export type PostInput = z.infer<typeof postSchema>;

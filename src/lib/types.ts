@@ -253,6 +253,25 @@ export interface NotificationItem {
   created_at: string;
 }
 
+export type PostType = 'seeking' | 'offering';
+export type PostStatus = 'active' | 'closed';
+
+export interface Post {
+  id: string;
+  author_id: string;
+  type: PostType;
+  title: string;
+  description: string;
+  category: string;
+  equity_min: number;
+  equity_max: number;
+  tags: string[];
+  status: PostStatus;
+  created_at: string;
+  updated_at: string;
+  author?: Profile;
+}
+
 export interface AIMatchResult {
   score: number;
   reasons: string[];

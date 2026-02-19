@@ -19,6 +19,7 @@ import {
   Loader2,
   Briefcase,
   Shield,
+  PenSquare,
 } from 'lucide-react';
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
@@ -40,6 +41,7 @@ const ADMIN_EMAILS = ['adithyamahesh123@gmail.com'];
 
 const profileMenuItems = [
   { label: 'Dashboard', href: '/dashboard', icon: LayoutDashboard },
+  { label: 'My Posts', href: '/dashboard/posts/new', icon: PenSquare },
   { label: 'Settings', href: '/dashboard/settings', icon: Settings },
   { label: 'My Deals', href: '/deals', icon: FileText },
 ];
@@ -134,10 +136,10 @@ function Navbar() {
                 Join as Talent
               </Link>
               <Link
-                href="/marketplace"
+                href="/dashboard/posts/new"
                 className="px-4 py-2 text-sm font-medium text-gray-600 hover:text-brand-600 rounded-lg hover:bg-brand-50 transition-colors"
               >
-                Post a Role
+                Post a Listing
               </Link>
             </div>
 
@@ -332,11 +334,11 @@ function Navbar() {
                           Join as Talent
                         </Link>
                         <Link
-                          href="/marketplace"
+                          href="/dashboard/posts/new"
                           className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-gray-700 hover:bg-gray-50"
                         >
-                          <Briefcase className="h-4 w-4 text-gray-400" />
-                          Post a Role
+                          <PenSquare className="h-4 w-4 text-gray-400" />
+                          Post a Listing
                         </Link>
                         <div className="pt-3 mt-3 border-t border-gray-100 flex flex-col gap-2">
                           <Link href="/login" className="btn-secondary text-center">
