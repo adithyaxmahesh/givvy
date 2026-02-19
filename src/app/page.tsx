@@ -196,10 +196,10 @@ export default function LandingPage() {
                     <ArrowRight className="h-4 w-4" />
                   </Link>
                   <Link
-                    href="/marketplace"
+                    href="/login"
                     className="btn-secondary px-8 py-4 text-base gap-2"
                   >
-                    Browse Marketplace
+                    Sign In
                   </Link>
                 </>
               )}
