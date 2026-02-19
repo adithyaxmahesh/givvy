@@ -20,7 +20,7 @@ import {
 } from 'lucide-react';
 import Link from 'next/link';
 import { useEffect, useState } from 'react';
-import { cn, getInitials, getStageColor, formatCurrency } from '@/lib/utils';
+import { cn, getInitials, getStageColor } from '@/lib/utils';
 import { useAuth } from '@/lib/auth-context';
 import { faqItems } from '@/lib/data';
 
@@ -406,17 +406,17 @@ export default function LandingPage() {
                       <div className="flex items-center justify-between pt-4 border-t border-gray-100">
                         <div>
                           <p className="text-lg font-bold text-brand-600">
-                            {startup.equity_pool != null
-                              ? formatCurrency(startup.equity_pool)
-                              : '—'}
-                          </p>
-                          <p className="text-xs text-gray-400">equity pool</p>
-                        </div>
-                        <div className="text-right">
-                          <p className="text-lg font-bold text-gray-900">
                             {startup.open_roles?.length || 0}
                           </p>
                           <p className="text-xs text-gray-400">open roles</p>
+                        </div>
+                        <div className="text-right">
+                          <p className="text-lg font-bold text-gray-900">
+                            {startup.equity_pool != null
+                              ? `${startup.equity_pool}%`
+                              : '—'}
+                          </p>
+                          <p className="text-xs text-gray-400">equity pool</p>
                         </div>
                       </div>
                     </div>

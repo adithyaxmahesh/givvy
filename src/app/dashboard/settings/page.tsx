@@ -2,14 +2,21 @@
 
 import { useAuth } from '@/lib/auth-context';
 import { useRequireApproval } from '@/hooks/useRequireApproval';
-import { getInitials } from '@/lib/utils';
+import { getInitials, formatCurrency } from '@/lib/utils';
 import {
   Bell,
-  Lock,
+  Briefcase,
+  Check,
+  Code2,
+  DollarSign,
   Loader2,
+  Lock,
+  MapPin,
+  Plus,
   Shield,
   Smartphone,
   User,
+  X,
 } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
@@ -22,37 +29,17 @@ const tabs: { id: SettingsTab; label: string; icon: typeof User }[] = [
   { id: 'security', label: 'Security', icon: Shield },
 ];
 
+const CATEGORIES = [
+  'engineering', 'design', 'legal', 'finance',
+  'marketing', 'consulting', 'media', 'operations',
+];
+
 const notificationSettings = [
-  {
-    id: 'deal-updates',
-    label: 'Deal Updates',
-    description: 'Get notified when deal status changes',
-    enabled: true,
-  },
-  {
-    id: 'new-matches',
-    label: 'New Matches',
-    description: 'Receive alerts for AI-powered match suggestions',
-    enabled: true,
-  },
-  {
-    id: 'messages',
-    label: 'Messages',
-    description: 'Notifications for new messages in deals',
-    enabled: true,
-  },
-  {
-    id: 'milestones',
-    label: 'Milestone Reminders',
-    description: 'Reminders for upcoming milestone deadlines',
-    enabled: false,
-  },
-  {
-    id: 'marketing',
-    label: 'Product Updates',
-    description: 'News about new features and platform updates',
-    enabled: false,
-  },
+  { id: 'deal-updates', label: 'Deal Updates', description: 'Get notified when deal status changes', enabled: true },
+  { id: 'new-matches', label: 'New Matches', description: 'Receive alerts for AI-powered match suggestions', enabled: true },
+  { id: 'messages', label: 'Messages', description: 'Notifications for new messages in deals', enabled: true },
+  { id: 'milestones', label: 'Milestone Reminders', description: 'Reminders for upcoming milestone deadlines', enabled: false },
+  { id: 'marketing', label: 'Product Updates', description: 'News about new features and platform updates', enabled: false },
 ];
 
 export default function SettingsPage() {
@@ -78,14 +65,12 @@ export default function SettingsPage() {
   return (
     <div className="min-h-screen bg-[#fafafa]">
       <div className="section-container py-8 space-y-8">
-        {/* Header */}
         <div>
           <h1 className="text-3xl font-bold text-gray-900">Settings</h1>
           <p className="text-gray-500 mt-1">Manage your account and preferences.</p>
         </div>
 
-        {/* Tabs */}
-        <div className="flex gap-1 bg-gray-100 rounded-xl p-1 w-fit" role="tablist" aria-label="Settings sections">
+        <div className="flex gap-1 bg-gray-100 rounded-xl p-1 w-fit" role="tablist">
           {tabs.map((t) => {
             const Icon = t.icon;
             return (
@@ -94,13 +79,7 @@ export default function SettingsPage() {
                 type="button"
                 role="tab"
                 aria-selected={activeTab === t.id}
-                aria-controls={`settings-panel-${t.id}`}
-                id={`settings-tab-${t.id}`}
-                onClick={(e) => {
-                  e.preventDefault();
-                  e.stopPropagation();
-                  setActiveTab(t.id);
-                }}
+                onClick={() => setActiveTab(t.id)}
                 className={`flex items-center gap-2 px-4 py-2.5 rounded-lg text-sm font-semibold transition-all ${
                   activeTab === t.id
                     ? 'bg-white text-brand-700 shadow-sm'
@@ -114,15 +93,14 @@ export default function SettingsPage() {
           })}
         </div>
 
-        {/* Tab Content — all panels in DOM, visibility toggled by class */}
         <div className="mt-6">
-          <div role="tabpanel" id="settings-panel-profile" aria-labelledby="settings-tab-profile" className={activeTab === 'profile' ? 'block' : 'hidden'}>
+          <div className={activeTab === 'profile' ? 'block' : 'hidden'}>
             <ProfileTab user={user} />
           </div>
-          <div role="tabpanel" id="settings-panel-notifications" aria-labelledby="settings-tab-notifications" className={activeTab === 'notifications' ? 'block' : 'hidden'}>
+          <div className={activeTab === 'notifications' ? 'block' : 'hidden'}>
             <NotificationsTab />
           </div>
-          <div role="tabpanel" id="settings-panel-security" aria-labelledby="settings-tab-security" className={activeTab === 'security' ? 'block' : 'hidden'}>
+          <div className={activeTab === 'security' ? 'block' : 'hidden'}>
             <SecurityTab />
           </div>
         </div>
@@ -131,60 +109,363 @@ export default function SettingsPage() {
   );
 }
 
-function ProfileTab({ user }: { user: { full_name: string; email: string; role: string; avatar_url: string | null } }) {
+function ProfileTab({ user }: { user: { id: string; full_name: string; email: string; role: string; avatar_url: string | null } }) {
+  const isTalent = user.role === 'talent';
+  const [talentProfile, setTalentProfile] = useState<any>(null);
+  const [loadingProfile, setLoadingProfile] = useState(isTalent);
+  const [saving, setSaving] = useState(false);
+  const [saved, setSaved] = useState(false);
+  const [error, setError] = useState('');
+
+  // Talent form state
+  const [title, setTitle] = useState('');
+  const [bio, setBio] = useState('');
+  const [skills, setSkills] = useState<string[]>([]);
+  const [skillInput, setSkillInput] = useState('');
+  const [category, setCategory] = useState('engineering');
+  const [experienceYears, setExperienceYears] = useState('0');
+  const [hourlyRate, setHourlyRate] = useState('');
+  const [location, setLocation] = useState('');
+  const [availability, setAvailability] = useState('full-time');
+  const [preferredIndustries, setPreferredIndustries] = useState<string[]>([]);
+  const [industryInput, setIndustryInput] = useState('');
+  const [minEquity, setMinEquity] = useState('10000');
+
+  useEffect(() => {
+    if (!isTalent) return;
+    fetch('/api/talent')
+      .then((r) => r.json())
+      .then((json) => {
+        const profiles = json.data ?? [];
+        const mine = profiles.find((t: any) => t.user_id === user.id || t.user?.id === user.id);
+        if (mine) {
+          setTalentProfile(mine);
+          setTitle(mine.title || '');
+          setBio(mine.bio || '');
+          setSkills(mine.skills || []);
+          setCategory(mine.category || 'engineering');
+          setExperienceYears(String(mine.experience_years ?? 0));
+          setHourlyRate(mine.hourly_rate || '');
+          setLocation(mine.location || '');
+          setAvailability(mine.availability || 'full-time');
+          setPreferredIndustries(mine.preferred_industries || []);
+          setMinEquity(String(mine.min_equity ?? 10000));
+        }
+      })
+      .catch(() => {})
+      .finally(() => setLoadingProfile(false));
+  }, [isTalent, user.id]);
+
+  const addSkill = () => {
+    const s = skillInput.trim();
+    if (s && !skills.includes(s) && skills.length < 20) {
+      setSkills([...skills, s]);
+      setSkillInput('');
+    }
+  };
+
+  const addIndustry = () => {
+    const ind = industryInput.trim();
+    if (ind && !preferredIndustries.includes(ind) && preferredIndustries.length < 10) {
+      setPreferredIndustries([...preferredIndustries, ind]);
+      setIndustryInput('');
+    }
+  };
+
+  const handleSave = async () => {
+    if (!talentProfile) return;
+    setSaving(true);
+    setError('');
+    setSaved(false);
+    try {
+      const res = await fetch(`/api/talent/${talentProfile.id}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          title,
+          bio,
+          skills,
+          category,
+          experience_years: parseInt(experienceYears) || 0,
+          hourly_rate: hourlyRate,
+          location,
+          availability,
+          preferred_industries: preferredIndustries,
+          min_equity: parseInt(minEquity) || 10000,
+        }),
+      });
+      if (!res.ok) {
+        const json = await res.json();
+        throw new Error(json.error || 'Failed to save');
+      }
+      setSaved(true);
+      setTimeout(() => setSaved(false), 3000);
+    } catch (err: any) {
+      setError(err.message);
+    } finally {
+      setSaving(false);
+    }
+  };
+
   return (
-    <div className="glass-card p-8 max-w-2xl">
-      <div className="flex items-center gap-5 pb-6 border-b border-gray-100">
-        <div className="flex h-16 w-16 items-center justify-center rounded-2xl bg-brand-100 text-brand-700 text-xl font-bold">
-          {user.avatar_url ? (
-            <img
-              src={user.avatar_url}
-              alt={user.full_name}
-              className="h-16 w-16 rounded-2xl object-cover"
-            />
+    <div className="max-w-2xl space-y-8">
+      {/* Account info */}
+      <div className="glass-card p-8">
+        <div className="flex items-center gap-5 pb-6 border-b border-gray-100">
+          <div className="flex h-16 w-16 items-center justify-center rounded-2xl bg-brand-100 text-brand-700 text-xl font-bold">
+            {user.avatar_url ? (
+              <img src={user.avatar_url} alt={user.full_name} className="h-16 w-16 rounded-2xl object-cover" />
+            ) : (
+              getInitials(user.full_name)
+            )}
+          </div>
+          <div>
+            <h3 className="text-xl font-semibold text-gray-900">{user.full_name}</h3>
+            <p className="text-sm text-gray-500">{user.email}</p>
+            <span className="mt-1 inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-brand-100 text-brand-700 capitalize">
+              {user.role}
+            </span>
+          </div>
+        </div>
+        <div className="mt-6 space-y-5">
+          <FieldRow label="Full Name" value={user.full_name} />
+          <FieldRow label="Email" value={user.email} />
+          <FieldRow label="Account Type" value={user.role} capitalize />
+        </div>
+      </div>
+
+      {/* Talent professional profile */}
+      {isTalent && (
+        <div className="glass-card p-8">
+          <div className="flex items-center gap-3 mb-6">
+            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-brand-50 text-brand-600">
+              <Briefcase className="h-5 w-5" />
+            </div>
+            <div>
+              <h3 className="text-lg font-semibold text-gray-900">Professional Profile</h3>
+              <p className="text-sm text-gray-500">This is what startups see on the marketplace.</p>
+            </div>
+          </div>
+
+          {loadingProfile ? (
+            <div className="flex items-center justify-center py-12">
+              <Loader2 className="h-6 w-6 animate-spin text-brand-600" />
+            </div>
+          ) : !talentProfile ? (
+            <div className="text-center py-8">
+              <p className="text-sm text-gray-500">No talent profile found. Complete onboarding to set up your profile.</p>
+            </div>
           ) : (
-            getInitials(user.full_name)
+            <div className="space-y-6">
+              {error && (
+                <div className="p-3 rounded-lg bg-red-50 border border-red-200 text-sm text-red-700">{error}</div>
+              )}
+              {saved && (
+                <div className="p-3 rounded-lg bg-emerald-50 border border-emerald-200 text-sm text-emerald-700 flex items-center gap-2">
+                  <Check className="h-4 w-4" /> Profile saved successfully
+                </div>
+              )}
+
+              {/* Title */}
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1.5">Professional Title</label>
+                <input
+                  type="text"
+                  value={title}
+                  onChange={(e) => setTitle(e.target.value)}
+                  placeholder="e.g. Senior Full-Stack Engineer"
+                  className="input-field"
+                  maxLength={100}
+                />
+              </div>
+
+              {/* Bio */}
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1.5">Bio</label>
+                <textarea
+                  value={bio}
+                  onChange={(e) => setBio(e.target.value)}
+                  placeholder="Tell startups about your experience, what you're passionate about, and the kind of work you're looking for..."
+                  rows={4}
+                  className="input-field resize-none"
+                  maxLength={2000}
+                />
+                <p className="text-xs text-gray-400 mt-1">{bio.length}/2000</p>
+              </div>
+
+              {/* Category & Experience */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1.5">Category</label>
+                  <select value={category} onChange={(e) => setCategory(e.target.value)} className="input-field capitalize">
+                    {CATEGORIES.map((c) => (
+                      <option key={c} value={c} className="capitalize">{c}</option>
+                    ))}
+                  </select>
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1.5">Years of Experience</label>
+                  <input
+                    type="number"
+                    value={experienceYears}
+                    onChange={(e) => setExperienceYears(e.target.value)}
+                    min="0"
+                    max="50"
+                    className="input-field"
+                  />
+                </div>
+              </div>
+
+              {/* Skills */}
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1.5">
+                  <Code2 className="inline h-4 w-4 mr-1" />
+                  Skills
+                </label>
+                <div className="flex gap-2 mb-2">
+                  <input
+                    type="text"
+                    value={skillInput}
+                    onChange={(e) => setSkillInput(e.target.value)}
+                    onKeyDown={(e) => { if (e.key === 'Enter') { e.preventDefault(); addSkill(); } }}
+                    placeholder="Type a skill and press Enter"
+                    className="input-field flex-1"
+                    maxLength={50}
+                  />
+                  <button type="button" onClick={addSkill} className="btn-secondary px-3 py-2.5 shrink-0">
+                    <Plus className="h-4 w-4" />
+                  </button>
+                </div>
+                {skills.length > 0 && (
+                  <div className="flex flex-wrap gap-2">
+                    {skills.map((skill) => (
+                      <span key={skill} className="inline-flex items-center gap-1 px-3 py-1 rounded-full bg-brand-50 text-brand-700 text-sm font-medium">
+                        {skill}
+                        <button type="button" onClick={() => setSkills(skills.filter((s) => s !== skill))} className="hover:text-red-600">
+                          <X className="h-3 w-3" />
+                        </button>
+                      </span>
+                    ))}
+                  </div>
+                )}
+              </div>
+
+              {/* Availability & Hourly Rate */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1.5">Availability</label>
+                  <select value={availability} onChange={(e) => setAvailability(e.target.value)} className="input-field">
+                    <option value="full-time">Full-time</option>
+                    <option value="part-time">Part-time</option>
+                    <option value="contract">Contract</option>
+                  </select>
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1.5">Hourly Rate (cash equivalent)</label>
+                  <input
+                    type="text"
+                    value={hourlyRate}
+                    onChange={(e) => setHourlyRate(e.target.value)}
+                    placeholder="e.g. 150"
+                    className="input-field"
+                  />
+                </div>
+              </div>
+
+              {/* Location */}
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1.5">
+                  <MapPin className="inline h-4 w-4 mr-1" />
+                  Location
+                </label>
+                <input
+                  type="text"
+                  value={location}
+                  onChange={(e) => setLocation(e.target.value)}
+                  placeholder="e.g. San Francisco, CA or Remote"
+                  className="input-field"
+                  maxLength={200}
+                />
+              </div>
+
+              {/* Min SAFE Investment */}
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1.5">
+                  <DollarSign className="inline h-4 w-4 mr-1" />
+                  Minimum SAFE Investment
+                </label>
+                <div className="relative">
+                  <DollarSign className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
+                  <input
+                    type="number"
+                    value={minEquity}
+                    onChange={(e) => setMinEquity(e.target.value)}
+                    step="5000"
+                    min="0"
+                    className="input-field !pl-9"
+                  />
+                </div>
+                <p className="text-xs text-gray-400 mt-1">The minimum SAFE purchase amount you&apos;d consider for a deal.</p>
+              </div>
+
+              {/* Preferred Industries */}
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1.5">Preferred Industries</label>
+                <div className="flex gap-2 mb-2">
+                  <input
+                    type="text"
+                    value={industryInput}
+                    onChange={(e) => setIndustryInput(e.target.value)}
+                    onKeyDown={(e) => { if (e.key === 'Enter') { e.preventDefault(); addIndustry(); } }}
+                    placeholder="e.g. FinTech, HealthTech, AI"
+                    className="input-field flex-1"
+                    maxLength={50}
+                  />
+                  <button type="button" onClick={addIndustry} className="btn-secondary px-3 py-2.5 shrink-0">
+                    <Plus className="h-4 w-4" />
+                  </button>
+                </div>
+                {preferredIndustries.length > 0 && (
+                  <div className="flex flex-wrap gap-2">
+                    {preferredIndustries.map((ind) => (
+                      <span key={ind} className="inline-flex items-center gap-1 px-3 py-1 rounded-full bg-gray-100 text-gray-700 text-sm">
+                        {ind}
+                        <button type="button" onClick={() => setPreferredIndustries(preferredIndustries.filter((i) => i !== ind))} className="hover:text-red-600">
+                          <X className="h-3 w-3" />
+                        </button>
+                      </span>
+                    ))}
+                  </div>
+                )}
+              </div>
+
+              {/* Save */}
+              <div className="pt-4 border-t border-gray-100">
+                <button
+                  onClick={handleSave}
+                  disabled={saving || !title.trim() || skills.length === 0}
+                  className="btn-primary px-6 py-3 text-sm gap-2 disabled:opacity-50"
+                >
+                  {saving ? (
+                    <><Loader2 className="h-4 w-4 animate-spin" /> Saving...</>
+                  ) : (
+                    <><Check className="h-4 w-4" /> Save Profile</>
+                  )}
+                </button>
+              </div>
+            </div>
           )}
         </div>
-        <div>
-          <h3 className="text-xl font-semibold text-gray-900">{user.full_name}</h3>
-          <p className="text-sm text-gray-500">{user.email}</p>
-          <span className="mt-1 inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-brand-100 text-brand-700 capitalize">
-            {user.role}
-          </span>
-        </div>
-      </div>
-
-      <div className="mt-6 space-y-5">
-        <FieldRow label="Full Name" value={user.full_name} />
-        <FieldRow label="Email Address" value={user.email} />
-        <FieldRow label="Account Type" value={user.role} capitalize />
-      </div>
-
-      <div className="mt-8">
-        <button className="btn-secondary text-sm" disabled>
-          Edit Profile (Coming Soon)
-        </button>
-      </div>
+      )}
     </div>
   );
 }
 
-function FieldRow({
-  label,
-  value,
-  capitalize: cap,
-}: {
-  label: string;
-  value: string;
-  capitalize?: boolean;
-}) {
+function FieldRow({ label, value, capitalize: cap }: { label: string; value: string; capitalize?: boolean }) {
   return (
     <div className="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-0">
       <p className="text-sm font-medium text-gray-500 sm:w-40 shrink-0">{label}</p>
-      <p className={`text-sm text-gray-900 font-medium ${cap ? 'capitalize' : ''}`}>
-        {value}
-      </p>
+      <p className={`text-sm text-gray-900 font-medium ${cap ? 'capitalize' : ''}`}>{value}</p>
     </div>
   );
 }
@@ -192,41 +473,22 @@ function FieldRow({
 function NotificationsTab() {
   return (
     <div className="glass-card p-8 max-w-2xl">
-      <h3 className="text-lg font-semibold text-gray-900 mb-1">
-        Notification Preferences
-      </h3>
-      <p className="text-sm text-gray-500 mb-6">
-        Choose which notifications you&apos;d like to receive.
-      </p>
-
+      <h3 className="text-lg font-semibold text-gray-900 mb-1">Notification Preferences</h3>
+      <p className="text-sm text-gray-500 mb-6">Choose which notifications you&apos;d like to receive.</p>
       <div className="space-y-5">
         {notificationSettings.map((setting) => (
-          <div
-            key={setting.id}
-            className="flex items-center justify-between py-3 border-b border-gray-50 last:border-0"
-          >
+          <div key={setting.id} className="flex items-center justify-between py-3 border-b border-gray-50 last:border-0">
             <div>
               <p className="text-sm font-medium text-gray-900">{setting.label}</p>
               <p className="text-xs text-gray-500 mt-0.5">{setting.description}</p>
             </div>
-            <div
-              className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${
-                setting.enabled ? 'bg-brand-600' : 'bg-gray-200'
-              }`}
-            >
-              <span
-                className={`inline-block h-4 w-4 rounded-full bg-white transition-transform shadow-sm ${
-                  setting.enabled ? 'translate-x-6' : 'translate-x-1'
-                }`}
-              />
+            <div className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${setting.enabled ? 'bg-brand-600' : 'bg-gray-200'}`}>
+              <span className={`inline-block h-4 w-4 rounded-full bg-white transition-transform shadow-sm ${setting.enabled ? 'translate-x-6' : 'translate-x-1'}`} />
             </div>
           </div>
         ))}
       </div>
-
-      <p className="text-xs text-gray-400 mt-6">
-        Notification preferences are read-only for now. Editable settings coming soon.
-      </p>
+      <p className="text-xs text-gray-400 mt-6">Notification preferences are read-only for now. Editable settings coming soon.</p>
     </div>
   );
 }
@@ -234,7 +496,6 @@ function NotificationsTab() {
 function SecurityTab() {
   return (
     <div className="space-y-6 max-w-2xl">
-      {/* Password */}
       <div className="glass-card p-8">
         <div className="flex items-center gap-3 mb-4">
           <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-gray-100">
@@ -245,12 +506,8 @@ function SecurityTab() {
             <p className="text-sm text-gray-500">Update your account password</p>
           </div>
         </div>
-        <button className="btn-secondary text-sm" disabled>
-          Change Password (Coming Soon)
-        </button>
+        <button className="btn-secondary text-sm" disabled>Change Password (Coming Soon)</button>
       </div>
-
-      {/* 2FA */}
       <div className="glass-card p-8">
         <div className="flex items-center gap-3 mb-4">
           <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-gray-100">
@@ -258,20 +515,14 @@ function SecurityTab() {
           </div>
           <div>
             <h3 className="font-semibold text-gray-900">Two-Factor Authentication</h3>
-            <p className="text-sm text-gray-500">
-              Add an extra layer of security to your account
-            </p>
+            <p className="text-sm text-gray-500">Add an extra layer of security to your account</p>
           </div>
         </div>
         <div className="flex items-center gap-3">
           <span className="badge bg-amber-50 text-amber-700">Not Enabled</span>
-          <button className="btn-secondary text-sm" disabled>
-            Enable 2FA (Coming Soon)
-          </button>
+          <button className="btn-secondary text-sm" disabled>Enable 2FA (Coming Soon)</button>
         </div>
       </div>
-
-      {/* Sessions */}
       <div className="glass-card p-8">
         <div className="flex items-center gap-3 mb-4">
           <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-gray-100">
@@ -279,9 +530,7 @@ function SecurityTab() {
           </div>
           <div>
             <h3 className="font-semibold text-gray-900">Active Sessions</h3>
-            <p className="text-sm text-gray-500">
-              Manage your active sessions across devices
-            </p>
+            <p className="text-sm text-gray-500">Manage your active sessions across devices</p>
           </div>
         </div>
         <div className="rounded-xl bg-gray-50 p-4">
