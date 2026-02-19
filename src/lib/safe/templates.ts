@@ -135,11 +135,11 @@ export function renderTemplate(
  */
 export function buildTemplateVars(
   deal: {
-    equity_percent?: number;
+    investment_amount?: number;
     safe_terms?: {
       valuation_cap?: number;
       discount?: number;
-      equity_percent?: number;
+      investment_amount?: number;
     };
     created_at?: string;
   },
@@ -160,7 +160,7 @@ export function buildTemplateVars(
   const terms = deal.safe_terms ?? {};
   const valuationCap = terms.valuation_cap ?? 0;
   const discount = terms.discount ?? 0;
-  const equityPercent = terms.equity_percent ?? deal.equity_percent ?? 0;
+  const investmentAmt = terms.investment_amount ?? deal.investment_amount ?? 0;
 
   const formatCurrency = (amount: number): string =>
     amount.toLocaleString('en-US', { style: 'currency', currency: 'USD', minimumFractionDigits: 0 });
@@ -172,20 +172,15 @@ export function buildTemplateVars(
 
   const state = startup.location?.split(',').pop()?.trim() || 'Delaware';
 
-  const investmentAmount = valuationCap > 0
-    ? formatCurrency(Math.round(valuationCap * (equityPercent / 100)))
-    : '$0';
-
   return {
     company_name: startup.name ?? 'Company',
     investor_name: talent.user?.full_name ?? 'Investor',
     investor_title: talent.title ?? 'Contributor',
     founder_name: startup.founder?.full_name ?? 'Founder',
     founder_title: 'CEO & Founder',
-    investment_amount: investmentAmount,
+    investment_amount: formatCurrency(investmentAmt),
     valuation_cap: formatCurrency(valuationCap),
     discount_rate: discount.toString(),
-    equity_percent: equityPercent.toFixed(2),
     state,
     date: formatDate(deal.created_at),
   };

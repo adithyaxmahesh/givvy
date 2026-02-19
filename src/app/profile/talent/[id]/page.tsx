@@ -3,7 +3,7 @@
 import { useAuth } from '@/lib/auth-context';
 import {
   cn,
-  formatPercent,
+  formatCurrency,
   getInitials,
   timeAgo,
 } from '@/lib/utils';
@@ -262,8 +262,8 @@ export default function TalentProfilePage({
               ),
             },
             {
-              label: 'Min Equity',
-              value: formatPercent(talent.min_equity),
+              label: 'Min Investment',
+              value: formatCurrency(talent.min_equity),
               icon: TrendingUp,
               color: 'text-brand-600 bg-brand-50',
             },
@@ -404,9 +404,9 @@ export default function TalentProfilePage({
                   </div>
                 )}
                 <div className="flex justify-between py-2 border-b border-gray-50">
-                  <span className="text-sm text-gray-500">Min Equity</span>
+                  <span className="text-sm text-gray-500">Min Investment</span>
                   <span className="text-sm font-semibold text-brand-600">
-                    {formatPercent(talent.min_equity)}
+                    {formatCurrency(talent.min_equity)}
                   </span>
                 </div>
                 <div className="flex justify-between py-2">

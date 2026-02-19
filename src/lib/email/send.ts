@@ -192,11 +192,12 @@ export async function sendDealProposal(
   dealData: {
     startupName: string;
     roleName: string;
-    equityPercent: number;
+    investmentAmount: number;
     vestingMonths: number;
     proposedBy: string;
   }
 ): Promise<{ success: boolean; id?: string }> {
+  const formattedAmount = dealData.investmentAmount.toLocaleString('en-US', { style: 'currency', currency: 'USD', minimumFractionDigits: 0 });
   const html = wrapHtml(`
     <h2 style="margin:0 0 16px;font-size:22px;color:#1a1a2e;">
       New Deal Proposal 📋
@@ -215,8 +216,8 @@ export async function sendDealProposal(
           <td style="padding:8px 0;font-size:14px;color:#1f2937;font-weight:600;">${dealData.roleName}</td>
         </tr>
         <tr>
-          <td style="padding:8px 0;font-size:14px;color:#6b7280;">Equity Offered:</td>
-          <td style="padding:8px 0;font-size:14px;color:#7c3aed;font-weight:700;">${dealData.equityPercent}%</td>
+          <td style="padding:8px 0;font-size:14px;color:#6b7280;">SAFE Amount:</td>
+          <td style="padding:8px 0;font-size:14px;color:#7c3aed;font-weight:700;">${formattedAmount}</td>
         </tr>
         <tr>
           <td style="padding:8px 0;font-size:14px;color:#6b7280;">Vesting:</td>
@@ -234,7 +235,7 @@ export async function sendDealProposal(
     </p>
   `);
 
-  return sendEmail(to, `Deal Proposal: ${dealData.equityPercent}% equity at ${dealData.startupName}`, html);
+  return sendEmail(to, `Deal Proposal: ${formattedAmount} SAFE at ${dealData.startupName}`, html);
 }
 
 export async function sendMilestoneApproved(
@@ -242,10 +243,11 @@ export async function sendMilestoneApproved(
   milestone: {
     title: string;
     dealTitle: string;
-    equityUnlock: number;
+    unlockAmount: number;
     approvedBy: string;
   }
 ): Promise<{ success: boolean; id?: string }> {
+  const formattedAmount = milestone.unlockAmount.toLocaleString('en-US', { style: 'currency', currency: 'USD', minimumFractionDigits: 0 });
   const html = wrapHtml(`
     <h2 style="margin:0 0 16px;font-size:22px;color:#1a1a2e;">
       Milestone Approved! ✅
@@ -264,8 +266,8 @@ export async function sendMilestoneApproved(
           <td style="padding:8px 0;font-size:14px;color:#1f2937;font-weight:600;">${milestone.dealTitle}</td>
         </tr>
         <tr>
-          <td style="padding:8px 0;font-size:14px;color:#6b7280;">Equity Unlocked:</td>
-          <td style="padding:8px 0;font-size:16px;color:#059669;font-weight:700;">${milestone.equityUnlock}%</td>
+          <td style="padding:8px 0;font-size:14px;color:#6b7280;">Amount Unlocked:</td>
+          <td style="padding:8px 0;font-size:16px;color:#059669;font-weight:700;">${formattedAmount}</td>
         </tr>
         <tr>
           <td style="padding:8px 0;font-size:14px;color:#6b7280;">Approved By:</td>
@@ -280,7 +282,7 @@ export async function sendMilestoneApproved(
     </div>
   `);
 
-  return sendEmail(to, `Milestone Approved: "${milestone.title}" — ${milestone.equityUnlock}% unlocked`, html);
+  return sendEmail(to, `Milestone Approved: "${milestone.title}" — ${formattedAmount} unlocked`, html);
 }
 
 export async function sendSAFEReady(
@@ -289,10 +291,11 @@ export async function sendSAFEReady(
     companyName: string;
     investorName: string;
     valuationCap: string;
-    equityPercent: number;
+    investmentAmount: number;
     documentUrl?: string;
   }
 ): Promise<{ success: boolean; id?: string }> {
+  const formattedAmount = safeData.investmentAmount.toLocaleString('en-US', { style: 'currency', currency: 'USD', minimumFractionDigits: 0 });
   const html = wrapHtml(`
     <h2 style="margin:0 0 16px;font-size:22px;color:#1a1a2e;">
       Your SAFE is Ready for Signature 📄
@@ -317,8 +320,8 @@ export async function sendSAFEReady(
           <td style="padding:8px 0;font-size:14px;color:#1f2937;font-weight:600;">${safeData.valuationCap}</td>
         </tr>
         <tr>
-          <td style="padding:8px 0;font-size:14px;color:#6b7280;">Equity:</td>
-          <td style="padding:8px 0;font-size:14px;color:#7c3aed;font-weight:700;">${safeData.equityPercent}%</td>
+          <td style="padding:8px 0;font-size:14px;color:#6b7280;">Investment:</td>
+          <td style="padding:8px 0;font-size:14px;color:#7c3aed;font-weight:700;">${formattedAmount}</td>
         </tr>
       </table>
     </div>

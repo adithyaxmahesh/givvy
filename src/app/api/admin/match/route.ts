@@ -8,7 +8,7 @@ export async function POST(request: NextRequest) {
 
   try {
     const body = await request.json();
-    const { startup_id, talent_id, role_id, equity_percent, vesting_months, cliff_months, match_score } = body;
+    const { startup_id, talent_id, role_id, investment_amount, vesting_months, cliff_months, match_score } = body;
 
     if (!startup_id || !talent_id) {
       return NextResponse.json(
@@ -44,7 +44,7 @@ export async function POST(request: NextRequest) {
         startup_id,
         talent_id,
         role_id: role_id || null,
-        equity_percent: equity_percent ?? 1.0,
+        investment_amount: investment_amount ?? 100000,
         vesting_months: vesting_months ?? 48,
         cliff_months: cliff_months ?? 12,
         status: 'proposed',
@@ -53,7 +53,7 @@ export async function POST(request: NextRequest) {
           type: 'post-money',
           valuation_cap: 0,
           discount: 20,
-          equity_percent: equity_percent ?? 1.0,
+          investment_amount: investment_amount ?? 100000,
           vesting_schedule: `${vesting_months ?? 48} months`,
           cliff_period: `${cliff_months ?? 12} months`,
           pro_rata: false,

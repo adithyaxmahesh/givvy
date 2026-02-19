@@ -7,7 +7,7 @@ import Link from 'next/link';
 interface Deal {
   id: string;
   status: string;
-  equity_percent: number;
+  investment_amount: number;
   vesting_months: number;
   match_score: number;
   created_at: string;
@@ -129,7 +129,7 @@ export default function AdminDealsPage() {
                     {deal.talent?.user?.full_name ?? 'Unknown'}
                   </p>
                   <p className="text-xs text-gray-500">
-                    {deal.talent?.title} &middot; {deal.equity_percent}% equity
+                    {deal.talent?.title} &middot; ${deal.investment_amount.toLocaleString()} SAFE
                     &middot; {deal.vesting_months}mo vesting &middot; Score:{' '}
                     {deal.match_score}
                   </p>

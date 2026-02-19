@@ -5,7 +5,6 @@ import {
   cn,
   formatCurrency,
   formatDate,
-  formatPercent,
   getInitials,
   getStatusColor,
   timeAgo,
@@ -42,7 +41,7 @@ type MobileTab = 'chat' | 'terms' | 'milestones';
 interface MilestoneForm {
   title: string;
   due_date: string;
-  equity_unlock: string;
+  unlock_amount: string;
   description: string;
 }
 
@@ -122,7 +121,7 @@ export default function DealNegotiationPage({
   const [sending, setSending] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
-  const [equityPercent, setEquityPercent] = useState(1.0);
+  const [investmentAmount, setInvestmentAmount] = useState('100000');
   const [safeType, setSafeType] = useState<'post-money' | 'pre-money'>('post-money');
   const [valuationCap, setValuationCap] = useState('5000000');
   const [vestingMonths, setVestingMonths] = useState('48');
@@ -137,7 +136,7 @@ export default function DealNegotiationPage({
   const [milestoneForm, setMilestoneForm] = useState<MilestoneForm>({
     title: '',
     due_date: '',
-    equity_unlock: '0.25',
+    unlock_amount: '25000',
     description: '',
   });
   const [addingMilestone, setAddingMilestone] = useState(false);
@@ -162,7 +161,7 @@ export default function DealNegotiationPage({
       if (d.milestones) setMilestones(d.milestones);
 
       if (d.safe_terms) {
-        setEquityPercent(d.equity_percent || d.safe_terms.equity_percent);
+        setInvestmentAmount(String(d.investment_amount || d.safe_terms.investment_amount));
         setSafeType(d.safe_terms.type);
         setValuationCap(String(d.safe_terms.valuation_cap));
         setVestingMonths(String(d.safe_terms.vesting_schedule));
@@ -233,14 +232,14 @@ export default function DealNegotiationPage({
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          equity_percent: equityPercent,
+          investment_amount: parseInt(investmentAmount),
           vesting_months: parseInt(vestingMonths),
           cliff_months: parseInt(cliffMonths),
           safe_terms: {
             type: safeType,
             valuation_cap: parseInt(valuationCap),
             discount: parseInt(discount),
-            equity_percent: equityPercent,
+            investment_amount: parseInt(investmentAmount),
             vesting_schedule: parseInt(vestingMonths),
             cliff_period: parseInt(cliffMonths),
             pro_rata: proRata,
@@ -257,7 +256,7 @@ export default function DealNegotiationPage({
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
-            content: `Terms updated: ${formatPercent(equityPercent)} equity, ${safeType} SAFE, ${formatCurrency(valuationCap)} cap, ${vestingMonths}mo vesting with ${cliffMonths}mo cliff`,
+            content: `Terms updated: ${formatCurrency(investmentAmount)} investment, ${safeType} SAFE, ${formatCurrency(valuationCap)} cap, ${vestingMonths}mo vesting with ${cliffMonths}mo cliff`,
             type: 'terms-update',
           }),
         });
@@ -278,13 +277,13 @@ export default function DealNegotiationPage({
           title: milestoneForm.title,
           description: milestoneForm.description || undefined,
           due_date: milestoneForm.due_date || undefined,
-          equity_unlock: parseFloat(milestoneForm.equity_unlock),
+          unlock_amount: parseFloat(milestoneForm.unlock_amount),
           deliverables: [],
         }),
       });
       if (res.ok) {
         await fetchMilestones();
-        setMilestoneForm({ title: '', due_date: '', equity_unlock: '0.25', description: '' });
+        setMilestoneForm({ title: '', due_date: '', unlock_amount: '25000', description: '' });
         setShowMilestoneForm(false);
       }
     } catch { /* add failed silently */ }
@@ -303,7 +302,11 @@ export default function DealNegotiationPage({
   };
 
   const exitScenarios = [10_000_000, 50_000_000, 100_000_000];
-  const calcPayout = (exitVal: number) => (exitVal * equityPercent) / 100;
+  const calcPayout = (exitVal: number) => {
+    const cap = parseInt(valuationCap) || 1;
+    const amt = parseInt(investmentAmount) || 0;
+    return (exitVal / cap) * amt;
+  };
 
   const dotColor = (status: string) => {
     const map: Record<string, string> = {
@@ -530,26 +533,36 @@ export default function DealNegotiationPage({
       <div className="p-5 space-y-5">
         <div>
           <label className="block text-xs font-medium text-gray-600 mb-2">
-            Equity Percentage
+            Investment Amount
           </label>
           <div className="flex items-center gap-3">
             <button
-              onClick={() => setEquityPercent((v) => Math.max(0.1, +(v - 0.1).toFixed(1)))}
+              onClick={() => setInvestmentAmount((v) => String(Math.max(1000, parseInt(v) - 5000)))}
               className="h-10 w-10 rounded-xl border border-gray-200 flex items-center justify-center text-gray-500 hover:bg-gray-50 hover:border-gray-300 transition-colors"
             >
               <Minus className="h-4 w-4" />
             </button>
             <div className="flex-1 text-center">
               <span className="text-2xl font-bold text-brand-700">
-                {formatPercent(equityPercent)}
+                {formatCurrency(investmentAmount)}
               </span>
             </div>
             <button
-              onClick={() => setEquityPercent((v) => Math.min(10, +(v + 0.1).toFixed(1)))}
+              onClick={() => setInvestmentAmount((v) => String(parseInt(v) + 5000))}
               className="h-10 w-10 rounded-xl border border-gray-200 flex items-center justify-center text-gray-500 hover:bg-gray-50 hover:border-gray-300 transition-colors"
             >
               <Plus className="h-4 w-4" />
             </button>
+          </div>
+          <div className="relative mt-2">
+            <DollarSign className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
+            <input
+              type="text"
+              value={investmentAmount}
+              onChange={(e) => setInvestmentAmount(e.target.value.replace(/\D/g, ''))}
+              className="input-field !pl-9"
+              placeholder="100,000"
+            />
           </div>
         </div>
 
@@ -756,20 +769,18 @@ export default function DealNegotiationPage({
                     className="input-field !py-2 !text-sm"
                   />
                   <div className="relative">
+                    <DollarSign className="absolute left-3 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-gray-400" />
                     <input
                       type="number"
-                      value={milestoneForm.equity_unlock}
+                      value={milestoneForm.unlock_amount}
                       onChange={(e) =>
-                        setMilestoneForm((f) => ({ ...f, equity_unlock: e.target.value }))
+                        setMilestoneForm((f) => ({ ...f, unlock_amount: e.target.value }))
                       }
-                      className="input-field !py-2 !text-sm !pr-8"
-                      step="0.05"
+                      className="input-field !py-2 !text-sm !pl-8"
+                      step="1000"
                       min="0"
-                      placeholder="Equity %"
+                      placeholder="Unlock amount"
                     />
-                    <span className="absolute right-3 top-1/2 -translate-y-1/2 text-xs text-gray-400">
-                      %
-                    </span>
                   </div>
                 </div>
                 <div className="flex gap-2">
@@ -826,7 +837,7 @@ export default function DealNegotiationPage({
                 )}
                 <div className="flex items-center justify-between mt-2">
                   <span className="text-xs font-medium text-brand-600">
-                    {formatPercent(ms.equity_unlock)} unlock
+                    {formatCurrency(ms.unlock_amount)} unlock
                   </span>
                   <div className="flex items-center gap-1.5">
                     <span

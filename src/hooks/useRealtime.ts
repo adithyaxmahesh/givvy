@@ -29,7 +29,7 @@ interface RealtimeNotification {
 interface RealtimeDeal {
   id: string;
   status: string;
-  equity_percent: number;
+  investment_amount: number;
   match_score: number;
   updated_at: string;
   [key: string]: unknown;

@@ -54,7 +54,7 @@ export async function PATCH(
 
     const allowedFields = [
       'status',
-      'equity_percent',
+      'investment_amount',
       'vesting_months',
       'cliff_months',
       'safe_terms',

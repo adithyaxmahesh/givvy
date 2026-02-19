@@ -170,7 +170,6 @@ export interface SAFEDocumentData {
   investmentAmount: string;
   valuationCap: string;
   discountRate: string;
-  equityPercent: string;
   vestingMonths: number;
   cliffMonths: number;
   state: string;
@@ -260,8 +259,8 @@ export function SAFEDocument({ data }: { data: SAFEDocumentData }) {
             <Text style={styles.termValue}>{data.discountRate}%</Text>
           </View>
           <View style={styles.termRow}>
-            <Text style={styles.termLabel}>Equity:</Text>
-            <Text style={styles.termValue}>{data.equityPercent}%</Text>
+            <Text style={styles.termLabel}>Purchase Amount:</Text>
+            <Text style={styles.termValue}>{data.investmentAmount}</Text>
           </View>
           <View style={styles.termRow}>
             <Text style={styles.termLabel}>Vesting:</Text>

@@ -4,7 +4,7 @@ import { useAuth } from '@/lib/auth-context';
 import { useRequireApproval } from '@/hooks/useRequireApproval';
 import {
   getStatusColor,
-  formatPercent,
+  formatCurrency,
   formatDate,
   timeAgo,
   getInitials,
@@ -99,7 +99,7 @@ export default function DashboardPage() {
     (d) => !['completed', 'cancelled'].includes(d.status)
   );
   const completedDeals = deals.filter((d) => d.status === 'completed');
-  const totalEquity = activeDeals.reduce((sum, d) => sum + d.equity_percent, 0);
+  const totalInvestment = activeDeals.reduce((sum, d) => sum + d.investment_amount, 0);
   const avgMatch =
     deals.length > 0
       ? Math.round(deals.reduce((s, d) => s + d.match_score, 0) / deals.length)
@@ -190,8 +190,8 @@ export default function DashboardPage() {
               sub={completedDeals.length > 0 ? `${completedDeals.length} completed` : undefined}
             />
             <StatCard
-              label="Total Equity"
-              value={`${totalEquity.toFixed(1)}%`}
+              label="Total Invested"
+              value={formatCurrency(totalInvestment)}
               icon={<TrendingUp className="h-4 w-4" />}
               accent="text-emerald-600 bg-emerald-50"
               sub={`Across ${activeDeals.length} deal${activeDeals.length !== 1 ? 's' : ''}`}
@@ -478,7 +478,7 @@ function DealRow({ deal }: { deal: Deal }) {
         </span>
         {/* Equity */}
         <span className="hidden sm:block text-sm font-medium text-[#1A1A1A] tabular-nums text-right">
-          {formatPercent(deal.equity_percent)}
+          {formatCurrency(deal.investment_amount)}
         </span>
         {/* Arrow */}
         <ChevronRight className="h-4 w-4 text-[#D1D5DB] group-hover:text-[#6B6B6B] transition-colors shrink-0 hidden sm:block" />

@@ -4,7 +4,6 @@ import { useAuth } from '@/lib/auth-context';
 import { useRequireApproval } from '@/hooks/useRequireApproval';
 import {
   formatCurrency,
-  formatPercent,
   getStatusColor,
 } from '@/lib/utils';
 import type { Deal } from '@/lib/types';
@@ -72,10 +71,10 @@ export default function PortfolioPage() {
     );
   }
 
-  const totalEquity = deals.reduce((sum, d) => sum + d.equity_percent, 0);
+  const totalInvestment = deals.reduce((sum, d) => sum + d.investment_amount, 0);
   const totalValue = deals.reduce((sum, d) => {
     const cap = d.safe_terms?.valuation_cap ?? 0;
-    return sum + (cap * d.equity_percent) / 100;
+    return cap > 0 ? sum + d.investment_amount : sum;
   }, 0);
   const avgReturn =
     deals.length > 0 ? totalValue / Math.max(deals.length, 1) : 0;
@@ -84,7 +83,7 @@ export default function PortfolioPage() {
     {
       label: 'Total Holdings',
       value: `${deals.length} deal${deals.length !== 1 ? 's' : ''}`,
-      sub: `${formatPercent(totalEquity)} total equity`,
+      sub: `${formatCurrency(totalInvestment)} total invested`,
       icon: PieChart,
       color: 'text-brand-600 bg-brand-50',
     },
@@ -188,8 +187,7 @@ export default function PortfolioPage() {
           ) : (
             <div className="space-y-3">
               {deals.map((deal) => {
-                const estimatedValue =
-                  ((deal.safe_terms?.valuation_cap ?? 0) * deal.equity_percent) / 100;
+                const estimatedValue = deal.investment_amount;
                 return (
                   <Link key={deal.id} href={`/deals/${deal.id}`}>
                     <motion.div
@@ -206,7 +204,7 @@ export default function PortfolioPage() {
                           {deal.startup?.name ?? 'Unknown Startup'}
                         </p>
                         <p className="text-sm text-gray-500">
-                          {formatPercent(deal.equity_percent)} equity
+                          {formatCurrency(deal.investment_amount)} SAFE
                           {deal.safe_terms?.valuation_cap
                             ? ` at ${formatCurrency(deal.safe_terms.valuation_cap)} cap`
                             : ''}

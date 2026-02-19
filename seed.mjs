@@ -231,29 +231,29 @@ async function main() {
   const roles = [];
   if (startupIds[0]) {
     roles.push(
-      { startup_id: startupIds[0], title: 'Senior ML Engineer', category: 'engineering', equity_min: 0.5, equity_max: 1.5, description: 'Build and optimize our core ML serving infrastructure. Work on model compilation, distributed inference, and real-time monitoring systems.', requirements: '{"5+ years ML engineering","Experience with PyTorch/TensorFlow serving","Distributed systems knowledge","Strong Python and C++ skills"}', duration: '12 months', status: 'open' },
-      { startup_id: startupIds[0], title: 'Product Designer', category: 'design', equity_min: 0.3, equity_max: 0.8, description: 'Design the developer experience for our ML platform. Create intuitive dashboards, monitoring UIs, and deployment workflows.', requirements: '{"4+ years product design","Developer tools experience","Figma proficiency","Understanding of data visualization"}', duration: '6 months', status: 'open' },
+      { startup_id: startupIds[0], title: 'Senior ML Engineer', category: 'engineering', equity_min: 90000, equity_max: 270000, description: 'Build and optimize our core ML serving infrastructure. Work on model compilation, distributed inference, and real-time monitoring systems.', requirements: '{"5+ years ML engineering","Experience with PyTorch/TensorFlow serving","Distributed systems knowledge","Strong Python and C++ skills"}', duration: '12 months', status: 'open' },
+      { startup_id: startupIds[0], title: 'Product Designer', category: 'design', equity_min: 54000, equity_max: 144000, description: 'Design the developer experience for our ML platform. Create intuitive dashboards, monitoring UIs, and deployment workflows.', requirements: '{"4+ years product design","Developer tools experience","Figma proficiency","Understanding of data visualization"}', duration: '6 months', status: 'open' },
     );
   }
   if (startupIds[1]) {
     roles.push(
-      { startup_id: startupIds[1], title: 'Blockchain Developer', category: 'engineering', equity_min: 1.0, equity_max: 2.5, description: 'Build smart contracts for carbon credit verification and trading on our multi-chain platform.', requirements: '{"3+ years Solidity/Rust","DeFi protocol experience","Understanding of carbon markets","Security audit experience"}', duration: '12 months', status: 'open' },
+      { startup_id: startupIds[1], title: 'Blockchain Developer', category: 'engineering', equity_min: 50000, equity_max: 125000, description: 'Build smart contracts for carbon credit verification and trading on our multi-chain platform.', requirements: '{"3+ years Solidity/Rust","DeFi protocol experience","Understanding of carbon markets","Security audit experience"}', duration: '12 months', status: 'open' },
     );
   }
   if (startupIds[2]) {
     roles.push(
-      { startup_id: startupIds[2], title: 'Growth Marketing Lead', category: 'marketing', equity_min: 0.3, equity_max: 0.7, description: 'Lead patient acquisition and healthcare provider partnerships. Build and execute go-to-market strategy for new verticals.', requirements: '{"5+ years B2B health tech marketing","Healthcare provider network","Content marketing expertise","Data-driven growth mindset"}', duration: '9 months', status: 'open' },
-      { startup_id: startupIds[2], title: 'Healthcare Compliance Advisor', category: 'legal', equity_min: 0.2, equity_max: 0.5, description: 'Guide our HIPAA compliance, FDA regulatory strategy, and healthcare data privacy framework.', requirements: '{"JD or equivalent","7+ years healthcare regulatory","HIPAA expertise","FDA submission experience"}', duration: '6 months', status: 'open' },
+      { startup_id: startupIds[2], title: 'Growth Marketing Lead', category: 'marketing', equity_min: 180000, equity_max: 420000, description: 'Lead patient acquisition and healthcare provider partnerships. Build and execute go-to-market strategy for new verticals.', requirements: '{"5+ years B2B health tech marketing","Healthcare provider network","Content marketing expertise","Data-driven growth mindset"}', duration: '9 months', status: 'open' },
+      { startup_id: startupIds[2], title: 'Healthcare Compliance Advisor', category: 'legal', equity_min: 120000, equity_max: 300000, description: 'Guide our HIPAA compliance, FDA regulatory strategy, and healthcare data privacy framework.', requirements: '{"JD or equivalent","7+ years healthcare regulatory","HIPAA expertise","FDA submission experience"}', duration: '6 months', status: 'open' },
     );
   }
   if (startupIds[3]) {
     roles.push(
-      { startup_id: startupIds[3], title: 'Full-Stack Engineer', category: 'engineering', equity_min: 0.8, equity_max: 2.0, description: 'Build the core VS Code extension and web dashboard. Work across the full stack from on-device AI inference to cloud sync.', requirements: '{"4+ years TypeScript/React","VS Code extension development","Experience with ML model optimization","Strong systems programming"}', duration: '12 months', status: 'open' },
+      { startup_id: startupIds[3], title: 'Full-Stack Engineer', category: 'engineering', equity_min: 72000, equity_max: 180000, description: 'Build the core VS Code extension and web dashboard. Work across the full stack from on-device AI inference to cloud sync.', requirements: '{"4+ years TypeScript/React","VS Code extension development","Experience with ML model optimization","Strong systems programming"}', duration: '12 months', status: 'open' },
     );
   }
   if (startupIds[4]) {
     roles.push(
-      { startup_id: startupIds[4], title: 'Risk Analytics Engineer', category: 'finance', equity_min: 0.2, equity_max: 0.6, description: 'Build quantitative risk models for DeFi protocols. Develop real-time monitoring and alerting systems for smart contract risk.', requirements: '{"5+ years quantitative finance","DeFi/blockchain knowledge","Python/SQL expertise","Risk modeling experience"}', duration: '9 months', status: 'open' },
+      { startup_id: startupIds[4], title: 'Risk Analytics Engineer', category: 'finance', equity_min: 280000, equity_max: 840000, description: 'Build quantitative risk models for DeFi protocols. Develop real-time monitoring and alerting systems for smart contract risk.', requirements: '{"5+ years quantitative finance","DeFi/blockchain knowledge","Python/SQL expertise","Risk modeling experience"}', duration: '9 months', status: 'open' },
     );
   }
 
@@ -280,7 +280,7 @@ async function main() {
       location: 'New York, NY',
       availability: 'full-time',
       preferred_industries: '{"AI/ML","Developer Tools","Fintech"}',
-      min_equity: 0.5,
+      min_equity: 50000,
       rating: 4.9,
       completed_deals: 6,
       featured: true,
@@ -296,7 +296,7 @@ async function main() {
       location: 'Seattle, WA',
       availability: 'part-time',
       preferred_industries: '{"AI/ML","Healthcare","Climate Tech"}',
-      min_equity: 0.3,
+      min_equity: 30000,
       rating: 4.95,
       completed_deals: 4,
       featured: true,
@@ -312,7 +312,7 @@ async function main() {
       location: 'Los Angeles, CA',
       availability: 'part-time',
       preferred_industries: '{"Developer Tools","SaaS","Fintech","AI/ML"}',
-      min_equity: 0.3,
+      min_equity: 25000,
       rating: 4.8,
       completed_deals: 5,
       featured: true,
@@ -328,7 +328,7 @@ async function main() {
       location: 'Austin, TX',
       availability: 'contract',
       preferred_industries: '{"SaaS","Developer Tools","Healthcare","Fintech"}',
-      min_equity: 0.2,
+      min_equity: 20000,
       rating: 4.7,
       completed_deals: 8,
       featured: false,
@@ -344,7 +344,7 @@ async function main() {
       location: 'Boston, MA',
       availability: 'contract',
       preferred_industries: '{"All Industries"}',
-      min_equity: 0.1,
+      min_equity: 15000,
       rating: 4.85,
       completed_deals: 12,
       featured: true,
@@ -369,14 +369,14 @@ async function main() {
       talent_id: createdTalent[0].id,
       role_id: createdRoles[0]?.id || null,
       status: 'negotiating',
-      equity_percent: 1.0,
+      investment_amount: 180000,
       vesting_months: 48,
       cliff_months: 12,
       safe_terms: JSON.stringify({
         type: 'post-money',
         valuation_cap: 18000000,
         discount: 20,
-        equity_percent: 1.0,
+        investment_amount: 180000,
         vesting_schedule: '4 years with 1 year cliff',
         cliff_period: '12 months',
         pro_rata: true,
@@ -393,14 +393,14 @@ async function main() {
       talent_id: createdTalent[1].id,
       role_id: createdRoles[2]?.id || null,
       status: 'proposed',
-      equity_percent: 1.5,
+      investment_amount: 75000,
       vesting_months: 36,
       cliff_months: 6,
       safe_terms: JSON.stringify({
         type: 'post-money',
         valuation_cap: 5000000,
         discount: 25,
-        equity_percent: 1.5,
+        investment_amount: 75000,
         vesting_schedule: '3 years with 6 month cliff',
         cliff_period: '6 months',
         pro_rata: false,
@@ -417,14 +417,14 @@ async function main() {
       talent_id: createdTalent[3].id,
       role_id: createdRoles[3]?.id || null,
       status: 'active',
-      equity_percent: 0.5,
+      investment_amount: 300000,
       vesting_months: 24,
       cliff_months: 6,
       safe_terms: JSON.stringify({
         type: 'post-money',
         valuation_cap: 60000000,
         discount: 15,
-        equity_percent: 0.5,
+        investment_amount: 300000,
         vesting_schedule: '2 years with 6 month cliff',
         cliff_period: '6 months',
         pro_rata: true,
@@ -475,18 +475,18 @@ async function main() {
   console.log('\n8. Creating milestones...');
   if (createdDeals[0]) {
     const milestones = [
-      { deal_id: createdDeals[0].id, title: 'ML Pipeline Architecture', description: 'Design and document the core ML serving pipeline architecture with benchmarks', due_date: '2026-03-15', equity_unlock: 0.1, status: 'approved', deliverables: '{"Architecture document","Performance benchmarks","Tech stack decision"}' },
-      { deal_id: createdDeals[0].id, title: 'MVP Inference Engine', description: 'Build the core inference engine with sub-10ms latency for transformer models', due_date: '2026-04-30', equity_unlock: 0.2, status: 'in-progress', deliverables: '{"Inference engine codebase","Unit tests with >90% coverage","Latency benchmarks"}' },
-      { deal_id: createdDeals[0].id, title: 'Monitoring Dashboard', description: 'Real-time monitoring dashboard for model performance, drift detection, and alerts', due_date: '2026-06-15', equity_unlock: 0.15, status: 'pending', deliverables: '{"Dashboard UI","Alerting system","Integration with PagerDuty"}' },
-      { deal_id: createdDeals[0].id, title: 'Auto-Scaling System', description: 'Implement auto-scaling based on prediction volume with cost optimization', due_date: '2026-08-01', equity_unlock: 0.25, status: 'pending', deliverables: '{"Auto-scaler implementation","Cost optimization report","Load testing results"}' },
+      { deal_id: createdDeals[0].id, title: 'ML Pipeline Architecture', description: 'Design and document the core ML serving pipeline architecture with benchmarks', due_date: '2026-03-15', unlock_amount: 18000, status: 'approved', deliverables: '{"Architecture document","Performance benchmarks","Tech stack decision"}' },
+      { deal_id: createdDeals[0].id, title: 'MVP Inference Engine', description: 'Build the core inference engine with sub-10ms latency for transformer models', due_date: '2026-04-30', unlock_amount: 36000, status: 'in-progress', deliverables: '{"Inference engine codebase","Unit tests with >90% coverage","Latency benchmarks"}' },
+      { deal_id: createdDeals[0].id, title: 'Monitoring Dashboard', description: 'Real-time monitoring dashboard for model performance, drift detection, and alerts', due_date: '2026-06-15', unlock_amount: 27000, status: 'pending', deliverables: '{"Dashboard UI","Alerting system","Integration with PagerDuty"}' },
+      { deal_id: createdDeals[0].id, title: 'Auto-Scaling System', description: 'Implement auto-scaling based on prediction volume with cost optimization', due_date: '2026-08-01', unlock_amount: 45000, status: 'pending', deliverables: '{"Auto-scaler implementation","Cost optimization report","Load testing results"}' },
     ];
     for (const m of milestones) await api('POST', '/rest/v1/milestones', m);
     console.log(`  ✓ 4 milestones for deal ${createdDeals[0].id}`);
   }
   if (createdDeals[2]) {
     const milestones = [
-      { deal_id: createdDeals[2].id, title: 'Growth Audit & Strategy', description: 'Complete audit of current marketing channels and develop 6-month growth strategy', due_date: '2026-03-01', equity_unlock: 0.1, status: 'approved', deliverables: '{"Channel audit report","6-month growth plan","KPI framework"}' },
-      { deal_id: createdDeals[2].id, title: 'Content Engine Launch', description: 'Launch thought leadership content program targeting healthcare CTOs', due_date: '2026-04-15', equity_unlock: 0.1, status: 'review', deliverables: '{"10 published articles","Newsletter with 5K subscribers","Speaking engagement pipeline"}' },
+      { deal_id: createdDeals[2].id, title: 'Growth Audit & Strategy', description: 'Complete audit of current marketing channels and develop 6-month growth strategy', due_date: '2026-03-01', unlock_amount: 60000, status: 'approved', deliverables: '{"Channel audit report","6-month growth plan","KPI framework"}' },
+      { deal_id: createdDeals[2].id, title: 'Content Engine Launch', description: 'Launch thought leadership content program targeting healthcare CTOs', due_date: '2026-04-15', unlock_amount: 60000, status: 'review', deliverables: '{"10 published articles","Newsletter with 5K subscribers","Speaking engagement pipeline"}' },
     ];
     for (const m of milestones) await api('POST', '/rest/v1/milestones', m);
     console.log(`  ✓ 2 milestones for deal ${createdDeals[2].id}`);
@@ -512,16 +512,16 @@ async function main() {
   console.log('\n10. Creating portfolio holdings...');
   if (createdTalent[0] && startupIds[0]) {
     const holdings = [
-      { talent_id: createdTalent[0].id, startup_id: startupIds[0], deal_id: createdDeals[0]?.id || null, equity_percent: 0.3, safe_amount: '54000', valuation_cap: '18000000', status: 'vesting', current_value: '72000', return_multiple: 1.33, date_issued: '2026-01-15T00:00:00Z' },
+      { talent_id: createdTalent[0].id, startup_id: startupIds[0], deal_id: createdDeals[0]?.id || null, investment_amount: 54000, safe_amount: '54000', valuation_cap: '18000000', status: 'vesting', current_value: '72000', return_multiple: 1.33, date_issued: '2026-01-15T00:00:00Z' },
     ];
     if (startupIds[2]) {
       holdings.push(
-        { talent_id: createdTalent[0].id, startup_id: startupIds[2], deal_id: null, equity_percent: 0.15, safe_amount: '90000', valuation_cap: '60000000', status: 'active', current_value: '120000', return_multiple: 1.33, date_issued: '2025-08-01T00:00:00Z' },
+        { talent_id: createdTalent[0].id, startup_id: startupIds[2], deal_id: null, investment_amount: 90000, safe_amount: '90000', valuation_cap: '60000000', status: 'active', current_value: '120000', return_multiple: 1.33, date_issued: '2025-08-01T00:00:00Z' },
       );
     }
     if (startupIds[4]) {
       holdings.push(
-        { talent_id: createdTalent[0].id, startup_id: startupIds[4], deal_id: null, equity_percent: 0.1, safe_amount: '140000', valuation_cap: '140000000', status: 'vested', current_value: '280000', return_multiple: 2.0, date_issued: '2025-03-01T00:00:00Z' },
+        { talent_id: createdTalent[0].id, startup_id: startupIds[4], deal_id: null, investment_amount: 140000, safe_amount: '140000', valuation_cap: '140000000', status: 'vested', current_value: '280000', return_multiple: 2.0, date_issued: '2025-03-01T00:00:00Z' },
       );
     }
     for (const h of holdings) await api('POST', '/rest/v1/portfolio_holdings', h);

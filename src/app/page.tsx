@@ -20,7 +20,7 @@ import {
 } from 'lucide-react';
 import Link from 'next/link';
 import { useEffect, useState } from 'react';
-import { cn, getInitials, getStageColor, formatPercent } from '@/lib/utils';
+import { cn, getInitials, getStageColor, formatCurrency } from '@/lib/utils';
 import { useAuth } from '@/lib/auth-context';
 import { faqItems } from '@/lib/data';
 
@@ -407,7 +407,7 @@ export default function LandingPage() {
                         <div>
                           <p className="text-lg font-bold text-brand-600">
                             {startup.equity_pool != null
-                              ? formatPercent(startup.equity_pool)
+                              ? formatCurrency(startup.equity_pool)
                               : '—'}
                           </p>
                           <p className="text-xs text-gray-400">equity pool</p>

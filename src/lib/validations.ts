@@ -101,8 +101,8 @@ export const talentProfileSchema = z.object({
   preferred_industries: z.array(z.string()).default([]),
   min_equity: z.coerce
     .number()
-    .min(0, 'Minimum equity cannot be negative')
-    .default(0.1),
+    .min(0, 'Minimum investment cannot be negative')
+    .default(10000),
 });
 
 // ─── Open Role Schema ──────────────────────────────────────────────────────────
@@ -123,12 +123,10 @@ export const openRoleSchema = z.object({
     .optional(),
   equity_min: z.coerce
     .number()
-    .min(0, 'Equity minimum cannot be negative')
-    .max(100),
+    .min(0, 'Minimum amount cannot be negative'),
   equity_max: z.coerce
     .number()
-    .min(0, 'Equity maximum cannot be negative')
-    .max(100),
+    .min(0, 'Maximum amount cannot be negative'),
   cash_equivalent: z.string().optional().or(z.literal('')),
   description: z
     .string()
@@ -145,10 +143,9 @@ export const dealSchema = z.object({
   startup_id: z.string().min(1, 'Startup is required'),
   talent_id: z.string().min(1, 'Talent is required'),
   role_id: z.string().optional().or(z.literal('')),
-  equity_percent: z.coerce
+  investment_amount: z.coerce
     .number()
-    .min(0.01, 'Equity must be greater than 0')
-    .max(100, 'Equity cannot exceed 100%'),
+    .min(1, 'Investment amount must be greater than 0'),
   vesting_months: z.coerce
     .number()
     .int()
@@ -165,7 +162,7 @@ export const dealSchema = z.object({
     type: z.enum(['post-money', 'pre-money']).default('post-money'),
     valuation_cap: z.coerce.number().min(0).default(0),
     discount: z.coerce.number().min(0).max(100).default(0),
-    equity_percent: z.coerce.number().min(0).max(100),
+    investment_amount: z.coerce.number().min(0),
     vesting_schedule: z.coerce.number().int().min(1).default(48),
     cliff_period: z.coerce.number().int().min(0).default(12),
     pro_rata: z.boolean().default(false),
@@ -185,10 +182,9 @@ export const milestoneSchema = z.object({
     .optional()
     .or(z.literal('')),
   due_date: z.string().optional().or(z.literal('')),
-  equity_unlock: z.coerce
+  unlock_amount: z.coerce
     .number()
-    .min(0, 'Equity unlock cannot be negative')
-    .max(100, 'Equity unlock cannot exceed 100%'),
+    .min(0, 'Unlock amount cannot be negative'),
   deliverables: z.array(z.string()).default([]),
 });
 
@@ -224,7 +220,7 @@ export const matchingRequestSchema = z.object({
     ])
     .optional(),
   min_experience: z.coerce.number().min(0).optional(),
-  max_equity: z.coerce.number().min(0).max(100).optional(),
+  max_equity: z.coerce.number().min(0).optional(),
   availability: z.enum(['full-time', 'part-time', 'contract']).optional(),
   location: z.string().optional(),
 });
@@ -241,8 +237,8 @@ export const postSchema = z.object({
     .max(5000, 'Description must be 5000 characters or less')
     .default(''),
   category: z.string().max(100).default(''),
-  equity_min: z.coerce.number().min(0).max(100).default(0),
-  equity_max: z.coerce.number().min(0).max(100).default(0),
+  equity_min: z.coerce.number().min(0).default(0),
+  equity_max: z.coerce.number().min(0).default(0),
   tags: z.array(z.string()).default([]),
 });
 

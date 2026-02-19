@@ -131,11 +131,13 @@ export interface OpenRole {
   startup?: Startup;
 }
 
+// Note: equity_min/equity_max in OpenRole and Post are dollar amounts (SAFE investment values), not percentages
+
 export interface SAFETerms {
   type: 'post-money' | 'pre-money';
   valuation_cap: number;
   discount: number;
-  equity_percent: number;
+  investment_amount: number;
   vesting_schedule: number;
   cliff_period: number;
   pro_rata: boolean;
@@ -150,7 +152,7 @@ export interface Deal {
   talent_id: string;
   role_id: string | null;
   status: DealStatus;
-  equity_percent: number;
+  investment_amount: number;
   vesting_months: number;
   cliff_months: number;
   safe_terms: SAFETerms;
@@ -171,7 +173,7 @@ export interface Milestone {
   title: string;
   description: string | null;
   due_date: string | null;
-  equity_unlock: number;
+  unlock_amount: number;
   status: MilestoneStatus;
   deliverables: string[];
   created_at: string;
@@ -232,7 +234,7 @@ export interface PortfolioHolding {
   talent_id: string;
   startup_id: string;
   deal_id: string | null;
-  equity_percent: number;
+  investment_amount: number;
   safe_amount: string | null;
   valuation_cap: string | null;
   status: HoldingStatus;

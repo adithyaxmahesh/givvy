@@ -4,7 +4,6 @@ import { useAuth } from '@/lib/auth-context';
 import {
   cn,
   formatCurrency,
-  formatPercent,
   getInitials,
   getStageColor,
   getStatusColor,
@@ -407,8 +406,8 @@ export default function StartupProfilePage({
                   <span className="text-sm text-gray-500">Equity Range</span>
                   <span className="text-sm font-semibold text-gray-900">
                     {roles.length > 0
-                      ? `${formatPercent(Math.min(...roles.map((r) => r.equity_min)))} - ${formatPercent(Math.max(...roles.map((r) => r.equity_max)))}`
-                      : `${startup.equity_pool}% pool`}
+                      ? `${formatCurrency(Math.min(...roles.map((r) => r.equity_min)))} - ${formatCurrency(Math.max(...roles.map((r) => r.equity_max)))}`
+                      : `${formatCurrency(startup.equity_pool)} pool`}
                   </span>
                 </div>
                 <div className="flex justify-between py-2 border-b border-gray-50">
@@ -534,7 +533,7 @@ function RoleCard({
           </div>
           <div className="flex items-center gap-3 text-xs text-gray-500">
             <span className="font-medium text-brand-600">
-              {formatPercent(role.equity_min)} - {formatPercent(role.equity_max)} equity
+              {formatCurrency(role.equity_min)} - {formatCurrency(role.equity_max)} SAFE
             </span>
             {role.duration && (
               <>

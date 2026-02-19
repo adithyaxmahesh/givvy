@@ -60,7 +60,7 @@ export async function POST(
         title: parsed.data.title,
         description: parsed.data.description || null,
         due_date: parsed.data.due_date || null,
-        equity_unlock: parsed.data.equity_unlock,
+        unlock_amount: parsed.data.unlock_amount,
         status: 'pending',
         deliverables: parsed.data.deliverables,
       })
@@ -103,7 +103,7 @@ export async function PATCH(
       'title',
       'description',
       'due_date',
-      'equity_unlock',
+      'unlock_amount',
       'status',
       'deliverables',
     ] as const;

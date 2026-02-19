@@ -5,7 +5,6 @@ import {
   cn,
   formatCurrency,
   formatDate,
-  formatPercent,
   getStatusColor,
 } from '@/lib/utils';
 import type { SAFEDocument, SignatureData } from '@/lib/types';
@@ -400,8 +399,8 @@ export default function SAFEDocumentPage({
                     <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 my-4">
                       {[
                         {
-                          label: 'Equity Percentage',
-                          value: formatPercent(terms.equity_percent),
+                          label: 'Investment Amount',
+                          value: formatCurrency(terms.investment_amount),
                           icon: Scale,
                         },
                         {
@@ -477,16 +476,16 @@ export default function SAFEDocumentPage({
                         </motion.div>
                       </div>
                       <div className="flex justify-between mt-2">
-                        <span className="text-xs font-semibold text-brand-600">0%</span>
+                        <span className="text-xs font-semibold text-brand-600">$0</span>
                         <span className="text-xs font-semibold text-brand-600">
-                          {formatPercent(
+                          {formatCurrency(
                             (terms.cliff_period / terms.vesting_schedule) *
-                              terms.equity_percent,
+                              terms.investment_amount,
                           )}{' '}
                           at cliff
                         </span>
                         <span className="text-xs font-semibold text-brand-600">
-                          {formatPercent(terms.equity_percent)}
+                          {formatCurrency(terms.investment_amount)}
                         </span>
                       </div>
                     </div>
@@ -731,7 +730,7 @@ export default function SAFEDocumentPage({
               </h3>
               <div className="space-y-2.5">
                 {[
-                  { label: 'Equity', value: formatPercent(terms.equity_percent) },
+                  { label: 'Investment', value: formatCurrency(terms.investment_amount) },
                   { label: 'Valuation Cap', value: formatCurrency(terms.valuation_cap) },
                   { label: 'Discount', value: `${terms.discount}%` },
                   {

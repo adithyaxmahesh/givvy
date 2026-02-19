@@ -3,7 +3,7 @@
 import { useAuth } from '@/lib/auth-context';
 import { useRequireApproval } from '@/hooks/useRequireApproval';
 import {
-  formatPercent,
+  formatCurrency,
   formatDate,
   getStatusColor,
   getInitials,
@@ -214,7 +214,7 @@ function DealRow({ deal }: { deal: Deal }) {
           {deal.status.replace('-', ' ')}
         </span>
         <span className="hidden sm:block w-16 text-sm text-[#1A1A1A] font-medium tabular-nums text-right shrink-0">
-          {formatPercent(deal.equity_percent)}
+          {formatCurrency(deal.investment_amount)}
         </span>
         <span className="hidden sm:block w-24 text-xs text-[#9CA3AF] text-right shrink-0">
           {formatDate(deal.created_at)}

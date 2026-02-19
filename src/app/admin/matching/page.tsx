@@ -39,7 +39,7 @@ export default function AdminMatchingPage() {
   const [selectedStartup, setSelectedStartup] = useState<string>('');
   const [selectedRole, setSelectedRole] = useState<string>('');
   const [selectedTalent, setSelectedTalent] = useState<string>('');
-  const [equity, setEquity] = useState('1.0');
+  const [equity, setEquity] = useState('100000');
   const [vesting, setVesting] = useState('48');
   const [cliff, setCliff] = useState('12');
 
@@ -76,7 +76,7 @@ export default function AdminMatchingPage() {
           startup_id: selectedStartup,
           talent_id: selectedTalent,
           role_id: selectedRole || undefined,
-          equity_percent: parseFloat(equity),
+          investment_amount: parseFloat(equity),
           vesting_months: parseInt(vesting),
           cliff_months: parseInt(cliff),
         }),
@@ -170,7 +170,7 @@ export default function AdminMatchingPage() {
                 <option value="">No specific role</option>
                 {openRoles.map((r) => (
                   <option key={r.id} value={r.id}>
-                    {r.title} ({r.equity_min}–{r.equity_max}%)
+                    {r.title} (${r.equity_min.toLocaleString()}–${r.equity_max.toLocaleString()})
                   </option>
                 ))}
               </select>
@@ -220,7 +220,7 @@ export default function AdminMatchingPage() {
                 <p>Skills: {t.skills.slice(0, 5).join(', ')}</p>
                 <p>Experience: {t.experience_years} years</p>
                 <p>Availability: {t.availability}</p>
-                <p>Min Equity: {t.min_equity}%</p>
+                <p>Min Investment: ${t.min_equity.toLocaleString()}</p>
               </div>
             );
           })()}
@@ -233,13 +233,12 @@ export default function AdminMatchingPage() {
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
           <div>
             <label className="block text-xs font-medium text-gray-500 mb-1.5">
-              Equity %
+              Investment Amount ($)
             </label>
             <input
               type="number"
-              step="0.1"
-              min="0.1"
-              max="100"
+              step="1000"
+              min="1000"
               value={equity}
               onChange={(e) => setEquity(e.target.value)}
               className="w-full px-3 py-2.5 rounded-lg border border-gray-200 text-sm focus:outline-none focus:ring-2 focus:ring-gray-900/10"
