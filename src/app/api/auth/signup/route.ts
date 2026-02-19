@@ -94,14 +94,18 @@ async function trySupabaseSignup(data: {
         console.warn('[auth/signup] Failed to auto-confirm email:', e);
       }
 
+      const profilePayload: Record<string, unknown> = {
+        id: authData.user.id,
+        email: data.email,
+        full_name: data.full_name,
+        role: data.role,
+        verified: false,
+      };
+      if (data.linkedin) profilePayload.linkedin = data.linkedin;
+      if (data.website) profilePayload.website = data.website;
+
       const { error: profileError } = await admin.from('profiles').upsert(
-        {
-          id: authData.user.id,
-          email: data.email,
-          full_name: data.full_name,
-          role: data.role,
-          verified: false,
-        },
+        profilePayload,
         { onConflict: 'id' }
       );
       if (profileError) {

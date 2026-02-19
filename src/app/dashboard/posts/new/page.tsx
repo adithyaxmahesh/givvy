@@ -35,8 +35,7 @@ export default function NewPostPage() {
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
   const [category, setCategory] = useState('');
-  const [equityMin, setEquityMin] = useState('');
-  const [equityMax, setEquityMax] = useState('');
+  const [equityAmount, setEquityAmount] = useState('');
   const [tagInput, setTagInput] = useState('');
   const [tags, setTags] = useState<string[]>([]);
   const [submitting, setSubmitting] = useState(false);
@@ -70,8 +69,8 @@ export default function NewPostPage() {
           title: title.trim(),
           description: description.trim(),
           category,
-          equity_min: equityMin ? parseFloat(equityMin) : 0,
-          equity_max: equityMax ? parseFloat(equityMax) : 0,
+          equity_min: equityAmount ? parseFloat(equityAmount) : 0,
+          equity_max: equityAmount ? parseFloat(equityAmount) : 0,
           tags,
         }),
       });
@@ -204,35 +203,19 @@ export default function NewPostPage() {
             </select>
           </div>
 
-          {/* SAFE Compensation Range */}
+          {/* SAFE Compensation */}
           <div>
             <label className="block text-sm font-semibold text-[#1A1A1A] mb-1.5">
-              SAFE Compensation Range ($)
+              SAFE Compensation ($)
             </label>
-            <div className="grid grid-cols-2 gap-3">
-              <div>
-                <input
-                  type="number"
-                  step="1000"
-                  min="0"
-                  value={equityMin}
-                  onChange={(e) => setEquityMin(e.target.value)}
-                  placeholder="Min $"
-                  className="input-field"
-                />
-              </div>
-              <div>
-                <input
-                  type="number"
-                  step="1000"
-                  min="0"
-                  value={equityMax}
-                  onChange={(e) => setEquityMax(e.target.value)}
-                  placeholder="Max $"
-                  className="input-field"
-                />
-              </div>
-            </div>
+            <input
+              type="number"
+              min="0"
+              value={equityAmount}
+              onChange={(e) => setEquityAmount(e.target.value)}
+              placeholder="e.g. 25000"
+              className="input-field"
+            />
             <p className="text-xs text-[#9CA3AF] mt-1">Optional — the dollar value of the SAFE note offered as compensation</p>
           </div>
 

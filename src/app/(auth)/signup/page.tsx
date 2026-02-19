@@ -66,12 +66,6 @@ export default function SignupPage() {
       errors.role = 'Please select a role';
     }
 
-    if (linkedin.trim() && !/^https?:\/\/.+\..+/.test(linkedin.trim())) {
-      errors.linkedin = 'Please enter a valid URL';
-    }
-    if (website.trim() && !/^https?:\/\/.+\..+/.test(website.trim())) {
-      errors.website = 'Please enter a valid URL';
-    }
 
     setFieldErrors(errors);
     return Object.keys(errors).length === 0;
@@ -300,13 +294,13 @@ export default function SignupPage() {
                 <Linkedin className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
                 <input
                   id="linkedin"
-                  type="url"
+                  type="text"
                   value={linkedin}
                   onChange={(e) => {
                     setLinkedin(e.target.value);
                     if (fieldErrors.linkedin) setFieldErrors((p) => ({ ...p, linkedin: undefined }));
                   }}
-                  placeholder="https://linkedin.com/in/username"
+                  placeholder="linkedin.com/in/username"
                   className={`input-field pl-10 ${fieldErrors.linkedin ? 'border-red-300 focus:border-red-500' : ''}`}
                 />
               </div>
@@ -327,13 +321,13 @@ export default function SignupPage() {
                 <Globe className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
                 <input
                   id="website"
-                  type="url"
+                  type="text"
                   value={website}
                   onChange={(e) => {
                     setWebsite(e.target.value);
                     if (fieldErrors.website) setFieldErrors((p) => ({ ...p, website: undefined }));
                   }}
-                  placeholder="https://yourwebsite.com"
+                  placeholder="yourwebsite.com"
                   className={`input-field pl-10 ${fieldErrors.website ? 'border-red-300 focus:border-red-500' : ''}`}
                 />
               </div>
