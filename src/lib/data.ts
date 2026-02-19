@@ -948,6 +948,6 @@ export const faqItems = [
   {
     question: 'What does it cost to use Givvy?',
     answer:
-      'Givvy is free for talent to browse and apply to opportunities. Founders can post up to 3 open roles on the free tier. Our Pro plan ($49/month) includes unlimited roles, priority AI matching, advanced analytics, and premium SAFE templates. We also charge a 2% success fee on completed deals.',
+      'Givvy is free for talent to browse and apply to opportunities. Founders can post up to 3 open roles on the free tier. Our Pro plan ($49/month) includes unlimited roles, priority AI matching, advanced analytics, and premium SAFE templates.',
   },
 ] as const;
