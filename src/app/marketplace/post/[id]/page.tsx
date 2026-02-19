@@ -1,7 +1,7 @@
 'use client';
 
 import { useAuth } from '@/lib/auth-context';
-import { useRequireApproval } from '@/hooks/useRequireApproval';
+import { useRequireAuth } from '@/hooks/useRequireAuth';
 import { getInitials, getAvatarColor } from '@/lib/utils';
 import type { Post, Proposal } from '@/lib/types';
 import {
@@ -20,7 +20,7 @@ import { useEffect, useState } from 'react';
 
 export default function PostDetailPage({ params }: { params: { id: string } }) {
   const { user } = useAuth();
-  useRequireApproval();
+  useRequireAuth();
   const router = useRouter();
 
   const [post, setPost] = useState<Post | null>(null);

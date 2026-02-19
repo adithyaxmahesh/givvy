@@ -1,6 +1,7 @@
 'use client';
 
 import { useAuth } from '@/lib/auth-context';
+import { useRequireAuth } from '@/hooks/useRequireAuth';
 import {
   cn,
   formatCurrency,
@@ -91,6 +92,7 @@ export default function StartupProfilePage({
 }) {
   const { id } = params;
   const { user } = useAuth();
+  useRequireAuth();
 
   const [startup, setStartup] = useState<Startup | null>(null);
   const [loading, setLoading] = useState(true);

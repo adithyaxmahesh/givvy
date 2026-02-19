@@ -1,7 +1,7 @@
 'use client';
 
 import { useAuth } from '@/lib/auth-context';
-import { useRequireApproval } from '@/hooks/useRequireApproval';
+import { useRequireAuth } from '@/hooks/useRequireAuth';
 import { getInitials, getAvatarColor, getStageColor, formatCurrency } from '@/lib/utils';
 import type { Startup, TalentProfile, Post } from '@/lib/types';
 import {
@@ -75,7 +75,7 @@ export default function MarketplacePage() {
 
 function MarketplaceContent() {
   const { user, loading: authLoading } = useAuth();
-  useRequireApproval();
+  useRequireAuth();
   const searchParams = useSearchParams();
 
   const initialTab = (searchParams.get('tab') as Tab) || 'talent';
