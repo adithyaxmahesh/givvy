@@ -187,21 +187,13 @@ export default function LandingPage() {
                   <ArrowRight className="h-4 w-4" />
                 </Link>
               ) : (
-                <>
-                  <Link
-                    href="/signup"
-                    className="btn-primary px-8 py-4 text-base gap-2 shadow-brand"
-                  >
-                    Get Started Free
-                    <ArrowRight className="h-4 w-4" />
-                  </Link>
-                  <Link
-                    href="/login"
-                    className="btn-secondary px-8 py-4 text-base gap-2"
-                  >
-                    Sign In
-                  </Link>
-                </>
+                <Link
+                  href="/signup"
+                  className="btn-primary px-8 py-4 text-base gap-2 shadow-brand"
+                >
+                  Get Started Free
+                  <ArrowRight className="h-4 w-4" />
+                </Link>
               )}
             </motion.div>
           </motion.div>
