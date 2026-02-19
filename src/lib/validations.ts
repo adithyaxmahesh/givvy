@@ -246,6 +246,16 @@ export const postSchema = z.object({
   tags: z.array(z.string()).default([]),
 });
 
+// ─── Proposal Schema ────────────────────────────────────────────────────────
+
+export const proposalSchema = z.object({
+  post_id: z.string().uuid('Invalid post ID'),
+  message: z
+    .string()
+    .min(1, 'Please include a message')
+    .max(5000, 'Message must be 5000 characters or less'),
+});
+
 // ─── Inferred Types ────────────────────────────────────────────────────────────
 
 export type SignupInput = z.infer<typeof signupSchema>;
@@ -258,3 +268,4 @@ export type MilestoneInput = z.infer<typeof milestoneSchema>;
 export type MessageInput = z.infer<typeof messageSchema>;
 export type MatchingRequestInput = z.infer<typeof matchingRequestSchema>;
 export type PostInput = z.infer<typeof postSchema>;
+export type ProposalInput = z.infer<typeof proposalSchema>;

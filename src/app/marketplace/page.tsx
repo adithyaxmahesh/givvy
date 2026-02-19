@@ -358,7 +358,8 @@ function PostCard({ post }: { post: Post }) {
   const timeAgo = formatTimeAgo(post.created_at);
 
   return (
-    <div className="bg-white border border-[#E8E8E6] rounded-lg p-5 h-full flex flex-col transition-colors hover:border-[#D1D5DB]">
+    <Link href={`/marketplace/post/${post.id}`}>
+    <div className="bg-white border border-[#E8E8E6] rounded-lg p-5 h-full flex flex-col transition-colors hover:border-[#D1D5DB] cursor-pointer">
       {/* Header */}
       <div className="flex items-start gap-3 mb-3">
         <div
@@ -429,6 +430,7 @@ function PostCard({ post }: { post: Post }) {
         </span>
       </div>
     </div>
+    </Link>
   );
 }
 

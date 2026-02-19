@@ -272,6 +272,20 @@ export interface Post {
   author?: Profile;
 }
 
+export type ProposalStatus = 'pending' | 'accepted' | 'rejected';
+
+export interface Proposal {
+  id: string;
+  post_id: string;
+  sender_id: string;
+  message: string;
+  status: ProposalStatus;
+  created_at: string;
+  updated_at: string;
+  sender?: Profile;
+  post?: Post;
+}
+
 export interface AIMatchResult {
   score: number;
   reasons: string[];

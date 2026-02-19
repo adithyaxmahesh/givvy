@@ -41,7 +41,7 @@ const ADMIN_EMAILS = ['adithyamahesh123@gmail.com'];
 
 const profileMenuItems = [
   { label: 'Dashboard', href: '/dashboard', icon: LayoutDashboard },
-  { label: 'My Posts', href: '/dashboard/posts/new', icon: PenSquare },
+  { label: 'My Posts', href: '/dashboard/posts', icon: PenSquare },
   { label: 'Settings', href: '/dashboard/settings', icon: Settings },
   { label: 'My Deals', href: '/deals', icon: FileText },
 ];
