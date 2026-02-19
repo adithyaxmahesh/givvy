@@ -20,9 +20,12 @@ import {
   CheckCircle2,
   ChevronRight,
   Clock,
+  Eye,
+  EyeOff,
   FileText,
   Loader2,
   Plus,
+  Sparkles,
   TrendingUp,
   Zap,
 } from 'lucide-react';
@@ -50,6 +53,8 @@ export default function DashboardPage() {
   const [notifications, setNotifications] = useState<NotificationItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [talentProfile, setTalentProfile] = useState<any>(null);
+  const [togglingVisibility, setTogglingVisibility] = useState(false);
 
   useEffect(() => {
     if (!authLoading && !user) {
@@ -61,13 +66,19 @@ export default function DashboardPage() {
     if (!user) return;
 
     async function fetchAll() {
+      if (!user) return;
       setLoading(true);
       setError(null);
       try {
-        const [dealsRes, notifsRes] = await Promise.all([
+        const fetches: Promise<Response>[] = [
           fetch('/api/deals'),
           fetch('/api/notifications'),
-        ]);
+        ];
+        if (user.role === 'talent') {
+          fetches.push(fetch('/api/talent'));
+        }
+
+        const [dealsRes, notifsRes, talentRes] = await Promise.all(fetches);
 
         if (!dealsRes.ok) throw new Error('Failed to load deals');
         if (!notifsRes.ok) throw new Error('Failed to load notifications');
@@ -77,6 +88,13 @@ export default function DashboardPage() {
 
         setDeals(dealsJson.data ?? []);
         setNotifications(notifsJson.data ?? []);
+
+        if (talentRes) {
+          const talentJson = await talentRes.json();
+          const profiles = talentJson.data ?? [];
+          const myProfile = profiles.find((t: any) => t.user_id === user.id || t.user?.id === user.id);
+          if (myProfile) setTalentProfile(myProfile);
+        }
       } catch (err: any) {
         setError(err.message ?? 'Something went wrong');
       } finally {
@@ -214,6 +232,68 @@ export default function DashboardPage() {
                   : `${allMilestones.length} total`
               }
             />
+          </div>
+        )}
+
+        {/* ── Marketplace Visibility (talent only) ────────────────── */}
+        {!loading && user.role === 'talent' && talentProfile && (
+          <div className={`rounded-xl border p-5 transition-all ${
+            talentProfile.featured
+              ? 'bg-gradient-to-r from-brand-50 to-emerald-50 border-brand-200'
+              : 'bg-white border-[#E8E8E6]'
+          }`}>
+            <div className="flex items-center justify-between gap-4">
+              <div className="flex items-center gap-3.5">
+                <div className={`flex h-10 w-10 items-center justify-center rounded-xl ${
+                  talentProfile.featured ? 'bg-brand-100 text-brand-600' : 'bg-gray-100 text-gray-400'
+                }`}>
+                  {talentProfile.featured ? <Eye className="h-5 w-5" /> : <EyeOff className="h-5 w-5" />}
+                </div>
+                <div>
+                  <h3 className="text-sm font-semibold text-[#1A1A1A]">
+                    {talentProfile.featured ? 'You\'re visible in the marketplace' : 'Make yourself visible to startups'}
+                  </h3>
+                  <p className="text-xs text-[#6B6B6B] mt-0.5">
+                    {talentProfile.featured
+                      ? 'Startups can find your profile, view your portfolio, and propose deals.'
+                      : 'Toggle on to let startups discover you and send SAFE-based deal proposals.'}
+                  </p>
+                </div>
+              </div>
+              <button
+                onClick={async () => {
+                  setTogglingVisibility(true);
+                  try {
+                    const res = await fetch(`/api/talent/${talentProfile.id}`, {
+                      method: 'PATCH',
+                      headers: { 'Content-Type': 'application/json' },
+                      body: JSON.stringify({ featured: !talentProfile.featured }),
+                    });
+                    if (res.ok) {
+                      const json = await res.json();
+                      setTalentProfile(json.data ?? { ...talentProfile, featured: !talentProfile.featured });
+                    }
+                  } catch { /* toggle failed silently */ }
+                  setTogglingVisibility(false);
+                }}
+                disabled={togglingVisibility}
+                className={`relative inline-flex h-7 w-12 items-center rounded-full transition-colors shrink-0 ${
+                  talentProfile.featured ? 'bg-brand-600' : 'bg-gray-300'
+                } ${togglingVisibility ? 'opacity-50' : ''}`}
+              >
+                <span className={`inline-block h-5 w-5 rounded-full bg-white shadow-sm transition-transform ${
+                  talentProfile.featured ? 'translate-x-6' : 'translate-x-1'
+                }`} />
+              </button>
+            </div>
+            {talentProfile.featured && (
+              <div className="mt-3 flex items-center gap-2">
+                <Sparkles className="h-3.5 w-3.5 text-brand-500" />
+                <Link href={`/profile/talent/${talentProfile.id}`} className="text-xs font-medium text-brand-600 hover:underline">
+                  View your public profile →
+                </Link>
+              </div>
+            )}
           </div>
         )}
 

@@ -18,6 +18,7 @@ export async function GET(request: NextRequest) {
     const search = searchParams.get('search')?.toLowerCase();
     const category = searchParams.get('category');
     const availability = searchParams.get('availability');
+    const visible = searchParams.get('visible');
 
     const supabase = getAdminClient();
     if (supabase) {
@@ -25,18 +26,19 @@ export async function GET(request: NextRequest) {
         .from('talent_profiles')
         .select('*, user:profiles!user_id(*)', { count: 'exact' });
 
+      if (visible === 'true') query = query.eq('featured', true);
       if (search) query = query.or(`title.ilike.%${search}%,bio.ilike.%${search}%`);
       if (category) query = query.eq('category', category);
       if (availability) query = query.eq('availability', availability);
 
-      const { data, error, count } = await query.order('created_at', { ascending: false });
+      const { data, error, count } = await query.order('rating', { ascending: false });
       if (!error && data) {
         return NextResponse.json({ data, count });
       }
     }
 
-    // Fallback to demo data
     let data = [...mockTalent];
+    if (visible === 'true') data = data.filter((t) => t.featured);
     if (search) {
       data = data.filter(
         (t) =>

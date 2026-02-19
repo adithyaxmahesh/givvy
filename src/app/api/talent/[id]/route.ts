@@ -67,11 +67,16 @@ export async function PATCH(
       return NextResponse.json({ error: 'You can only update your own profile' }, { status: 403 });
     }
 
+    const updatePayload: Record<string, unknown> = { ...parsed.data, updated_at: new Date().toISOString() };
+    if (typeof body.featured === 'boolean') {
+      updatePayload.featured = body.featured;
+    }
+
     const { data, error } = await supabase
       .from('talent_profiles')
-      .update({ ...parsed.data, updated_at: new Date().toISOString() })
+      .update(updatePayload)
       .eq('id', id)
-      .select()
+      .select('*, user:profiles!user_id(*)')
       .single();
 
     if (error) {
