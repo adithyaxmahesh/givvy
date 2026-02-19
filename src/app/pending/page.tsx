@@ -63,7 +63,7 @@ export default function PendingPage() {
           </h1>
 
           <p className="text-gray-600 mt-3 leading-relaxed">
-            Thank you for signing up! Our team is reviewing your profile and will get back to you shortly.
+            Thank you for signing up! To ensure the highest quality marketplace, every user on Givvy is personally vetted by our team. We&apos;re reviewing your profile now and will get back to you shortly.
           </p>
 
           {/* Timeline card */}
