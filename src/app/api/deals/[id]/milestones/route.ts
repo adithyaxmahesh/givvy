@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { getAuthUser } from '@/lib/auth';
 import { createAdminClient } from '@/lib/supabase/admin';
 import { milestoneSchema } from '@/lib/validations';
+import { fromDbFields, fromDbRows } from '@/lib/utils';
 
 export async function GET(
   request: NextRequest,
@@ -25,7 +26,7 @@ export async function GET(
       return NextResponse.json({ error: error.message }, { status: 500 });
     }
 
-    return NextResponse.json({ data, count });
+    return NextResponse.json({ data: fromDbRows(data || []), count });
   } catch (err) {
     console.error('[deals/id/milestones] Unexpected error:', err);
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
@@ -60,7 +61,7 @@ export async function POST(
         title: parsed.data.title,
         description: parsed.data.description || null,
         due_date: parsed.data.due_date || null,
-        unlock_amount: parsed.data.unlock_amount,
+        equity_unlock: parsed.data.unlock_amount,
         status: 'pending',
         deliverables: parsed.data.deliverables,
       })
@@ -72,7 +73,7 @@ export async function POST(
       return NextResponse.json({ error: error.message }, { status: 500 });
     }
 
-    return NextResponse.json({ data }, { status: 201 });
+    return NextResponse.json({ data: fromDbFields(data) }, { status: 201 });
   } catch (err) {
     console.error('[deals/id/milestones] Unexpected error:', err);
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
@@ -119,6 +120,12 @@ export async function PATCH(
       return NextResponse.json({ error: 'No valid fields to update' }, { status: 400 });
     }
 
+    // Map unlock_amount → equity_unlock for DB
+    if ('unlock_amount' in updates) {
+      updates.equity_unlock = updates.unlock_amount;
+      delete updates.unlock_amount;
+    }
+
     const supabase = createAdminClient();
 
     const { data, error } = await supabase
@@ -137,7 +144,7 @@ export async function PATCH(
       return NextResponse.json({ error: error.message }, { status: 500 });
     }
 
-    return NextResponse.json({ data });
+    return NextResponse.json({ data: fromDbFields(data) });
   } catch (err) {
     console.error('[deals/id/milestones] Unexpected error:', err);
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 });

@@ -3,6 +3,7 @@ import { getAuthUser, DEMO_EMAILS } from '@/lib/auth';
 import { requireVerified } from '@/app/api/admin/_guard';
 import { dealSchema } from '@/lib/validations';
 import { mockDeals } from '@/lib/data';
+import { toDbFields, fromDbRows, fromDbFields } from '@/lib/utils';
 
 function getAdminClient() {
   try {
@@ -42,7 +43,7 @@ export async function GET(request: NextRequest) {
           let query = supabase
             .from('deals')
             .select(
-              '*, startup:startups(id, name, logo_emoji, tagline, stage, industry), talent:talent_profiles(id, title, user:profiles!user_id(full_name, avatar_url)), milestones(id, title, due_date, status, unlock_amount)',
+              '*, startup:startups(id, name, logo_emoji, tagline, stage, industry), talent:talent_profiles(id, title, user:profiles!user_id(full_name, avatar_url)), milestones(id, title, due_date, status, equity_unlock)',
               { count: 'exact' }
             );
 
@@ -53,7 +54,16 @@ export async function GET(request: NextRequest) {
           if (status) query = query.eq('status', status);
 
           const { data, error, count } = await query.order('updated_at', { ascending: false });
-          if (!error && data) return NextResponse.json({ data, count });
+          if (!error && data) {
+            const mapped = data.map((d: any) => {
+              const row = fromDbFields(d);
+              if (d.milestones) {
+                row.milestones = d.milestones.map((m: any) => fromDbFields(m));
+              }
+              return row;
+            });
+            return NextResponse.json({ data: mapped, count });
+          }
         }
       } catch {
         // Fall through to demo data
@@ -89,19 +99,22 @@ export async function POST(request: NextRequest) {
 
     const supabase = getAdminClient();
     if (supabase) {
+      const dbData = toDbFields(parsed.data) as Record<string, unknown>;
+      dbData.role_id = parsed.data.role_id || null;
+      dbData.status = 'pending';
+      dbData.match_score = 0;
       const { data, error } = await supabase
         .from('deals')
-        .insert({
-          ...parsed.data,
-          role_id: parsed.data.role_id || null,
-          status: 'pending',
-          match_score: 0,
-        })
+        .insert(dbData)
         .select(
           '*, startup:startups(id, name, logo_emoji, tagline, stage, industry), talent:talent_profiles(id, title, user:profiles!user_id(full_name, avatar_url))'
         )
         .single();
-      if (!error) return NextResponse.json({ data }, { status: 201 });
+      if (!error && data) return NextResponse.json({ data: fromDbFields(data) }, { status: 201 });
+      if (error) {
+        console.error('[deals] Insert failed:', error.message);
+        return NextResponse.json({ error: error.message }, { status: 500 });
+      }
     }
 
     return NextResponse.json(

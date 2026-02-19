@@ -204,38 +204,36 @@ export default function NewPostPage() {
             </select>
           </div>
 
-          {/* Equity range */}
+          {/* SAFE Compensation Range */}
           <div>
             <label className="block text-sm font-semibold text-[#1A1A1A] mb-1.5">
-              Equity Range (%)
+              SAFE Compensation Range ($)
             </label>
             <div className="grid grid-cols-2 gap-3">
               <div>
                 <input
                   type="number"
-                  step="0.01"
+                  step="1000"
                   min="0"
-                  max="100"
                   value={equityMin}
                   onChange={(e) => setEquityMin(e.target.value)}
-                  placeholder="Min %"
+                  placeholder="Min $"
                   className="input-field"
                 />
               </div>
               <div>
                 <input
                   type="number"
-                  step="0.01"
+                  step="1000"
                   min="0"
-                  max="100"
                   value={equityMax}
                   onChange={(e) => setEquityMax(e.target.value)}
-                  placeholder="Max %"
+                  placeholder="Max $"
                   className="input-field"
                 />
               </div>
             </div>
-            <p className="text-xs text-[#9CA3AF] mt-1">Optional — leave blank if flexible</p>
+            <p className="text-xs text-[#9CA3AF] mt-1">Optional — the dollar value of the SAFE note offered as compensation</p>
           </div>
 
           {/* Tags */}

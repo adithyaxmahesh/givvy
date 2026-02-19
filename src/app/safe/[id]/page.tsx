@@ -261,7 +261,11 @@ export default function SAFEDocumentPage({
     );
   }
 
-  const { terms } = safeDoc;
+  const rawTerms = safeDoc.terms;
+  const terms: any = {
+    ...rawTerms,
+    investment_amount: (rawTerms as any).investment_amount ?? (rawTerms as any).equity_percent ?? 0,
+  };
   const founderSig = safeDoc.signatures?.founder;
   const talentSig = safeDoc.signatures?.talent;
 

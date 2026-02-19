@@ -369,7 +369,7 @@ async function main() {
       talent_id: createdTalent[0].id,
       role_id: createdRoles[0]?.id || null,
       status: 'negotiating',
-      investment_amount: 180000,
+      equity_percent: 180000,
       vesting_months: 48,
       cliff_months: 12,
       safe_terms: JSON.stringify({
@@ -393,7 +393,7 @@ async function main() {
       talent_id: createdTalent[1].id,
       role_id: createdRoles[2]?.id || null,
       status: 'proposed',
-      investment_amount: 75000,
+      equity_percent: 75000,
       vesting_months: 36,
       cliff_months: 6,
       safe_terms: JSON.stringify({
@@ -417,7 +417,7 @@ async function main() {
       talent_id: createdTalent[3].id,
       role_id: createdRoles[3]?.id || null,
       status: 'active',
-      investment_amount: 300000,
+      equity_percent: 300000,
       vesting_months: 24,
       cliff_months: 6,
       safe_terms: JSON.stringify({
@@ -475,18 +475,18 @@ async function main() {
   console.log('\n8. Creating milestones...');
   if (createdDeals[0]) {
     const milestones = [
-      { deal_id: createdDeals[0].id, title: 'ML Pipeline Architecture', description: 'Design and document the core ML serving pipeline architecture with benchmarks', due_date: '2026-03-15', unlock_amount: 18000, status: 'approved', deliverables: '{"Architecture document","Performance benchmarks","Tech stack decision"}' },
-      { deal_id: createdDeals[0].id, title: 'MVP Inference Engine', description: 'Build the core inference engine with sub-10ms latency for transformer models', due_date: '2026-04-30', unlock_amount: 36000, status: 'in-progress', deliverables: '{"Inference engine codebase","Unit tests with >90% coverage","Latency benchmarks"}' },
-      { deal_id: createdDeals[0].id, title: 'Monitoring Dashboard', description: 'Real-time monitoring dashboard for model performance, drift detection, and alerts', due_date: '2026-06-15', unlock_amount: 27000, status: 'pending', deliverables: '{"Dashboard UI","Alerting system","Integration with PagerDuty"}' },
-      { deal_id: createdDeals[0].id, title: 'Auto-Scaling System', description: 'Implement auto-scaling based on prediction volume with cost optimization', due_date: '2026-08-01', unlock_amount: 45000, status: 'pending', deliverables: '{"Auto-scaler implementation","Cost optimization report","Load testing results"}' },
+      { deal_id: createdDeals[0].id, title: 'ML Pipeline Architecture', description: 'Design and document the core ML serving pipeline architecture with benchmarks', due_date: '2026-03-15', equity_unlock: 18000, status: 'approved', deliverables: '{"Architecture document","Performance benchmarks","Tech stack decision"}' },
+      { deal_id: createdDeals[0].id, title: 'MVP Inference Engine', description: 'Build the core inference engine with sub-10ms latency for transformer models', due_date: '2026-04-30', equity_unlock: 36000, status: 'in-progress', deliverables: '{"Inference engine codebase","Unit tests with >90% coverage","Latency benchmarks"}' },
+      { deal_id: createdDeals[0].id, title: 'Monitoring Dashboard', description: 'Real-time monitoring dashboard for model performance, drift detection, and alerts', due_date: '2026-06-15', equity_unlock: 27000, status: 'pending', deliverables: '{"Dashboard UI","Alerting system","Integration with PagerDuty"}' },
+      { deal_id: createdDeals[0].id, title: 'Auto-Scaling System', description: 'Implement auto-scaling based on prediction volume with cost optimization', due_date: '2026-08-01', equity_unlock: 45000, status: 'pending', deliverables: '{"Auto-scaler implementation","Cost optimization report","Load testing results"}' },
     ];
     for (const m of milestones) await api('POST', '/rest/v1/milestones', m);
     console.log(`  ✓ 4 milestones for deal ${createdDeals[0].id}`);
   }
   if (createdDeals[2]) {
     const milestones = [
-      { deal_id: createdDeals[2].id, title: 'Growth Audit & Strategy', description: 'Complete audit of current marketing channels and develop 6-month growth strategy', due_date: '2026-03-01', unlock_amount: 60000, status: 'approved', deliverables: '{"Channel audit report","6-month growth plan","KPI framework"}' },
-      { deal_id: createdDeals[2].id, title: 'Content Engine Launch', description: 'Launch thought leadership content program targeting healthcare CTOs', due_date: '2026-04-15', unlock_amount: 60000, status: 'review', deliverables: '{"10 published articles","Newsletter with 5K subscribers","Speaking engagement pipeline"}' },
+      { deal_id: createdDeals[2].id, title: 'Growth Audit & Strategy', description: 'Complete audit of current marketing channels and develop 6-month growth strategy', due_date: '2026-03-01', equity_unlock: 60000, status: 'approved', deliverables: '{"Channel audit report","6-month growth plan","KPI framework"}' },
+      { deal_id: createdDeals[2].id, title: 'Content Engine Launch', description: 'Launch thought leadership content program targeting healthcare CTOs', due_date: '2026-04-15', equity_unlock: 60000, status: 'review', deliverables: '{"10 published articles","Newsletter with 5K subscribers","Speaking engagement pipeline"}' },
     ];
     for (const m of milestones) await api('POST', '/rest/v1/milestones', m);
     console.log(`  ✓ 2 milestones for deal ${createdDeals[2].id}`);
@@ -512,16 +512,16 @@ async function main() {
   console.log('\n10. Creating portfolio holdings...');
   if (createdTalent[0] && startupIds[0]) {
     const holdings = [
-      { talent_id: createdTalent[0].id, startup_id: startupIds[0], deal_id: createdDeals[0]?.id || null, investment_amount: 54000, safe_amount: '54000', valuation_cap: '18000000', status: 'vesting', current_value: '72000', return_multiple: 1.33, date_issued: '2026-01-15T00:00:00Z' },
+      { talent_id: createdTalent[0].id, startup_id: startupIds[0], deal_id: createdDeals[0]?.id || null, equity_percent: 54000, safe_amount: '54000', valuation_cap: '18000000', status: 'vesting', current_value: '72000', return_multiple: 1.33, date_issued: '2026-01-15T00:00:00Z' },
     ];
     if (startupIds[2]) {
       holdings.push(
-        { talent_id: createdTalent[0].id, startup_id: startupIds[2], deal_id: null, investment_amount: 90000, safe_amount: '90000', valuation_cap: '60000000', status: 'active', current_value: '120000', return_multiple: 1.33, date_issued: '2025-08-01T00:00:00Z' },
+        { talent_id: createdTalent[0].id, startup_id: startupIds[2], deal_id: null, equity_percent: 90000, safe_amount: '90000', valuation_cap: '60000000', status: 'active', current_value: '120000', return_multiple: 1.33, date_issued: '2025-08-01T00:00:00Z' },
       );
     }
     if (startupIds[4]) {
       holdings.push(
-        { talent_id: createdTalent[0].id, startup_id: startupIds[4], deal_id: null, investment_amount: 140000, safe_amount: '140000', valuation_cap: '140000000', status: 'vested', current_value: '280000', return_multiple: 2.0, date_issued: '2025-03-01T00:00:00Z' },
+        { talent_id: createdTalent[0].id, startup_id: startupIds[4], deal_id: null, equity_percent: 140000, safe_amount: '140000', valuation_cap: '140000000', status: 'vested', current_value: '280000', return_multiple: 2.0, date_issued: '2025-03-01T00:00:00Z' },
       );
     }
     for (const h of holdings) await api('POST', '/rest/v1/portfolio_holdings', h);

@@ -161,7 +161,8 @@ export default function DealNegotiationPage({
       if (d.milestones) setMilestones(d.milestones);
 
       if (d.safe_terms) {
-        setInvestmentAmount(String(d.investment_amount || d.safe_terms.investment_amount));
+        const st = d.safe_terms as any;
+        setInvestmentAmount(String(d.investment_amount || st?.investment_amount || st?.equity_percent || 0));
         setSafeType(d.safe_terms.type);
         setValuationCap(String(d.safe_terms.valuation_cap));
         setVestingMonths(String(d.safe_terms.vesting_schedule));

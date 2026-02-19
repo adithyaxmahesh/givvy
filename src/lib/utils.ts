@@ -214,3 +214,43 @@ export function getAvatarColor(name: string): string {
   }
   return AVATAR_COLORS[Math.abs(hash) % AVATAR_COLORS.length];
 }
+
+// DB columns haven't been renamed yet — map between app names and DB names.
+const APP_TO_DB: Record<string, string> = {
+  investment_amount: 'equity_percent',
+  unlock_amount: 'equity_unlock',
+};
+const DB_TO_APP: Record<string, string> = {
+  equity_percent: 'investment_amount',
+  equity_unlock: 'unlock_amount',
+};
+
+/** Rename app-layer field names to DB column names before insert/update. */
+export function toDbFields<T extends Record<string, unknown>>(obj: T): Record<string, unknown> {
+  const out: Record<string, unknown> = {};
+  for (const [k, v] of Object.entries(obj)) {
+    out[APP_TO_DB[k] ?? k] = v;
+  }
+  return out;
+}
+
+/** Rename DB column names to app-layer field names after select. */
+export function fromDbFields<T extends Record<string, unknown>>(obj: T): Record<string, unknown> {
+  const out: Record<string, unknown> = {};
+  for (const [k, v] of Object.entries(obj)) {
+    out[DB_TO_APP[k] ?? k] = v;
+  }
+  // Normalize safe_terms JSONB: ensure investment_amount exists
+  if (out.safe_terms && typeof out.safe_terms === 'object') {
+    const st = out.safe_terms as Record<string, unknown>;
+    if (st.equity_percent !== undefined && st.investment_amount === undefined) {
+      st.investment_amount = st.equity_percent;
+    }
+  }
+  return out;
+}
+
+/** Map an array of DB rows to app-layer field names. */
+export function fromDbRows<T extends Record<string, unknown>>(rows: T[]): Record<string, unknown>[] {
+  return rows.map(fromDbFields);
+}

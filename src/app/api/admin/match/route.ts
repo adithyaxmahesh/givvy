@@ -38,13 +38,14 @@ export async function POST(request: NextRequest) {
       );
     }
 
+    const amt = investment_amount ?? 100000;
     const { data: deal, error: dealErr } = await sb
       .from('deals')
       .insert({
         startup_id,
         talent_id,
         role_id: role_id || null,
-        investment_amount: investment_amount ?? 100000,
+        equity_percent: amt,
         vesting_months: vesting_months ?? 48,
         cliff_months: cliff_months ?? 12,
         status: 'proposed',
@@ -53,7 +54,7 @@ export async function POST(request: NextRequest) {
           type: 'post-money',
           valuation_cap: 0,
           discount: 20,
-          investment_amount: investment_amount ?? 100000,
+          investment_amount: amt,
           vesting_schedule: `${vesting_months ?? 48} months`,
           cliff_period: `${cliff_months ?? 12} months`,
           pro_rata: false,

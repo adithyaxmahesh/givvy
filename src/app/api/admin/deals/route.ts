@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getAdmin } from '../_guard';
 import { createAdminClient } from '@/lib/supabase/admin';
+import { fromDbFields } from '@/lib/utils';
 
 export async function GET(request: NextRequest) {
   const { error } = getAdmin(request);
@@ -16,7 +17,8 @@ export async function GET(request: NextRequest) {
       .order('updated_at', { ascending: false });
 
     if (dbErr) throw dbErr;
-    return NextResponse.json({ data: data ?? [] });
+    const mapped = (data ?? []).map((d: any) => fromDbFields(d));
+    return NextResponse.json({ data: mapped });
   } catch (err) {
     console.error('[admin/deals]', err);
     return NextResponse.json({ error: 'Failed to load deals' }, { status: 500 });
@@ -42,7 +44,7 @@ export async function PATCH(request: NextRequest) {
       .single();
 
     if (dbErr) throw dbErr;
-    return NextResponse.json({ data });
+    return NextResponse.json({ data: fromDbFields(data) });
   } catch (err) {
     console.error('[admin/deals PATCH]', err);
     return NextResponse.json({ error: 'Failed to update deal' }, { status: 500 });

@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getAuthUser } from '@/lib/auth';
 import { createAdminClient } from '@/lib/supabase/admin';
+import { toDbFields, fromDbFields } from '@/lib/utils';
 
 export async function GET(
   request: NextRequest,
@@ -34,7 +35,11 @@ export async function GET(
       return NextResponse.json({ error: error.message }, { status: 500 });
     }
 
-    return NextResponse.json({ data });
+    const mapped = fromDbFields(data) as any;
+    if (data.milestones) {
+      mapped.milestones = data.milestones.map((m: any) => fromDbFields(m));
+    }
+    return NextResponse.json({ data: mapped });
   } catch (err) {
     console.error('[deals/id] Unexpected error:', err);
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
@@ -72,11 +77,14 @@ export async function PATCH(
       return NextResponse.json({ error: 'No valid fields to update' }, { status: 400 });
     }
 
+    const dbUpdates = toDbFields(updates) as Record<string, unknown>;
+    dbUpdates.updated_at = new Date().toISOString();
+
     const supabase = createAdminClient();
 
     const { data, error } = await supabase
       .from('deals')
-      .update({ ...updates, updated_at: new Date().toISOString() })
+      .update(dbUpdates)
       .eq('id', id)
       .select(
         '*, startup:startups(*, founder:profiles!founder_id(*)), talent:talent_profiles(*, user:profiles!user_id(*))'
@@ -91,7 +99,7 @@ export async function PATCH(
       return NextResponse.json({ error: error.message }, { status: 500 });
     }
 
-    return NextResponse.json({ data });
+    return NextResponse.json({ data: fromDbFields(data) });
   } catch (err) {
     console.error('[deals/id] Unexpected error:', err);
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
