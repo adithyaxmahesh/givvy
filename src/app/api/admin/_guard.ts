@@ -21,7 +21,7 @@ export function getAdmin(request: NextRequest) {
   return { user: result, error: null };
 }
 
-/** Requires an authenticated user. Auto-verifies unverified accounts. */
+/** Requires an authenticated AND admin-verified user. Returns 403 if not verified. */
 export async function requireVerified(
   request: NextRequest
 ): Promise<{ user: SessionUser; error: null } | { user: null; error: NextResponse }> {
@@ -37,11 +37,17 @@ export async function requireVerified(
         .select('verified')
         .eq('id', user.id)
         .single();
-      if (profile && profile.verified !== true) {
-        await admin.from('profiles').update({ verified: true }).eq('id', user.id);
+      if (!profile || profile.verified !== true) {
+        return {
+          user: null,
+          error: NextResponse.json(
+            { error: 'Your account is pending admin approval' },
+            { status: 403 }
+          ),
+        };
       }
     } catch {
-      // Non-blocking: proceed even if profile check fails
+      // If we can't check, allow through to avoid locking out users due to DB errors
     }
   }
   return { user, error: null };

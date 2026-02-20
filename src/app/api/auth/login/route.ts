@@ -80,7 +80,7 @@ async function trySupabaseLogin(
       });
     }
 
-    let verified = true;
+    let verified = false;
     if (admin) {
       try {
         const { data: profile } = await admin
@@ -88,11 +88,9 @@ async function trySupabaseLogin(
           .select('verified')
           .eq('id', data.user.id)
           .single();
-        if (profile && profile.verified === false) {
-          await admin.from('profiles').update({ verified: true }).eq('id', data.user.id);
-        }
+        verified = profile?.verified === true;
       } catch {
-        // keep true
+        verified = false;
       }
     }
 

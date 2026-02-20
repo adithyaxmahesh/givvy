@@ -99,7 +99,7 @@ async function trySupabaseSignup(data: {
         email: data.email,
         full_name: data.full_name,
         role: data.role,
-        verified: true,
+        verified: false,
       };
       if (data.linkedin) profilePayload.linkedin = data.linkedin;
       if (data.website) profilePayload.website = data.website;

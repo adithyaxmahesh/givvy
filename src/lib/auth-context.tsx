@@ -53,7 +53,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       if (res.ok) {
         const data = await res.json();
         const u = data.user ?? null;
-        setUser(u ? { ...u, verified: true } : null);
+        setUser(u);
       } else {
         setUser(null);
       }
@@ -83,9 +83,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       }
 
       const data = await res.json();
-      const u = data.user ? { ...data.user, verified: true } : null;
-      setUser(u);
-      return u ?? undefined;
+      setUser(data.user ?? null);
+      return data.user ?? undefined;
     },
     []
   );
@@ -114,7 +113,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       }
 
       const result = await res.json();
-      setUser(result.user ? { ...result.user, verified: true } : null);
+      setUser(result.user ?? null);
     },
     []
   );
