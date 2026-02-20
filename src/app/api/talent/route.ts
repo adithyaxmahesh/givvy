@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { getAuthUser, DEMO_EMAILS } from '@/lib/auth';
 import { requireVerified } from '@/app/api/admin/_guard';
 import { talentProfileSchema } from '@/lib/validations';
 import { mockTalent } from '@/lib/data';
@@ -12,6 +13,11 @@ function getAdminClient() {
   }
 }
 
+function isRealUser(request: NextRequest): boolean {
+  const user = getAuthUser(request.headers.get('cookie'));
+  return !!user && !DEMO_EMAILS.includes(user.email.toLowerCase());
+}
+
 export async function GET(request: NextRequest) {
   try {
     const { searchParams } = new URL(request.url);
@@ -19,6 +25,7 @@ export async function GET(request: NextRequest) {
     const category = searchParams.get('category');
     const availability = searchParams.get('availability');
     const visible = searchParams.get('visible');
+    const realUser = isRealUser(request);
 
     const supabase = getAdminClient();
     if (supabase) {
@@ -37,6 +44,10 @@ export async function GET(request: NextRequest) {
       }
     }
 
+    if (realUser) {
+      return NextResponse.json({ data: [], count: 0 });
+    }
+
     let data = [...mockTalent];
     if (visible === 'true') data = data.filter((t) => t.featured);
     if (search) {
@@ -51,6 +62,9 @@ export async function GET(request: NextRequest) {
     return NextResponse.json({ data, count: data.length });
   } catch (err) {
     console.error('[talent] error:', err);
+    if (isRealUser(request)) {
+      return NextResponse.json({ data: [], count: 0 });
+    }
     return NextResponse.json({ data: mockTalent, count: mockTalent.length });
   }
 }
@@ -87,7 +101,6 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ data }, { status: 201 });
     }
 
-    // Demo/dev fallback only when Supabase is not configured
     return NextResponse.json(
       { data: { id: crypto.randomUUID(), ...parsed.data, user_id: user.id } },
       { status: 201 }
