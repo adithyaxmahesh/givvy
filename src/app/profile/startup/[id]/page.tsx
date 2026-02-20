@@ -9,7 +9,7 @@ import {
   getStageColor,
   getStatusColor,
 } from '@/lib/utils';
-import type { Startup, OpenRole } from '@/lib/types';
+import type { Startup, OpenRole, Post } from '@/lib/types';
 import { motion } from 'framer-motion';
 import {
   ArrowLeft,
@@ -32,6 +32,8 @@ import {
   Target,
   ExternalLink,
   RefreshCw,
+  Megaphone,
+  Tag,
 } from 'lucide-react';
 import Link from 'next/link';
 import { useEffect, useState, useCallback } from 'react';
@@ -97,6 +99,7 @@ export default function StartupProfilePage({
   const [startup, setStartup] = useState<Startup | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [posts, setPosts] = useState<Post[]>([]);
 
   const fetchStartup = useCallback(async () => {
     try {
@@ -116,6 +119,14 @@ export default function StartupProfilePage({
   useEffect(() => {
     fetchStartup();
   }, [fetchStartup]);
+
+  useEffect(() => {
+    if (!startup?.founder_id) return;
+    fetch(`/api/posts?author_id=${startup.founder_id}`)
+      .then((r) => r.json())
+      .then((json) => setPosts(json.data ?? []))
+      .catch(() => {});
+  }, [startup?.founder_id]);
 
   if (loading) return <StartupSkeleton />;
 
@@ -365,6 +376,63 @@ export default function StartupProfilePage({
                   {roles.map((role, i) => (
                     <RoleCard key={role.id} role={role} index={i} isLoggedIn={!!user} />
                   ))}
+                </div>
+              </motion.div>
+            )}
+
+            {/* Posts / Looking For */}
+            {posts.length > 0 && (
+              <motion.div
+                variants={fadeUp}
+                initial="hidden"
+                animate="visible"
+                custom={3}
+                className="bg-white rounded-2xl border border-gray-100 shadow-card p-6 md:p-8"
+              >
+                <h2 className="text-lg font-bold text-gray-900 mb-5 flex items-center gap-2">
+                  <Megaphone className="h-5 w-5 text-brand-600" />
+                  Looking For
+                  <span className="ml-auto badge badge-brand">{posts.length}</span>
+                </h2>
+                <div className="space-y-4">
+                  {posts.map((post) => {
+                    const hasEquity = post.equity_min > 0 || post.equity_max > 0;
+                    const equityLabel = hasEquity
+                      ? post.equity_min === post.equity_max
+                        ? formatCurrency(post.equity_min)
+                        : `${formatCurrency(post.equity_min)} – ${formatCurrency(post.equity_max)}`
+                      : null;
+                    return (
+                      <Link key={post.id} href={`/marketplace/post/${post.id}`}>
+                        <div className="rounded-xl border border-gray-100 p-4 hover:border-brand-200 hover:bg-brand-50/30 transition-all cursor-pointer">
+                          <div className="flex items-start justify-between gap-3 mb-2">
+                            <h3 className="text-sm font-semibold text-gray-900">{post.title}</h3>
+                            <span className={`shrink-0 px-2.5 py-0.5 rounded-full text-xs font-medium ${
+                              post.type === 'seeking' ? 'bg-amber-50 text-amber-700' : 'bg-emerald-50 text-emerald-700'
+                            }`}>
+                              {post.type === 'seeking' ? 'Seeking' : 'Offering'}
+                            </span>
+                          </div>
+                          {post.description && (
+                            <p className="text-sm text-gray-600 line-clamp-2 mb-2">{post.description}</p>
+                          )}
+                          <div className="flex items-center gap-3 flex-wrap">
+                            {post.category && (
+                              <span className="px-2 py-0.5 rounded-full bg-gray-100 text-gray-600 text-xs capitalize">{post.category}</span>
+                            )}
+                            {post.tags?.slice(0, 3).map((tag) => (
+                              <span key={tag} className="inline-flex items-center gap-0.5 px-2 py-0.5 rounded-full bg-brand-50 text-brand-700 text-xs">
+                                <Tag className="h-2.5 w-2.5" />{tag}
+                              </span>
+                            ))}
+                            {equityLabel && (
+                              <span className="ml-auto text-sm font-semibold text-brand-600">{equityLabel} SAFE</span>
+                            )}
+                          </div>
+                        </div>
+                      </Link>
+                    );
+                  })}
                 </div>
               </motion.div>
             )}

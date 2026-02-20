@@ -3,15 +3,13 @@
 import { useAuth } from '@/lib/auth-context';
 import { useRequireAuth } from '@/hooks/useRequireAuth';
 import { getInitials, getAvatarColor, getStageColor, formatCurrency } from '@/lib/utils';
-import type { Startup, TalentProfile, Post } from '@/lib/types';
+import type { Startup, TalentProfile } from '@/lib/types';
 import {
   Search,
   Building2,
   Users,
   Loader2,
-  Megaphone,
   Plus,
-  Tag,
   Star,
   Clock,
   Briefcase,
@@ -25,7 +23,7 @@ import Link from 'next/link';
 import { Suspense, useCallback, useEffect, useState } from 'react';
 import { useSearchParams } from 'next/navigation';
 
-type Tab = 'talent' | 'posts' | 'startups';
+type Tab = 'talent' | 'startups';
 
 const STAGES = [
   { value: '', label: 'All Stages' },
@@ -55,12 +53,6 @@ const AVAILABILITY = [
   { value: 'contract', label: 'Contract' },
 ];
 
-const POST_TYPES = [
-  { value: '', label: 'All Types' },
-  { value: 'seeking', label: 'Seeking Talent' },
-  { value: 'offering', label: 'Offering Services' },
-];
-
 export default function MarketplacePage() {
   return (
     <Suspense fallback={
@@ -84,10 +76,8 @@ function MarketplaceContent() {
   const [stage, setStage] = useState('');
   const [category, setCategory] = useState('');
   const [availability, setAvailability] = useState('');
-  const [postType, setPostType] = useState('');
   const [startups, setStartups] = useState<Startup[]>([]);
   const [talent, setTalent] = useState<TalentProfile[]>([]);
-  const [posts, setPosts] = useState<Post[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -99,12 +89,13 @@ function MarketplaceContent() {
       if (search) params.set('search', search);
 
       if (tab === 'startups') {
+        params.set('featured', 'true');
         if (stage) params.set('stage', stage);
         const res = await fetch(`/api/startups?${params}`);
         if (!res.ok) throw new Error('Failed to fetch startups');
         const json = await res.json();
         setStartups(json.data ?? []);
-      } else if (tab === 'talent') {
+      } else {
         params.set('visible', 'true');
         if (category) params.set('category', category);
         if (availability) params.set('availability', availability);
@@ -112,20 +103,13 @@ function MarketplaceContent() {
         if (!res.ok) throw new Error('Failed to fetch talent');
         const json = await res.json();
         setTalent(json.data ?? []);
-      } else {
-        if (postType) params.set('type', postType);
-        if (category) params.set('category', category);
-        const res = await fetch(`/api/posts?${params}`);
-        if (!res.ok) throw new Error('Failed to fetch posts');
-        const json = await res.json();
-        setPosts(json.data ?? []);
       }
     } catch (err: any) {
       setError(err.message ?? 'Something went wrong');
     } finally {
       setLoading(false);
     }
-  }, [tab, search, stage, category, availability, postType]);
+  }, [tab, search, stage, category, availability]);
 
   useEffect(() => {
     const timer = setTimeout(fetchData, 300);
@@ -142,7 +126,6 @@ function MarketplaceContent() {
 
   const tabs: { key: Tab; label: string; icon: React.ReactNode; count?: number }[] = [
     { key: 'talent', label: 'Talent', icon: <Users className="h-4 w-4" />, count: talent.length },
-    { key: 'posts', label: 'Posts', icon: <Megaphone className="h-4 w-4" />, count: posts.length },
     { key: 'startups', label: 'Startups', icon: <Building2 className="h-4 w-4" />, count: startups.length },
   ];
 
@@ -169,8 +152,7 @@ function MarketplaceContent() {
                 type="text"
                 placeholder={
                   tab === 'talent' ? 'Search by skill, title, or bio...'
-                    : tab === 'startups' ? 'Search startups...'
-                    : 'Search posts...'
+                    : 'Search startups...'
                 }
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
@@ -202,7 +184,6 @@ function MarketplaceContent() {
                   setStage('');
                   setCategory('');
                   setAvailability('');
-                  setPostType('');
                 }}
                 className={`flex items-center gap-2 px-4 py-2.5 text-sm font-medium rounded-t-lg border-b-2 transition-all ${
                   tab === t.key
@@ -248,24 +229,6 @@ function MarketplaceContent() {
             >
               {STAGES.map((s) => <option key={s.value} value={s.value}>{s.label}</option>)}
             </select>
-          )}
-          {tab === 'posts' && (
-            <>
-              <select
-                value={postType}
-                onChange={(e) => setPostType(e.target.value)}
-                className="text-sm px-3 py-1.5 rounded-lg border border-[#E8E8E6] bg-white text-[#1A1A1A] focus:outline-none focus:ring-2 focus:ring-brand-600/10"
-              >
-                {POST_TYPES.map((pt) => <option key={pt.value} value={pt.value}>{pt.label}</option>)}
-              </select>
-              <select
-                value={category}
-                onChange={(e) => setCategory(e.target.value)}
-                className="text-sm px-3 py-1.5 rounded-lg border border-[#E8E8E6] bg-white text-[#1A1A1A] focus:outline-none focus:ring-2 focus:ring-brand-600/10"
-              >
-                {CATEGORIES.map((c) => <option key={c.value} value={c.value}>{c.label}</option>)}
-              </select>
-            </>
           )}
         </div>
       </div>
@@ -324,38 +287,25 @@ function MarketplaceContent() {
               </div>
             )}
 
-            {/* Posts */}
-            {tab === 'posts' && (
-              <div>
-                {posts.length === 0 ? (
-                  <EmptyState
-                    icon={<Megaphone className="h-10 w-10 text-[#D1D5DB]" />}
-                    title="No posts yet"
-                    description="Be the first to post — share what you're looking for or what you can offer."
-                    action={
-                      user ? (
-                        <Link href="/dashboard/posts/new" className="btn-primary px-5 py-2.5 text-sm mt-4 inline-flex items-center gap-1.5">
-                          <Plus className="h-4 w-4" /> Create Post
-                        </Link>
-                      ) : null
-                    }
-                  />
-                ) : (
-                  <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-5">
-                    {posts.map((p) => <PostCard key={p.id} post={p} />)}
-                  </div>
-                )}
-              </div>
-            )}
-
             {/* Startups */}
             {tab === 'startups' && (
               <div>
                 {startups.length === 0 ? (
                   <EmptyState
                     icon={<Building2 className="h-10 w-10 text-[#D1D5DB]" />}
-                    title="No startups found"
-                    description="Try adjusting your search or filters."
+                    title="No startups listed yet"
+                    description={
+                      user?.role === 'founder'
+                        ? 'Toggle your marketplace visibility from the dashboard to appear here.'
+                        : 'Check back soon — startups are joining the marketplace.'
+                    }
+                    action={
+                      user?.role === 'founder' ? (
+                        <Link href="/dashboard" className="btn-primary px-5 py-2.5 text-sm mt-4 inline-flex items-center gap-1.5">
+                          Go to Dashboard
+                        </Link>
+                      ) : null
+                    }
                   />
                 ) : (
                   <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-5">
@@ -468,80 +418,6 @@ function TalentCard({ talent, isFounder }: { talent: TalentProfile; isFounder?: 
   );
 }
 
-/* ─── Post Card ──────────────────────────────────────────────────────────────── */
-
-function PostCard({ post }: { post: Post }) {
-  const authorName = post.author?.full_name ?? 'Unknown';
-  const isSeek = post.type === 'seeking';
-  const hasEquity = post.equity_min > 0 || post.equity_max > 0;
-  const equityLabel = hasEquity
-    ? post.equity_min === post.equity_max
-      ? formatCurrency(post.equity_min)
-      : `${formatCurrency(post.equity_min)} – ${formatCurrency(post.equity_max)}`
-    : null;
-
-  return (
-    <Link href={`/marketplace/post/${post.id}`}>
-      <div className="group bg-white border border-[#E8E8E6] rounded-xl p-6 h-full flex flex-col transition-all hover:border-brand-200 hover:shadow-md hover:shadow-brand-100/50 cursor-pointer">
-        <div className="flex items-start gap-3 mb-3">
-          <div className={`flex h-10 w-10 items-center justify-center rounded-full text-sm font-bold shrink-0 ${getAvatarColor(authorName)}`}>
-            {getInitials(authorName)}
-          </div>
-          <div className="min-w-0 flex-1">
-            <h3 className="text-sm font-semibold text-[#1A1A1A] line-clamp-2 group-hover:text-brand-600 transition-colors">
-              {post.title}
-            </h3>
-            <p className="text-xs text-[#6B6B6B] mt-0.5">
-              {authorName} · {formatTimeAgo(post.created_at)}
-            </p>
-          </div>
-        </div>
-
-        <div className="flex items-center gap-2 mb-3">
-          <span className={`px-2.5 py-0.5 rounded-full text-xs font-medium ${
-            isSeek ? 'bg-amber-50 text-amber-700' : 'bg-emerald-50 text-emerald-700'
-          }`}>
-            {isSeek ? 'Seeking' : 'Offering'}
-          </span>
-          {post.category && (
-            <span className="px-2.5 py-0.5 rounded-full bg-gray-100 text-[#6B6B6B] text-xs capitalize">
-              {post.category}
-            </span>
-          )}
-        </div>
-
-        {post.description && (
-          <p className="text-sm text-[#6B6B6B] line-clamp-3 leading-relaxed mb-3 flex-1">
-            {post.description}
-          </p>
-        )}
-
-        {post.tags && post.tags.length > 0 && (
-          <div className="flex flex-wrap gap-1.5 mb-3">
-            {post.tags.slice(0, 4).map((tag) => (
-              <span key={tag} className="inline-flex items-center gap-0.5 px-2 py-0.5 rounded-full bg-brand-50 text-brand-700 text-xs">
-                <Tag className="h-2.5 w-2.5" />{tag}
-              </span>
-            ))}
-            {post.tags.length > 4 && <span className="text-xs text-[#9CA3AF]">+{post.tags.length - 4}</span>}
-          </div>
-        )}
-
-        <div className="flex items-center justify-between pt-3 border-t border-[#F3F4F6] mt-auto">
-          {equityLabel ? (
-            <span className="text-sm font-semibold text-brand-600">{equityLabel} SAFE</span>
-          ) : (
-            <span className="text-xs text-[#9CA3AF]">SAFE terms flexible</span>
-          )}
-          <span className="px-2.5 py-0.5 rounded-full bg-gray-100 text-[#6B6B6B] text-xs capitalize">
-            {post.author?.role ?? 'member'}
-          </span>
-        </div>
-      </div>
-    </Link>
-  );
-}
-
 /* ─── Startup Card ───────────────────────────────────────────────────────────── */
 
 function StartupCard({ startup }: { startup: Startup }) {
@@ -605,17 +481,3 @@ function EmptyState({ icon, title, description, action }: {
   );
 }
 
-function formatTimeAgo(dateStr: string): string {
-  const now = Date.now();
-  const then = new Date(dateStr).getTime();
-  const diff = now - then;
-  const mins = Math.floor(diff / 60000);
-  if (mins < 1) return 'just now';
-  if (mins < 60) return `${mins}m ago`;
-  const hours = Math.floor(mins / 60);
-  if (hours < 24) return `${hours}h ago`;
-  const days = Math.floor(hours / 24);
-  if (days < 30) return `${days}d ago`;
-  const months = Math.floor(days / 30);
-  return `${months}mo ago`;
-}

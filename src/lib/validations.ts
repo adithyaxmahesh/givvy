@@ -62,6 +62,7 @@ export const startupSchema = z.object({
     .optional()
     .or(z.literal('')),
   traction: z.array(z.string()).default([]),
+  featured: z.boolean().optional(),
 });
 
 // ─── Talent Profile Schema ─────────────────────────────────────────────────────

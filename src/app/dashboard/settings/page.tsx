@@ -6,9 +6,11 @@ import { getInitials, formatCurrency } from '@/lib/utils';
 import {
   Bell,
   Briefcase,
+  Building2,
   Check,
   Code2,
   DollarSign,
+  Globe,
   Loader2,
   Lock,
   MapPin,
@@ -111,11 +113,28 @@ export default function SettingsPage() {
 
 function ProfileTab({ user }: { user: { id: string; full_name: string; email: string; role: string; avatar_url: string | null } }) {
   const isTalent = user.role === 'talent';
+  const isFounder = user.role === 'founder';
   const [talentProfile, setTalentProfile] = useState<any>(null);
-  const [loadingProfile, setLoadingProfile] = useState(isTalent);
+  const [loadingProfile, setLoadingProfile] = useState(isTalent || isFounder);
   const [saving, setSaving] = useState(false);
   const [saved, setSaved] = useState(false);
   const [error, setError] = useState('');
+
+  // Startup form state (founders)
+  const [startupProfile, setStartupProfile] = useState<any>(null);
+  const [sName, setSName] = useState('');
+  const [sTagline, setSTagline] = useState('');
+  const [sDescription, setSDescription] = useState('');
+  const [sIndustry, setSIndustry] = useState('');
+  const [sStage, setSStage] = useState('pre-seed');
+  const [sLocation, setSLocation] = useState('');
+  const [sWebsite, setSWebsite] = useState('');
+  const [sTeamSize, setSTeamSize] = useState('1');
+  const [sEquityPool, setSEquityPool] = useState('10');
+  const [sPitch, setSPitch] = useState('');
+  const [sTraction, setSTraction] = useState<string[]>([]);
+  const [sTractionInput, setSTractionInput] = useState('');
+  const [sLogoEmoji, setSLogoEmoji] = useState('🚀');
 
   // Talent form state
   const [title, setTitle] = useState('');
@@ -155,6 +174,33 @@ function ProfileTab({ user }: { user: { id: string; full_name: string; email: st
       .catch(() => {})
       .finally(() => setLoadingProfile(false));
   }, [isTalent, user.id]);
+
+  useEffect(() => {
+    if (!isFounder) return;
+    fetch('/api/startups')
+      .then((r) => r.json())
+      .then((json) => {
+        const startups = json.data ?? [];
+        const mine = startups.find((s: any) => s.founder_id === user.id || s.founder?.id === user.id);
+        if (mine) {
+          setStartupProfile(mine);
+          setSName(mine.name || '');
+          setSTagline(mine.tagline || '');
+          setSDescription(mine.description || '');
+          setSIndustry(mine.industry || '');
+          setSStage(mine.stage || 'pre-seed');
+          setSLocation(mine.location || '');
+          setSWebsite(mine.website || '');
+          setSTeamSize(String(mine.team_size ?? 1));
+          setSEquityPool(String(mine.equity_pool ?? 10));
+          setSPitch(mine.pitch || '');
+          setSTraction(mine.traction || []);
+          setSLogoEmoji(mine.logo_emoji || '🚀');
+        }
+      })
+      .catch(() => {})
+      .finally(() => setLoadingProfile(false));
+  }, [isFounder, user.id]);
 
   const addSkill = () => {
     const s = skillInput.trim();
@@ -207,6 +253,51 @@ function ProfileTab({ user }: { user: { id: string; full_name: string; email: st
     }
   };
 
+  const addTraction = () => {
+    const t = sTractionInput.trim();
+    if (t && !sTraction.includes(t) && sTraction.length < 10) {
+      setSTraction([...sTraction, t]);
+      setSTractionInput('');
+    }
+  };
+
+  const handleSaveStartup = async () => {
+    if (!startupProfile) return;
+    setSaving(true);
+    setError('');
+    setSaved(false);
+    try {
+      const res = await fetch(`/api/startups/${startupProfile.id}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          name: sName,
+          tagline: sTagline,
+          description: sDescription,
+          industry: sIndustry,
+          stage: sStage,
+          location: sLocation,
+          website: sWebsite || undefined,
+          team_size: parseInt(sTeamSize) || 1,
+          equity_pool: parseFloat(sEquityPool) || 10,
+          pitch: sPitch,
+          traction: sTraction,
+          logo_emoji: sLogoEmoji,
+        }),
+      });
+      if (!res.ok) {
+        const json = await res.json();
+        throw new Error(json.error || 'Failed to save');
+      }
+      setSaved(true);
+      setTimeout(() => setSaved(false), 3000);
+    } catch (err: any) {
+      setError(err.message);
+    } finally {
+      setSaving(false);
+    }
+  };
+
   return (
     <div className="max-w-2xl space-y-8">
       {/* Account info */}
@@ -233,6 +324,165 @@ function ProfileTab({ user }: { user: { id: string; full_name: string; email: st
           <FieldRow label="Account Type" value={user.role} capitalize />
         </div>
       </div>
+
+      {/* Startup profile (founders) */}
+      {isFounder && (
+        <div className="glass-card p-8">
+          <div className="flex items-center gap-3 mb-6">
+            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-brand-50 text-brand-600">
+              <Building2 className="h-5 w-5" />
+            </div>
+            <div>
+              <h3 className="text-lg font-semibold text-gray-900">Startup Profile</h3>
+              <p className="text-sm text-gray-500">This is what talent sees on the marketplace.</p>
+            </div>
+          </div>
+
+          {loadingProfile ? (
+            <div className="flex items-center justify-center py-12">
+              <Loader2 className="h-6 w-6 animate-spin text-brand-600" />
+            </div>
+          ) : !startupProfile ? (
+            <div className="text-center py-8">
+              <p className="text-sm text-gray-500">No startup profile found. Complete onboarding to set up your startup.</p>
+            </div>
+          ) : (
+            <div className="space-y-6">
+              {error && (
+                <div className="p-3 rounded-lg bg-red-50 border border-red-200 text-sm text-red-700">{error}</div>
+              )}
+              {saved && (
+                <div className="p-3 rounded-lg bg-emerald-50 border border-emerald-200 text-sm text-emerald-700 flex items-center gap-2">
+                  <Check className="h-4 w-4" /> Startup profile saved successfully
+                </div>
+              )}
+
+              {/* Name & Emoji */}
+              <div className="grid grid-cols-[1fr_80px] gap-4">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1.5">Company Name</label>
+                  <input type="text" value={sName} onChange={(e) => setSName(e.target.value)} placeholder="e.g. Acme Inc." className="input-field" maxLength={100} />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1.5">Logo</label>
+                  <input type="text" value={sLogoEmoji} onChange={(e) => setSLogoEmoji(e.target.value)} className="input-field text-center text-2xl" maxLength={4} />
+                </div>
+              </div>
+
+              {/* Tagline */}
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1.5">Tagline</label>
+                <input type="text" value={sTagline} onChange={(e) => setSTagline(e.target.value)} placeholder="One-line description of your startup" className="input-field" maxLength={200} />
+              </div>
+
+              {/* Description */}
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1.5">About</label>
+                <textarea value={sDescription} onChange={(e) => setSDescription(e.target.value)} placeholder="Tell talent about your startup, mission, and what you're building..." rows={4} className="input-field resize-none" maxLength={5000} />
+                <p className="text-xs text-gray-400 mt-1">{sDescription.length}/5000</p>
+              </div>
+
+              {/* Stage & Industry */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1.5">Stage</label>
+                  <select value={sStage} onChange={(e) => setSStage(e.target.value)} className="input-field">
+                    <option value="pre-seed">Pre-Seed</option>
+                    <option value="seed">Seed</option>
+                    <option value="series-a">Series A</option>
+                    <option value="series-b">Series B</option>
+                    <option value="growth">Growth</option>
+                  </select>
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1.5">Industry</label>
+                  <input type="text" value={sIndustry} onChange={(e) => setSIndustry(e.target.value)} placeholder="e.g. FinTech, HealthTech" className="input-field" maxLength={100} />
+                </div>
+              </div>
+
+              {/* Team Size & Equity Pool */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1.5">Team Size</label>
+                  <input type="number" value={sTeamSize} onChange={(e) => setSTeamSize(e.target.value)} min="1" className="input-field" />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1.5">Equity Pool (%)</label>
+                  <input type="number" value={sEquityPool} onChange={(e) => setSEquityPool(e.target.value)} min="0" max="100" step="0.5" className="input-field" />
+                </div>
+              </div>
+
+              {/* Location & Website */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1.5">
+                    <MapPin className="inline h-4 w-4 mr-1" />Location
+                  </label>
+                  <input type="text" value={sLocation} onChange={(e) => setSLocation(e.target.value)} placeholder="e.g. San Francisco, CA" className="input-field" maxLength={200} />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1.5">
+                    <Globe className="inline h-4 w-4 mr-1" />Website
+                  </label>
+                  <input type="text" value={sWebsite} onChange={(e) => setSWebsite(e.target.value)} placeholder="https://example.com" className="input-field" />
+                </div>
+              </div>
+
+              {/* Pitch */}
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1.5">Pitch</label>
+                <textarea value={sPitch} onChange={(e) => setSPitch(e.target.value)} placeholder="Your startup pitch — why should talent want to work with you?" rows={4} className="input-field resize-none" maxLength={10000} />
+              </div>
+
+              {/* Traction */}
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1.5">Traction Highlights</label>
+                <div className="flex gap-2 mb-2">
+                  <input
+                    type="text"
+                    value={sTractionInput}
+                    onChange={(e) => setSTractionInput(e.target.value)}
+                    onKeyDown={(e) => { if (e.key === 'Enter') { e.preventDefault(); addTraction(); } }}
+                    placeholder="e.g. 10K users, $500K ARR, YC W25"
+                    className="input-field flex-1"
+                    maxLength={200}
+                  />
+                  <button type="button" onClick={addTraction} className="btn-secondary px-3 py-2.5 shrink-0">
+                    <Plus className="h-4 w-4" />
+                  </button>
+                </div>
+                {sTraction.length > 0 && (
+                  <div className="flex flex-wrap gap-2">
+                    {sTraction.map((item) => (
+                      <span key={item} className="inline-flex items-center gap-1 px-3 py-1 rounded-full bg-emerald-50 text-emerald-700 text-sm font-medium">
+                        {item}
+                        <button type="button" onClick={() => setSTraction(sTraction.filter((t) => t !== item))} className="hover:text-red-600">
+                          <X className="h-3 w-3" />
+                        </button>
+                      </span>
+                    ))}
+                  </div>
+                )}
+              </div>
+
+              {/* Save */}
+              <div className="pt-4 border-t border-gray-100">
+                <button
+                  onClick={handleSaveStartup}
+                  disabled={saving || !sName.trim()}
+                  className="btn-primary px-6 py-3 text-sm gap-2 disabled:opacity-50"
+                >
+                  {saving ? (
+                    <><Loader2 className="h-4 w-4 animate-spin" /> Saving...</>
+                  ) : (
+                    <><Check className="h-4 w-4" /> Save Startup Profile</>
+                  )}
+                </button>
+              </div>
+            </div>
+          )}
+        </div>
+      )}
 
       {/* Talent professional profile */}
       {isTalent && (

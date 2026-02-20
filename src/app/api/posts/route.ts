@@ -18,6 +18,7 @@ export async function GET(request: NextRequest) {
     const type = searchParams.get('type');
     const category = searchParams.get('category');
     const status = searchParams.get('status') || 'active';
+    const authorId = searchParams.get('author_id');
 
     const supabase = getAdminClient();
     if (supabase) {
@@ -28,6 +29,7 @@ export async function GET(request: NextRequest) {
       if (status) query = query.eq('status', status);
       if (type) query = query.eq('type', type);
       if (category) query = query.eq('category', category);
+      if (authorId) query = query.eq('author_id', authorId);
       if (search) {
         query = query.or(
           `title.ilike.%${search}%,description.ilike.%${search}%`

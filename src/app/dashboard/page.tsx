@@ -54,6 +54,7 @@ export default function DashboardPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [talentProfile, setTalentProfile] = useState<any>(null);
+  const [startupProfile, setStartupProfile] = useState<any>(null);
   const [togglingVisibility, setTogglingVisibility] = useState(false);
 
   useEffect(() => {
@@ -77,8 +78,12 @@ export default function DashboardPage() {
         if (user.role === 'talent') {
           fetches.push(fetch('/api/talent'));
         }
+        if (user.role === 'founder') {
+          fetches.push(fetch('/api/startups'));
+        }
 
-        const [dealsRes, notifsRes, talentRes] = await Promise.all(fetches);
+        const results = await Promise.all(fetches);
+        const [dealsRes, notifsRes] = results;
 
         if (!dealsRes.ok) throw new Error('Failed to load deals');
         if (!notifsRes.ok) throw new Error('Failed to load notifications');
@@ -89,11 +94,17 @@ export default function DashboardPage() {
         setDeals(dealsJson.data ?? []);
         setNotifications(notifsJson.data ?? []);
 
-        if (talentRes) {
-          const talentJson = await talentRes.json();
+        if (user.role === 'talent' && results[2]) {
+          const talentJson = await results[2].json();
           const profiles = talentJson.data ?? [];
           const myProfile = profiles.find((t: any) => t.user_id === user.id || t.user?.id === user.id);
           if (myProfile) setTalentProfile(myProfile);
+        }
+        if (user.role === 'founder' && results[2]) {
+          const startupJson = await results[2].json();
+          const startups = startupJson.data ?? [];
+          const myStartup = startups.find((s: any) => s.founder_id === user.id || s.founder?.id === user.id);
+          if (myStartup) setStartupProfile(myStartup);
         }
       } catch (err: any) {
         setError(err.message ?? 'Something went wrong');
@@ -290,6 +301,68 @@ export default function DashboardPage() {
               <div className="mt-3 flex items-center gap-2">
                 <Sparkles className="h-3.5 w-3.5 text-brand-500" />
                 <Link href={`/profile/talent/${talentProfile.id}`} className="text-xs font-medium text-brand-600 hover:underline">
+                  View your public profile →
+                </Link>
+              </div>
+            )}
+          </div>
+        )}
+
+        {/* ── Marketplace Visibility (founder / startup) ──────────── */}
+        {!loading && user.role === 'founder' && startupProfile && (
+          <div className={`rounded-xl border p-5 transition-all ${
+            startupProfile.featured
+              ? 'bg-gradient-to-r from-brand-50 to-emerald-50 border-brand-200'
+              : 'bg-white border-[#E8E8E6]'
+          }`}>
+            <div className="flex items-center justify-between gap-4">
+              <div className="flex items-center gap-3.5">
+                <div className={`flex h-10 w-10 items-center justify-center rounded-xl ${
+                  startupProfile.featured ? 'bg-brand-100 text-brand-600' : 'bg-gray-100 text-gray-400'
+                }`}>
+                  {startupProfile.featured ? <Eye className="h-5 w-5" /> : <EyeOff className="h-5 w-5" />}
+                </div>
+                <div>
+                  <h3 className="text-sm font-semibold text-[#1A1A1A]">
+                    {startupProfile.featured ? 'Your startup is visible in the marketplace' : 'Make your startup visible to talent'}
+                  </h3>
+                  <p className="text-xs text-[#6B6B6B] mt-0.5">
+                    {startupProfile.featured
+                      ? 'Talent can find your startup, view open roles, and send proposals.'
+                      : 'Toggle on to let talent discover your startup and apply for equity-based roles.'}
+                  </p>
+                </div>
+              </div>
+              <button
+                onClick={async () => {
+                  setTogglingVisibility(true);
+                  try {
+                    const res = await fetch(`/api/startups/${startupProfile.id}`, {
+                      method: 'PATCH',
+                      headers: { 'Content-Type': 'application/json' },
+                      body: JSON.stringify({ featured: !startupProfile.featured }),
+                    });
+                    if (res.ok) {
+                      const json = await res.json();
+                      setStartupProfile(json.data ?? { ...startupProfile, featured: !startupProfile.featured });
+                    }
+                  } catch { /* toggle failed silently */ }
+                  setTogglingVisibility(false);
+                }}
+                disabled={togglingVisibility}
+                className={`relative inline-flex h-7 w-12 items-center rounded-full transition-colors shrink-0 ${
+                  startupProfile.featured ? 'bg-brand-600' : 'bg-gray-300'
+                } ${togglingVisibility ? 'opacity-50' : ''}`}
+              >
+                <span className={`inline-block h-5 w-5 rounded-full bg-white shadow-sm transition-transform ${
+                  startupProfile.featured ? 'translate-x-6' : 'translate-x-1'
+                }`} />
+              </button>
+            </div>
+            {startupProfile.featured && (
+              <div className="mt-3 flex items-center gap-2">
+                <Sparkles className="h-3.5 w-3.5 text-brand-500" />
+                <Link href={`/profile/startup/${startupProfile.id}`} className="text-xs font-medium text-brand-600 hover:underline">
                   View your public profile →
                 </Link>
               </div>
