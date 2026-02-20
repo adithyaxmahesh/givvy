@@ -19,10 +19,10 @@ import {
   CheckCircle2,
 } from 'lucide-react';
 import Link from 'next/link';
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { cn, getInitials, getStageColor } from '@/lib/utils';
 import { useAuth } from '@/lib/auth-context';
-import { faqItems } from '@/lib/data';
+import { faqItems, mockStartups, mockTalent } from '@/lib/data';
 
 const fadeInUp = {
   hidden: { opacity: 0, y: 20 },
@@ -109,31 +109,10 @@ function TalentCardSkeleton() {
 
 export default function LandingPage() {
   const { user } = useAuth();
-  const [startups, setStartups] = useState<any[]>([]);
-  const [talent, setTalent] = useState<any[]>([]);
-  const [loading, setLoading] = useState(true);
+  const startups = mockStartups.filter((s: any) => s.featured).slice(0, 3);
+  const talent = mockTalent.slice(0, 4);
+  const loading = false;
   const [faqOpen, setFaqOpen] = useState<number | null>(null);
-
-  useEffect(() => {
-    async function load() {
-      try {
-        const [s, t] = await Promise.all([
-          fetch('/api/startups?featured=true'),
-          fetch('/api/talent'),
-        ]);
-        const sj = await s.json();
-        const tj = await t.json();
-        setStartups(sj.data || []);
-        setTalent((tj.data || []).slice(0, 4));
-      } catch {
-        setStartups([]);
-        setTalent([]);
-      } finally {
-        setLoading(false);
-      }
-    }
-    load();
-  }, []);
 
   return (
     <div className="overflow-hidden">
