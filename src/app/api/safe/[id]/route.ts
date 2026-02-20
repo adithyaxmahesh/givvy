@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { getAuthUser } from '@/lib/auth';
+import { getAuthUser, DEMO_EMAILS } from '@/lib/auth';
 import { createAdminClient } from '@/lib/supabase/admin';
+import { mockDeals } from '@/lib/data';
 
 export async function GET(
   request: NextRequest,
@@ -11,6 +12,40 @@ export async function GET(
     if (!user) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
 
     const dealId = params.id;
+
+    const mockDeal = mockDeals.find((d) => d.id === dealId);
+    if (mockDeal && DEMO_EMAILS.includes(user.email.toLowerCase())) {
+      if (mockDeal.status === 'active' || mockDeal.status === 'completed') {
+        return NextResponse.json({
+          data: {
+            id: `safe-${dealId}`,
+            deal_id: dealId,
+            template: mockDeal.safe_terms?.template || 'yc-standard',
+            status: 'pending-signature',
+            terms: mockDeal.safe_terms,
+            document_url: null,
+            version_history: [
+              { version: 1, date: mockDeal.created_at, description: 'SAFE document generated from deal terms', author: 'system' },
+            ],
+            audit_trail: [
+              { action: 'Document generated', timestamp: mockDeal.created_at, actor: 'system' },
+              { action: 'Sent for signature', timestamp: mockDeal.updated_at, actor: 'system' },
+            ],
+            signatures: {
+              founder: { signed: false, signer_name: '', signer_title: '', signed_at: null },
+              talent: { signed: false, signer_name: '', signer_title: '', signed_at: null },
+            },
+            created_at: mockDeal.created_at,
+            updated_at: mockDeal.updated_at,
+          },
+        });
+      }
+      return NextResponse.json(
+        { error: 'SAFE document not found for this deal' },
+        { status: 404 }
+      );
+    }
+
     const supabase = createAdminClient();
 
     const { data, error } = await supabase

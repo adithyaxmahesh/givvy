@@ -1,8 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { getAuthUser } from '@/lib/auth';
+import { getAuthUser, DEMO_EMAILS } from '@/lib/auth';
 import { createAdminClient } from '@/lib/supabase/admin';
 import { milestoneSchema } from '@/lib/validations';
 import { fromDbFields, fromDbRows } from '@/lib/utils';
+import { mockDeals, mockMilestones } from '@/lib/data';
 
 export async function GET(
   request: NextRequest,
@@ -13,6 +14,12 @@ export async function GET(
     if (!user) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
 
     const dealId = params.id;
+
+    if (mockDeals.some((d) => d.id === dealId) && DEMO_EMAILS.includes(user.email.toLowerCase())) {
+      const data = mockMilestones.filter((m) => m.deal_id === dealId);
+      return NextResponse.json({ data, count: data.length });
+    }
+
     const supabase = createAdminClient();
 
     const { data, error, count } = await supabase
