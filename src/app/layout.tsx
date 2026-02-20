@@ -33,8 +33,8 @@ const landingPages = ['/', '/about', '/pricing', '/contact'];
 const navLinks = [
   { label: 'Marketplace', href: '/marketplace', icon: Search },
   { label: 'Dashboard', href: '/dashboard', icon: LayoutDashboard },
+  { label: 'My Posts', href: '/dashboard/posts', icon: PenSquare },
   { label: 'Deals', href: '/deals', icon: FileText },
-  { label: 'Portfolio', href: '/dashboard/portfolio', icon: TrendingUp },
 ];
 
 const ADMIN_EMAILS = ['adithyamahesh123@gmail.com'];

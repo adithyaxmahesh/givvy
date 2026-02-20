@@ -60,6 +60,9 @@ export default function MyPostsPage() {
     } catch {}
   };
 
+  const [acceptedDealId, setAcceptedDealId] = useState<string | null>(null);
+  const [acceptedNoDeal, setAcceptedNoDeal] = useState(false);
+
   const handleProposalAction = async (proposalId: string, status: 'accepted' | 'rejected') => {
     try {
       const res = await fetch(`/api/proposals/${proposalId}`, {
@@ -68,9 +71,18 @@ export default function MyPostsPage() {
         body: JSON.stringify({ status }),
       });
       if (res.ok) {
+        const json = await res.json();
         setProposals((prev) =>
           prev.map((p) => (p.id === proposalId ? { ...p, status } : p))
         );
+        if (status === 'accepted') {
+          if (json.deal?.id) {
+            setAcceptedDealId(json.deal.id);
+            setAcceptedNoDeal(false);
+          } else {
+            setAcceptedNoDeal(true);
+          }
+        }
       }
     } catch {}
   };
@@ -200,6 +212,68 @@ export default function MyPostsPage() {
               </div>
             )}
           </>
+        )}
+
+        {/* Deal created banner */}
+        {acceptedDealId && (
+          <div className="mb-6 bg-green-50 border border-green-200 rounded-xl p-5">
+            <div className="flex items-start gap-3">
+              <CheckCircle2 className="h-5 w-5 text-green-600 shrink-0 mt-0.5" />
+              <div className="flex-1">
+                <h3 className="text-sm font-semibold text-green-800">Deal Created!</h3>
+                <p className="text-xs text-green-700 mt-0.5">
+                  A new deal has been created from the accepted proposal. You can now negotiate terms and sign SAFE documents.
+                </p>
+                <Link
+                  href={`/deals/${acceptedDealId}`}
+                  className="inline-flex items-center gap-1.5 px-4 py-2 mt-3 text-xs font-medium text-white bg-green-600 hover:bg-green-700 rounded-lg transition-colors"
+                >
+                  View Deal & SAFE Terms
+                </Link>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Accepted but no deal (profiles needed) */}
+        {acceptedNoDeal && !acceptedDealId && (
+          <div className="mb-6 bg-brand-50 border border-brand-200 rounded-xl p-5">
+            <div className="flex items-start gap-3">
+              <CheckCircle2 className="h-5 w-5 text-brand-600 shrink-0 mt-0.5" />
+              <div className="flex-1">
+                <h3 className="text-sm font-semibold text-[#1A1A1A]">Proposal Accepted!</h3>
+                <p className="text-xs text-[#6B6B6B] mt-0.5">
+                  To start a formal deal with SAFE terms, both parties need profiles set up.
+                  {user?.role === 'founder'
+                    ? ' Create your startup profile first, then you can initiate a deal.'
+                    : ' Create your talent profile first, then the founder can initiate a deal.'}
+                </p>
+                <div className="flex items-center gap-2 mt-3">
+                  {user?.role === 'founder' ? (
+                    <Link
+                      href="/onboarding/founder"
+                      className="inline-flex items-center gap-1.5 px-4 py-2 text-xs font-medium text-white bg-brand-600 hover:bg-brand-700 rounded-lg transition-colors"
+                    >
+                      Create Startup Profile
+                    </Link>
+                  ) : (
+                    <Link
+                      href="/onboarding/talent"
+                      className="inline-flex items-center gap-1.5 px-4 py-2 text-xs font-medium text-white bg-brand-600 hover:bg-brand-700 rounded-lg transition-colors"
+                    >
+                      Create Talent Profile
+                    </Link>
+                  )}
+                  <Link
+                    href="/deals"
+                    className="inline-flex items-center gap-1.5 px-4 py-2 text-xs font-medium text-brand-600 hover:bg-brand-100 rounded-lg transition-colors"
+                  >
+                    View Deals
+                  </Link>
+                </div>
+              </div>
+            </div>
+          </div>
         )}
 
         {/* Proposals tab */}

@@ -246,6 +246,54 @@ export default function DashboardPage() {
           </div>
         )}
 
+        {/* ── Profile Setup Prompt (talent without profile) ──────── */}
+        {!loading && user.role === 'talent' && !talentProfile && (
+          <div className="rounded-xl border-2 border-dashed border-brand-300 bg-brand-50/30 p-6">
+            <div className="flex items-start gap-4">
+              <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-brand-100 text-brand-600 shrink-0">
+                <Sparkles className="h-6 w-6" />
+              </div>
+              <div className="flex-1">
+                <h3 className="text-base font-semibold text-[#1A1A1A]">Complete your talent profile</h3>
+                <p className="text-sm text-[#6B6B6B] mt-1 leading-relaxed">
+                  Set up your profile so startups can find you in the marketplace. Add your skills, experience, and availability.
+                </p>
+                <Link
+                  href="/onboarding/talent"
+                  className="btn-primary inline-flex items-center gap-1.5 px-5 py-2.5 text-sm mt-4"
+                >
+                  <Plus className="h-4 w-4" />
+                  Create Talent Profile
+                </Link>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* ── Profile Setup Prompt (founder without startup) ──────── */}
+        {!loading && user.role === 'founder' && !startupProfile && (
+          <div className="rounded-xl border-2 border-dashed border-brand-300 bg-brand-50/30 p-6">
+            <div className="flex items-start gap-4">
+              <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-brand-100 text-brand-600 shrink-0">
+                <Sparkles className="h-6 w-6" />
+              </div>
+              <div className="flex-1">
+                <h3 className="text-base font-semibold text-[#1A1A1A]">Set up your startup profile</h3>
+                <p className="text-sm text-[#6B6B6B] mt-1 leading-relaxed">
+                  Create your startup profile to appear in the marketplace. Add your company details, stage, and equity pool.
+                </p>
+                <Link
+                  href="/onboarding/founder"
+                  className="btn-primary inline-flex items-center gap-1.5 px-5 py-2.5 text-sm mt-4"
+                >
+                  <Plus className="h-4 w-4" />
+                  Create Startup Profile
+                </Link>
+              </div>
+            </div>
+          </div>
+        )}
+
         {/* ── Marketplace Visibility (talent only) ────────────────── */}
         {!loading && user.role === 'talent' && talentProfile && (
           <div className={`rounded-xl border p-5 transition-all ${
@@ -558,7 +606,9 @@ export default function DashboardPage() {
 
             {/* Quick links */}
             <div className="bg-white rounded-xl border border-[#E8E8E6] divide-y divide-[#E8E8E6]">
-              <QuickLink href="/marketplace" label="Browse Marketplace" sub="Find startups & talent" />
+              <QuickLink href="/marketplace" label="Browse Marketplace" sub="Find posts, startups & talent" />
+              <QuickLink href="/dashboard/posts" label="My Posts" sub="Manage posts & proposals" />
+              <QuickLink href="/dashboard/posts/new" label="Create New Post" sub="Seek talent or offer services" />
               <QuickLink href="/deals" label="All Deals" sub="Manage your pipeline" />
               {user.role === 'founder' && (
                 <QuickLink href="/dashboard/roles/new" label="Post a Role" sub="Hire talent with equity" />

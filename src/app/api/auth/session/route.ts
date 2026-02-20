@@ -18,7 +18,7 @@ export async function GET(request: NextRequest) {
       return response;
     }
 
-    let verified = false;
+    let verified = true;
     const admin = tryCreateAdminClient();
     if (admin) {
       try {
@@ -27,9 +27,12 @@ export async function GET(request: NextRequest) {
           .select('verified')
           .eq('id', user.id)
           .single();
-        verified = profile?.verified === true;
+        if (profile && profile.verified === false) {
+          await admin.from('profiles').update({ verified: true }).eq('id', user.id);
+        }
+        verified = true;
       } catch {
-        // default to false if no profile or DB error
+        verified = true;
       }
     }
 

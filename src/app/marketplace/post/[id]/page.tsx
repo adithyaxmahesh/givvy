@@ -96,6 +96,8 @@ export default function PostDetailPage({ params }: { params: { id: string } }) {
     }
   };
 
+  const [dealId, setDealId] = useState<string | null>(null);
+
   const handleProposalAction = async (proposalId: string, status: 'accepted' | 'rejected') => {
     try {
       const res = await fetch(`/api/proposals/${proposalId}`, {
@@ -104,9 +106,13 @@ export default function PostDetailPage({ params }: { params: { id: string } }) {
         body: JSON.stringify({ status }),
       });
       if (res.ok) {
+        const json = await res.json();
         setProposals((prev) =>
           prev.map((p) => (p.id === proposalId ? { ...p, status } : p))
         );
+        if (json.deal?.id) {
+          setDealId(json.deal.id);
+        }
       }
     } catch {}
   };
@@ -268,6 +274,27 @@ export default function PostDetailPage({ params }: { params: { id: string } }) {
                 </div>
               </form>
             )}
+          </div>
+        )}
+
+        {/* Deal created banner */}
+        {dealId && (
+          <div className="mt-6 bg-green-50 border border-green-200 rounded-xl p-6">
+            <div className="flex items-start gap-3">
+              <CheckCircle2 className="h-6 w-6 text-green-600 shrink-0 mt-0.5" />
+              <div className="flex-1">
+                <h3 className="text-base font-semibold text-green-800">Deal Created!</h3>
+                <p className="text-sm text-green-700 mt-1">
+                  A new deal has been created from this accepted proposal. You can now negotiate terms and sign a SAFE agreement.
+                </p>
+                <Link
+                  href={`/deals/${dealId}`}
+                  className="inline-flex items-center gap-1.5 px-5 py-2.5 mt-3 text-sm font-medium text-white bg-green-600 hover:bg-green-700 rounded-lg transition-colors"
+                >
+                  View Deal & SAFE Terms
+                </Link>
+              </div>
+            </div>
           </div>
         )}
 

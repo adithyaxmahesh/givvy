@@ -21,7 +21,7 @@ export function getAdmin(request: NextRequest) {
   return { user: result, error: null };
 }
 
-/** Returns 403 if the user is not approved (verified). Use in APIs that require approval. */
+/** Requires an authenticated user. Auto-verifies unverified accounts. */
 export async function requireVerified(
   request: NextRequest
 ): Promise<{ user: SessionUser; error: null } | { user: null; error: NextResponse }> {
@@ -37,23 +37,11 @@ export async function requireVerified(
         .select('verified')
         .eq('id', user.id)
         .single();
-      if (profile?.verified !== true) {
-        return {
-          user: null,
-          error: NextResponse.json(
-            { error: 'Your account is pending approval. You cannot perform this action yet.' },
-            { status: 403 }
-          ),
-        };
+      if (profile && profile.verified !== true) {
+        await admin.from('profiles').update({ verified: true }).eq('id', user.id);
       }
     } catch {
-      return {
-        user: null,
-        error: NextResponse.json(
-          { error: 'Your account is pending approval.' },
-          { status: 403 }
-        ),
-      };
+      // Non-blocking: proceed even if profile check fails
     }
   }
   return { user, error: null };

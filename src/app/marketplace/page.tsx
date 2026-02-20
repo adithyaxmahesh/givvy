@@ -3,7 +3,7 @@
 import { useAuth } from '@/lib/auth-context';
 import { useRequireAuth } from '@/hooks/useRequireAuth';
 import { getInitials, getAvatarColor, getStageColor, formatCurrency } from '@/lib/utils';
-import type { Startup, TalentProfile } from '@/lib/types';
+import type { Startup, TalentProfile, Post } from '@/lib/types';
 import {
   Search,
   Building2,
@@ -18,12 +18,15 @@ import {
   ArrowRight,
   Sparkles,
   Filter,
+  FileText,
+  Send,
+  Tag,
 } from 'lucide-react';
 import Link from 'next/link';
 import { Suspense, useCallback, useEffect, useState } from 'react';
 import { useSearchParams } from 'next/navigation';
 
-type Tab = 'talent' | 'startups';
+type Tab = 'posts' | 'talent' | 'startups';
 
 const STAGES = [
   { value: '', label: 'All Stages' },
@@ -53,6 +56,12 @@ const AVAILABILITY = [
   { value: 'contract', label: 'Contract' },
 ];
 
+const POST_TYPES = [
+  { value: '', label: 'All Types' },
+  { value: 'seeking', label: 'Seeking Talent' },
+  { value: 'offering', label: 'Offering Services' },
+];
+
 export default function MarketplacePage() {
   return (
     <Suspense fallback={
@@ -70,14 +79,16 @@ function MarketplaceContent() {
   useRequireAuth();
   const searchParams = useSearchParams();
 
-  const initialTab = (searchParams.get('tab') as Tab) || 'talent';
+  const initialTab = (searchParams.get('tab') as Tab) || 'posts';
   const [tab, setTab] = useState<Tab>(initialTab);
   const [search, setSearch] = useState('');
   const [stage, setStage] = useState('');
   const [category, setCategory] = useState('');
   const [availability, setAvailability] = useState('');
+  const [postType, setPostType] = useState('');
   const [startups, setStartups] = useState<Startup[]>([]);
   const [talent, setTalent] = useState<TalentProfile[]>([]);
+  const [posts, setPosts] = useState<Post[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -89,13 +100,12 @@ function MarketplaceContent() {
       if (search) params.set('search', search);
 
       if (tab === 'startups') {
-        params.set('featured', 'true');
         if (stage) params.set('stage', stage);
         const res = await fetch(`/api/startups?${params}`);
         if (!res.ok) throw new Error('Failed to fetch startups');
         const json = await res.json();
         setStartups(json.data ?? []);
-      } else {
+      } else if (tab === 'talent') {
         params.set('visible', 'true');
         if (category) params.set('category', category);
         if (availability) params.set('availability', availability);
@@ -103,13 +113,20 @@ function MarketplaceContent() {
         if (!res.ok) throw new Error('Failed to fetch talent');
         const json = await res.json();
         setTalent(json.data ?? []);
+      } else {
+        if (postType) params.set('type', postType);
+        if (category) params.set('category', category);
+        const res = await fetch(`/api/posts?${params}`);
+        if (!res.ok) throw new Error('Failed to fetch posts');
+        const json = await res.json();
+        setPosts(json.data ?? []);
       }
     } catch (err: any) {
       setError(err.message ?? 'Something went wrong');
     } finally {
       setLoading(false);
     }
-  }, [tab, search, stage, category, availability]);
+  }, [tab, search, stage, category, availability, postType]);
 
   useEffect(() => {
     const timer = setTimeout(fetchData, 300);
@@ -124,14 +141,14 @@ function MarketplaceContent() {
     );
   }
 
-  const tabs: { key: Tab; label: string; icon: React.ReactNode; count?: number }[] = [
-    { key: 'talent', label: 'Talent', icon: <Users className="h-4 w-4" />, count: talent.length },
-    { key: 'startups', label: 'Startups', icon: <Building2 className="h-4 w-4" />, count: startups.length },
+  const tabs: { key: Tab; label: string; icon: React.ReactNode }[] = [
+    { key: 'posts', label: 'Posts', icon: <FileText className="h-4 w-4" /> },
+    { key: 'talent', label: 'Talent', icon: <Users className="h-4 w-4" /> },
+    { key: 'startups', label: 'Startups', icon: <Building2 className="h-4 w-4" /> },
   ];
 
   return (
     <div className="min-h-screen bg-[#FAFAF8]">
-      {/* Hero */}
       <div className="bg-white border-b border-[#E8E8E6]">
         <div className="section-container py-10">
           <div className="max-w-2xl">
@@ -139,19 +156,18 @@ function MarketplaceContent() {
               Marketplace
             </h1>
             <p className="text-[#6B6B6B] mt-2 text-base leading-relaxed">
-              Discover professionals ready to work for equity, browse startup opportunities,
-              and connect through SAFE-based deals.
+              Browse equity opportunities, find talent, and connect through SAFE-based deals.
             </p>
           </div>
 
-          {/* Search */}
           <div className="mt-6 flex flex-col sm:flex-row gap-3 max-w-2xl">
             <div className="relative flex-1">
               <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
               <input
                 type="text"
                 placeholder={
-                  tab === 'talent' ? 'Search by skill, title, or bio...'
+                  tab === 'posts' ? 'Search posts...'
+                    : tab === 'talent' ? 'Search by skill, title, or bio...'
                     : 'Search startups...'
                 }
                 value={search}
@@ -170,7 +186,6 @@ function MarketplaceContent() {
             )}
           </div>
 
-          {/* Tabs */}
           <div className="mt-8 flex gap-1 -mb-px" role="tablist">
             {tabs.map((t) => (
               <button
@@ -184,6 +199,7 @@ function MarketplaceContent() {
                   setStage('');
                   setCategory('');
                   setAvailability('');
+                  setPostType('');
                 }}
                 className={`flex items-center gap-2 px-4 py-2.5 text-sm font-medium rounded-t-lg border-b-2 transition-all ${
                   tab === t.key
@@ -199,10 +215,27 @@ function MarketplaceContent() {
         </div>
       </div>
 
-      {/* Filters */}
       <div className="section-container py-4">
         <div className="flex flex-wrap items-center gap-2">
           <Filter className="h-4 w-4 text-[#9CA3AF]" />
+          {tab === 'posts' && (
+            <>
+              <select
+                value={postType}
+                onChange={(e) => setPostType(e.target.value)}
+                className="text-sm px-3 py-1.5 rounded-lg border border-[#E8E8E6] bg-white text-[#1A1A1A] focus:outline-none focus:ring-2 focus:ring-brand-600/10"
+              >
+                {POST_TYPES.map((t) => <option key={t.value} value={t.value}>{t.label}</option>)}
+              </select>
+              <select
+                value={category}
+                onChange={(e) => setCategory(e.target.value)}
+                className="text-sm px-3 py-1.5 rounded-lg border border-[#E8E8E6] bg-white text-[#1A1A1A] focus:outline-none focus:ring-2 focus:ring-brand-600/10"
+              >
+                {CATEGORIES.map((c) => <option key={c.value} value={c.value}>{c.label}</option>)}
+              </select>
+            </>
+          )}
           {tab === 'talent' && (
             <>
               <select
@@ -233,7 +266,6 @@ function MarketplaceContent() {
         </div>
       </div>
 
-      {/* Content */}
       <div className="section-container pb-16">
         {error && (
           <div className="mb-6 p-4 rounded-xl bg-red-50 border border-red-200 text-sm text-red-700">
@@ -259,7 +291,29 @@ function MarketplaceContent() {
           </div>
         ) : (
           <>
-            {/* Talent */}
+            {tab === 'posts' && (
+              <div>
+                {posts.length === 0 ? (
+                  <EmptyState
+                    icon={<FileText className="h-10 w-10 text-[#D1D5DB]" />}
+                    title="No posts yet"
+                    description="Be the first to post — share what you're looking for or what you can offer."
+                    action={
+                      user ? (
+                        <Link href="/dashboard/posts/new" className="btn-primary px-5 py-2.5 text-sm mt-4 inline-flex items-center gap-1.5">
+                          <Plus className="h-4 w-4" /> Create Post
+                        </Link>
+                      ) : null
+                    }
+                  />
+                ) : (
+                  <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-5">
+                    {posts.map((p) => <PostCard key={p.id} post={p} />)}
+                  </div>
+                )}
+              </div>
+            )}
+
             {tab === 'talent' && (
               <div>
                 {talent.length === 0 ? (
@@ -287,7 +341,6 @@ function MarketplaceContent() {
               </div>
             )}
 
-            {/* Startups */}
             {tab === 'startups' && (
               <div>
                 {startups.length === 0 ? (
@@ -296,13 +349,13 @@ function MarketplaceContent() {
                     title="No startups listed yet"
                     description={
                       user?.role === 'founder'
-                        ? 'Toggle your marketplace visibility from the dashboard to appear here.'
+                        ? 'Create your startup profile from the dashboard to appear here.'
                         : 'Check back soon — startups are joining the marketplace.'
                     }
                     action={
                       user?.role === 'founder' ? (
-                        <Link href="/dashboard" className="btn-primary px-5 py-2.5 text-sm mt-4 inline-flex items-center gap-1.5">
-                          Go to Dashboard
+                        <Link href="/onboarding/founder" className="btn-primary px-5 py-2.5 text-sm mt-4 inline-flex items-center gap-1.5">
+                          Create Startup Profile
                         </Link>
                       ) : null
                     }
@@ -321,7 +374,74 @@ function MarketplaceContent() {
   );
 }
 
-/* ─── Talent Card ────────────────────────────────────────────────────────────── */
+function PostCard({ post }: { post: Post }) {
+  const authorName = post.author?.full_name ?? 'Unknown';
+  const isSeek = post.type === 'seeking';
+  const hasEquity = (post.equity_min > 0 || post.equity_max > 0);
+  const equityLabel = hasEquity
+    ? post.equity_min === post.equity_max
+      ? formatCurrency(post.equity_min)
+      : `${formatCurrency(post.equity_min)}–${formatCurrency(post.equity_max)}`
+    : null;
+
+  return (
+    <Link href={`/marketplace/post/${post.id}`}>
+      <div className="group bg-white border border-[#E8E8E6] rounded-xl p-6 h-full flex flex-col transition-all hover:border-brand-200 hover:shadow-md hover:shadow-brand-100/50 cursor-pointer">
+        <div className="flex items-start gap-3 mb-3">
+          <div className={`flex h-10 w-10 items-center justify-center rounded-full text-xs font-bold shrink-0 ${getAvatarColor(authorName)}`}>
+            {getInitials(authorName)}
+          </div>
+          <div className="min-w-0 flex-1">
+            <p className="text-sm font-medium text-[#6B6B6B]">{authorName}</p>
+            <p className="text-xs text-[#9CA3AF] capitalize">{post.author?.role} · {timeAgo(post.created_at)}</p>
+          </div>
+          <span className={`badge text-xs font-medium shrink-0 ${
+            isSeek ? 'bg-amber-50 text-amber-700' : 'bg-emerald-50 text-emerald-700'
+          }`}>
+            {isSeek ? 'Seeking' : 'Offering'}
+          </span>
+        </div>
+
+        <h3 className="text-base font-semibold text-[#1A1A1A] group-hover:text-brand-600 transition-colors line-clamp-2">
+          {post.title}
+        </h3>
+
+        {post.description && (
+          <p className="mt-2 text-sm text-[#6B6B6B] line-clamp-2 leading-relaxed">
+            {post.description}
+          </p>
+        )}
+
+        {post.tags && post.tags.length > 0 && (
+          <div className="mt-3 flex flex-wrap gap-1.5">
+            {post.tags.slice(0, 3).map((tag) => (
+              <span key={tag} className="inline-flex items-center gap-0.5 px-2 py-0.5 rounded-full bg-brand-50 text-brand-700 text-xs">
+                <Tag className="h-2.5 w-2.5" />
+                {tag}
+              </span>
+            ))}
+          </div>
+        )}
+
+        <div className="mt-auto pt-4 flex items-center justify-between">
+          {post.category && (
+            <span className="text-xs text-[#6B6B6B] capitalize">{post.category}</span>
+          )}
+          {equityLabel && (
+            <span className="flex items-center gap-1 text-xs font-semibold text-brand-600">
+              <DollarSign className="h-3 w-3" />
+              {equityLabel}
+            </span>
+          )}
+        </div>
+
+        <div className="mt-3 flex items-center justify-center gap-1.5 py-2 rounded-lg bg-brand-50 text-brand-600 text-xs font-medium opacity-0 group-hover:opacity-100 transition-opacity">
+          View Post & Send Proposal <ArrowRight className="h-3 w-3" />
+        </div>
+      </div>
+    </Link>
+  );
+}
 
 function TalentCard({ talent, isFounder }: { talent: TalentProfile; isFounder?: boolean }) {
   const name = talent.user?.full_name ?? 'Unknown';
@@ -333,15 +453,12 @@ function TalentCard({ talent, isFounder }: { talent: TalentProfile; isFounder?: 
   return (
     <Link href={`/profile/talent/${talent.id}`}>
       <div className="group bg-white border border-[#E8E8E6] rounded-xl p-6 h-full flex flex-col transition-all hover:border-brand-200 hover:shadow-md hover:shadow-brand-100/50 cursor-pointer">
-        {/* Header */}
         <div className="flex items-start gap-3.5">
           <div className={`flex h-12 w-12 items-center justify-center rounded-full text-sm font-bold shrink-0 ring-2 ring-white shadow-sm ${getAvatarColor(name)}`}>
             {getInitials(name)}
           </div>
           <div className="min-w-0 flex-1">
-            <h3 className="text-base font-semibold text-[#1A1A1A] truncate group-hover:text-brand-600 transition-colors">
-              {name}
-            </h3>
+            <h3 className="text-base font-semibold text-[#1A1A1A] truncate group-hover:text-brand-600 transition-colors">{name}</h3>
             <p className="text-sm text-brand-600 font-medium truncate">{talent.title}</p>
           </div>
           {talent.rating >= 4.5 && (
@@ -352,62 +469,40 @@ function TalentCard({ talent, isFounder }: { talent: TalentProfile; isFounder?: 
           )}
         </div>
 
-        {/* Bio preview */}
         {talent.bio && (
-          <p className="mt-3 text-sm text-[#6B6B6B] line-clamp-2 leading-relaxed">
-            {talent.bio}
-          </p>
+          <p className="mt-3 text-sm text-[#6B6B6B] line-clamp-2 leading-relaxed">{talent.bio}</p>
         )}
 
-        {/* Skills */}
         <div className="mt-3 flex flex-wrap gap-1.5">
           {talent.skills.slice(0, 3).map((skill) => (
-            <span key={skill} className="px-2.5 py-0.5 rounded-full bg-[#F5F5F3] text-[#6B6B6B] text-xs font-medium">
-              {skill}
-            </span>
+            <span key={skill} className="px-2.5 py-0.5 rounded-full bg-[#F5F5F3] text-[#6B6B6B] text-xs font-medium">{skill}</span>
           ))}
           {talent.skills.length > 3 && (
-            <span className="px-2.5 py-0.5 rounded-full bg-[#F5F5F3] text-[#9CA3AF] text-xs">
-              +{talent.skills.length - 3}
-            </span>
+            <span className="px-2.5 py-0.5 rounded-full bg-[#F5F5F3] text-[#9CA3AF] text-xs">+{talent.skills.length - 3}</span>
           )}
         </div>
 
-        {/* Details */}
         <div className="mt-auto pt-4 flex flex-wrap items-center gap-x-4 gap-y-1.5 text-xs text-[#6B6B6B]">
-          <span className="flex items-center gap-1">
-            <Briefcase className="h-3 w-3" />
-            {talent.experience_years}y exp
-          </span>
+          <span className="flex items-center gap-1"><Briefcase className="h-3 w-3" />{talent.experience_years}y exp</span>
           {talent.completed_deals > 0 && (
-            <span className="flex items-center gap-1">
-              <Sparkles className="h-3 w-3" />
-              {talent.completed_deals} deal{talent.completed_deals !== 1 ? 's' : ''}
-            </span>
+            <span className="flex items-center gap-1"><Sparkles className="h-3 w-3" />{talent.completed_deals} deal{talent.completed_deals !== 1 ? 's' : ''}</span>
           )}
           {talent.location && (
-            <span className="flex items-center gap-1">
-              <MapPin className="h-3 w-3" />
-              {talent.location}
-            </span>
+            <span className="flex items-center gap-1"><MapPin className="h-3 w-3" />{talent.location}</span>
           )}
         </div>
 
-        {/* Footer */}
         <div className="mt-3 pt-3 border-t border-[#F3F4F6] flex items-center justify-between">
           <span className={`inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-medium border ${availColor}`}>
-            <Clock className="h-3 w-3" />
-            {talent.availability}
+            <Clock className="h-3 w-3" />{talent.availability}
           </span>
           {talent.min_equity > 0 && (
             <span className="flex items-center gap-1 text-xs font-semibold text-[#1A1A1A]">
-              <DollarSign className="h-3 w-3 text-brand-500" />
-              {formatCurrency(talent.min_equity)}+
+              <DollarSign className="h-3 w-3 text-brand-500" />{formatCurrency(talent.min_equity)}+
             </span>
           )}
         </div>
 
-        {/* CTA hint for founders */}
         {isFounder && (
           <div className="mt-3 flex items-center justify-center gap-1.5 py-2 rounded-lg bg-brand-50 text-brand-600 text-xs font-medium opacity-0 group-hover:opacity-100 transition-opacity">
             View Profile & Propose Deal <ArrowRight className="h-3 w-3" />
@@ -417,8 +512,6 @@ function TalentCard({ talent, isFounder }: { talent: TalentProfile; isFounder?: 
     </Link>
   );
 }
-
-/* ─── Startup Card ───────────────────────────────────────────────────────────── */
 
 function StartupCard({ startup }: { startup: Startup }) {
   const name = startup.name || 'Startup';
@@ -430,9 +523,7 @@ function StartupCard({ startup }: { startup: Startup }) {
             {startup.logo_emoji || getInitials(name)}
           </div>
           <div className="min-w-0 flex-1">
-            <h3 className="text-base font-semibold text-[#1A1A1A] truncate group-hover:text-brand-600 transition-colors">
-              {name}
-            </h3>
+            <h3 className="text-base font-semibold text-[#1A1A1A] truncate group-hover:text-brand-600 transition-colors">{name}</h3>
             {startup.tagline && (
               <p className="text-sm text-[#6B6B6B] mt-0.5 line-clamp-1">{startup.tagline}</p>
             )}
@@ -440,9 +531,7 @@ function StartupCard({ startup }: { startup: Startup }) {
         </div>
 
         <div className="mt-4 flex items-center gap-2">
-          <span className={`px-2.5 py-0.5 rounded-full text-xs font-medium ${getStageColor(startup.stage)}`}>
-            {startup.stage}
-          </span>
+          <span className={`px-2.5 py-0.5 rounded-full text-xs font-medium ${getStageColor(startup.stage)}`}>{startup.stage}</span>
           {startup.industry && (
             <span className="text-xs text-[#6B6B6B] capitalize">{startup.industry}</span>
           )}
@@ -461,8 +550,6 @@ function StartupCard({ startup }: { startup: Startup }) {
   );
 }
 
-/* ─── Empty State ────────────────────────────────────────────────────────────── */
-
 function EmptyState({ icon, title, description, action }: {
   icon: React.ReactNode;
   title: string;
@@ -471,9 +558,7 @@ function EmptyState({ icon, title, description, action }: {
 }) {
   return (
     <div className="flex flex-col items-center justify-center py-24 text-center">
-      <div className="h-16 w-16 rounded-2xl bg-gray-50 flex items-center justify-center mb-4">
-        {icon}
-      </div>
+      <div className="h-16 w-16 rounded-2xl bg-gray-50 flex items-center justify-center mb-4">{icon}</div>
       <h3 className="text-lg font-semibold text-[#1A1A1A]">{title}</h3>
       <p className="text-sm text-[#6B6B6B] mt-1.5 max-w-sm leading-relaxed">{description}</p>
       {action}
@@ -481,3 +566,16 @@ function EmptyState({ icon, title, description, action }: {
   );
 }
 
+function timeAgo(dateStr: string): string {
+  const now = Date.now();
+  const then = new Date(dateStr).getTime();
+  const diff = now - then;
+  const mins = Math.floor(diff / 60000);
+  if (mins < 1) return 'just now';
+  if (mins < 60) return `${mins}m ago`;
+  const hours = Math.floor(mins / 60);
+  if (hours < 24) return `${hours}h ago`;
+  const days = Math.floor(hours / 24);
+  if (days < 30) return `${days}d ago`;
+  return `${Math.floor(days / 30)}mo ago`;
+}

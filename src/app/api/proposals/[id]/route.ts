@@ -23,7 +23,7 @@ export async function PUT(
 
     const { data: proposal } = await supabase
       .from('proposals')
-      .select('*, post:posts!post_id(author_id)')
+      .select('*, post:posts!post_id(id, title, author_id, type, category, equity_min, equity_max)')
       .eq('id', params.id)
       .single();
 
@@ -46,7 +46,59 @@ export async function PUT(
       .single();
 
     if (error) return NextResponse.json({ error: error.message }, { status: 500 });
-    return NextResponse.json({ data });
+
+    let deal = null;
+    if (newStatus === 'accepted') {
+      try {
+        const senderId = proposal.sender_id;
+        const postAuthorId = proposal.post.author_id;
+
+        const [{ data: senderStartup }, { data: senderTalent }, { data: authorStartup }, { data: authorTalent }] = await Promise.all([
+          supabase.from('startups').select('id').eq('founder_id', senderId).maybeSingle(),
+          supabase.from('talent_profiles').select('id').eq('user_id', senderId).maybeSingle(),
+          supabase.from('startups').select('id').eq('founder_id', postAuthorId).maybeSingle(),
+          supabase.from('talent_profiles').select('id').eq('user_id', postAuthorId).maybeSingle(),
+        ]);
+
+        const startupId = authorStartup?.id || senderStartup?.id;
+        const talentId = senderTalent?.id || authorTalent?.id;
+        const equityAmount = proposal.post.equity_max || proposal.post.equity_min || 10000;
+
+        if (startupId && talentId) {
+          const { data: newDeal } = await supabase
+            .from('deals')
+            .insert({
+              startup_id: startupId,
+              talent_id: talentId,
+              role_id: null,
+              investment_amount: equityAmount,
+              vesting_months: 48,
+              cliff_months: 12,
+              status: 'proposed',
+              match_score: 85,
+              safe_terms: {
+                type: 'post-money',
+                valuation_cap: 0,
+                discount: 0,
+                investment_amount: equityAmount,
+                vesting_schedule: 48,
+                cliff_period: 12,
+                pro_rata: false,
+                mfn_clause: false,
+                board_seat: false,
+                template: 'yc-standard',
+              },
+            })
+            .select('id')
+            .single();
+          deal = newDeal;
+        }
+      } catch (dealErr) {
+        console.warn('[proposals/:id] Auto-deal creation skipped:', dealErr);
+      }
+    }
+
+    return NextResponse.json({ data, deal });
   } catch (err) {
     console.error('[proposals/:id] error:', err);
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
