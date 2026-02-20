@@ -1,0 +1,204 @@
+{
+  "sections": [
+    {
+      "name": "Hero",
+      "heading": "Hire with equity,not runway.",
+      "subheading": "The global talent network for startups. SAFE-backed. AI-matched. Built to scale."
+    }
+  ],
+  "navigation": {
+    "links": [
+      {
+        "text": "Givvy",
+        "href": "http://localhost:3000/",
+        "visible": true
+      },
+      {
+        "text": "Browse Talent",
+        "href": "http://localhost:3000/marketplace",
+        "visible": true
+      },
+      {
+        "text": "Join as Talent",
+        "href": "http://localhost:3000/signup",
+        "visible": true
+      },
+      {
+        "text": "Post a Listing",
+        "href": "http://localhost:3000/dashboard/posts/new",
+        "visible": true
+      },
+      {
+        "text": "Sign In",
+        "href": "http://localhost:3000/login",
+        "visible": true
+      },
+      {
+        "text": "Get Started",
+        "href": "http://localhost:3000/signup",
+        "visible": true
+      }
+    ],
+    "hasLogo": true
+  },
+  "interactions": [],
+  "issues": [
+    "Element overflows right: DIV.absolute bottom-1/4 -right-48 w-[500px] h-[500px] bg-brand-100/15 rounded-full blur-3xl"
+  ],
+  "visualQuality": {
+    "backgroundColor": "rgb(250, 250, 250)",
+    "fontFamily": "Inter, system-ui, sans-serif",
+    "hasAnimations": true,
+    "responsiveElements": 11,
+    "totalElements": 552
+  },
+  "pageTitle": "Givvy - Hire Top Talent. Pay with Equity.",
+  "ctaButtons": [
+    {
+      "text": "Get Started",
+      "href": "http://localhost:3000/signup",
+      "classes": "btn-primary px-5 py-2.5 text-sm"
+    },
+    {
+      "text": "",
+      "href": "button",
+      "classes": "p-2 rounded-lg text-gray-600 hover:bg-gray-50 transition-colors"
+    },
+    {
+      "text": "Get Started Free",
+      "href": "http://localhost:3000/signup",
+      "classes": "btn-primary px-8 py-4 text-base gap-2 shadow-brand"
+    },
+    {
+      "text": "How does equity-for-talent work on Givvy?",
+      "href": "button",
+      "classes": "w-full flex items-center justify-between gap-4 px-6 py-4 text-left transition-colors hover:bg-gray-50/40"
+    },
+    {
+      "text": "What is a SAFE agreement and how is it generated?",
+      "href": "button",
+      "classes": "w-full flex items-center justify-between gap-4 px-6 py-4 text-left transition-colors hover:bg-gray-50/40"
+    }
+  ],
+  "detectedSections": [
+    {
+      "selector": "section",
+      "heading": "Hire with equity,not runway.",
+      "hasContent": true
+    },
+    {
+      "selector": "section",
+      "heading": "No heading",
+      "hasContent": true
+    },
+    {
+      "selector": "section",
+      "heading": "Three steps to your next deal",
+      "hasContent": true
+    },
+    {
+      "selector": "section",
+      "heading": "Startups hiring for equity",
+      "hasContent": true
+    },
+    {
+      "selector": "section",
+      "heading": "Top talent ready to build",
+      "hasContent": true
+    },
+    {
+      "selector": "section",
+      "heading": "Built for both sides of the deal",
+      "hasContent": true
+    },
+    {
+      "selector": "section",
+      "heading": "Frequently asked questions",
+      "hasContent": true
+    },
+    {
+      "selector": "section",
+      "heading": "Fill the gaps. Stay liquid.",
+      "hasContent": true
+    },
+    {
+      "selector": "footer",
+      "heading": "Platform",
+      "hasContent": true
+    }
+  ],
+  "primaryCTA": {
+    "found": true,
+    "href": "/signup",
+    "destination": "http://localhost:3000/signup"
+  },
+  "footer": {
+    "links": [
+      {
+        "text": "Browse Startups",
+        "href": "http://localhost:3000/marketplace"
+      },
+      {
+        "text": "Browse Talent",
+        "href": "http://localhost:3000/marketplace"
+      },
+      {
+        "text": "How It Works",
+        "href": "http://localhost:3000/"
+      },
+      {
+        "text": "SAFE Agreements",
+        "href": "http://localhost:3000/"
+      },
+      {
+        "text": "Help Center",
+        "href": "http://localhost:3000/"
+      },
+      {
+        "text": "Blog",
+        "href": "http://localhost:3000/"
+      },
+      {
+        "text": "API Documentation",
+        "href": "http://localhost:3000/"
+      },
+      {
+        "text": "Status",
+        "href": "http://localhost:3000/"
+      },
+      {
+        "text": "Compliance",
+        "href": "http://localhost:3000/"
+      },
+      {
+        "text": "Data Security",
+        "href": "http://localhost:3000/"
+      },
+      {
+        "text": "Verification",
+        "href": "http://localhost:3000/"
+      },
+      {
+        "text": "Contact",
+        "href": "http://localhost:3000/"
+      },
+      {
+        "text": "Terms of Service",
+        "href": "http://localhost:3000/"
+      },
+      {
+        "text": "Privacy Policy",
+        "href": "http://localhost:3000/"
+      },
+      {
+        "text": "Cookie Policy",
+        "href": "http://localhost:3000/"
+      },
+      {
+        "text": "Securities Disclaimer",
+        "href": "http://localhost:3000/"
+      }
+    ]
+  },
+  "images": []
+}
