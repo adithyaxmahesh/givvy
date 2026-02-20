@@ -4,9 +4,13 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import {
   BarChart3,
+  Bell,
   Briefcase,
+  FileText,
   GitMerge,
   LayoutDashboard,
+  MessageSquare,
+  PieChart,
   Sparkles,
   Users,
   Building2,
@@ -20,6 +24,10 @@ const sidebarLinks = [
   { label: 'Startups', href: '/admin/startups', icon: Building2 },
   { label: 'Talent', href: '/admin/talent', icon: UserCheck },
   { label: 'Deals', href: '/admin/deals', icon: Briefcase },
+  { label: 'Posts & Proposals', href: '/admin/posts', icon: MessageSquare },
+  { label: 'SAFE Documents', href: '/admin/safe-documents', icon: FileText },
+  { label: 'Portfolio', href: '/admin/portfolio', icon: PieChart },
+  { label: 'Notifications', href: '/admin/notifications', icon: Bell },
   { label: 'Matching', href: '/admin/matching', icon: GitMerge },
 ];
 
@@ -28,7 +36,6 @@ export default function AdminLayout({ children }: { children: ReactNode }) {
 
   return (
     <div className="min-h-screen bg-gray-50 flex">
-      {/* Sidebar */}
       <aside className="fixed top-0 left-0 z-40 w-60 h-screen border-r border-gray-200 bg-white flex flex-col">
         <div className="flex items-center gap-2.5 px-5 h-16 border-b border-gray-100 shrink-0">
           <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-gray-900">
@@ -40,7 +47,7 @@ export default function AdminLayout({ children }: { children: ReactNode }) {
           </div>
         </div>
 
-        <nav className="flex-1 px-3 py-4 space-y-1 overflow-y-auto">
+        <nav className="flex-1 px-3 py-4 space-y-0.5 overflow-y-auto">
           {sidebarLinks.map((link) => {
             const isActive =
               link.href === '/admin'
@@ -51,7 +58,7 @@ export default function AdminLayout({ children }: { children: ReactNode }) {
               <Link
                 key={link.href}
                 href={link.href}
-                className={`flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors ${
+                className={`flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
                   isActive
                     ? 'bg-gray-900 text-white'
                     : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'
@@ -75,7 +82,6 @@ export default function AdminLayout({ children }: { children: ReactNode }) {
         </div>
       </aside>
 
-      {/* Main content */}
       <main className="ml-60 flex-1 min-h-screen">
         <div className="max-w-7xl mx-auto px-6 py-8">{children}</div>
       </main>
