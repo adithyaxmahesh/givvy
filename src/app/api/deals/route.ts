@@ -101,7 +101,7 @@ export async function POST(request: NextRequest) {
     if (supabase) {
       const dbData = toDbFields(parsed.data) as Record<string, unknown>;
       dbData.role_id = parsed.data.role_id || null;
-      dbData.status = 'pending';
+      dbData.status = 'proposed';
       dbData.match_score = 0;
       const { data, error } = await supabase
         .from('deals')
@@ -173,7 +173,7 @@ export async function POST(request: NextRequest) {
     }
 
     return NextResponse.json(
-      { data: { id: crypto.randomUUID(), ...parsed.data, status: 'pending' } },
+      { data: { id: crypto.randomUUID(), ...parsed.data, status: 'proposed' } },
       { status: 201 }
     );
   } catch (err) {
