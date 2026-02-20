@@ -215,15 +215,9 @@ export function getAvatarColor(name: string): string {
   return AVATAR_COLORS[Math.abs(hash) % AVATAR_COLORS.length];
 }
 
-// DB columns haven't been renamed yet — map between app names and DB names.
-const APP_TO_DB: Record<string, string> = {
-  investment_amount: 'equity_percent',
-  unlock_amount: 'equity_unlock',
-};
-const DB_TO_APP: Record<string, string> = {
-  equity_percent: 'investment_amount',
-  equity_unlock: 'unlock_amount',
-};
+// DB columns have been renamed by MIGRATION_SAFE_DOLLAR_AMOUNTS.sql — no mapping needed.
+const APP_TO_DB: Record<string, string> = {};
+const DB_TO_APP: Record<string, string> = {};
 
 /** Rename app-layer field names to DB column names before insert/update. */
 export function toDbFields<T extends Record<string, unknown>>(obj: T): Record<string, unknown> {

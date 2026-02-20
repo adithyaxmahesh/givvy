@@ -45,7 +45,7 @@ export async function POST(request: NextRequest) {
         startup_id,
         talent_id,
         role_id: role_id || null,
-        equity_percent: amt,
+        investment_amount: amt,
         vesting_months: vesting_months ?? 48,
         cliff_months: cliff_months ?? 12,
         status: 'proposed',

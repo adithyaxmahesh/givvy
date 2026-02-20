@@ -109,14 +109,13 @@ export async function PUT(
         const equityAmount = proposal.post.equity_max || proposal.post.equity_min || 10000;
 
         if (startupId && talentId) {
-          // Use equity_percent (DB column name) — app-layer maps it to investment_amount
           const { data: newDeal } = await supabase
             .from('deals')
             .insert({
               startup_id: startupId,
               talent_id: talentId,
               role_id: null,
-              equity_percent: equityAmount,
+              investment_amount: equityAmount,
               vesting_months: 48,
               cliff_months: 12,
               status: 'proposed',

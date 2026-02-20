@@ -32,7 +32,7 @@ export async function GET(request: NextRequest) {
       await Promise.all([
         sb.from('deals').select('status'),
         sb.from('profiles').select('id, full_name, email, role, verified, created_at').order('created_at', { ascending: false }).limit(5),
-        sb.from('deals').select('id, status, investment_amount:equity_percent, created_at, startup:startups(name), talent:talent_profiles(title, user:profiles!user_id(full_name))').order('created_at', { ascending: false }).limit(5),
+        sb.from('deals').select('id, status, investment_amount, created_at, startup:startups(name), talent:talent_profiles(title, user:profiles!user_id(full_name))').order('created_at', { ascending: false }).limit(5),
         sb.from('proposals').select('*', { count: 'exact', head: true }).eq('status', 'pending'),
         sb.from('posts').select('status'),
       ]);

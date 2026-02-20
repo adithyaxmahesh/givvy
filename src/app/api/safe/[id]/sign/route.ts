@@ -118,7 +118,7 @@ export async function POST(
           .single();
 
         if (deal) {
-          const investmentAmount = deal.equity_percent || deal.safe_terms?.investment_amount || 0;
+          const investmentAmount = deal.investment_amount || deal.safe_terms?.investment_amount || 0;
           const valuationCap = deal.safe_terms?.valuation_cap || 0;
           const safeAmount = deal.safe_terms?.investment_amount || investmentAmount;
 
@@ -126,7 +126,7 @@ export async function POST(
             talent_id: deal.talent_id,
             startup_id: deal.startup_id,
             deal_id: dealId,
-            equity_percent: investmentAmount,
+            investment_amount: investmentAmount,
             safe_amount: safeAmount,
             valuation_cap: valuationCap,
             status: 'vesting',

@@ -24,7 +24,7 @@ interface SafeDocument {
   deal?: {
     id: string;
     status: string;
-    equity_percent: number;
+    investment_amount: number;
     startup?: { id: string; name: string; logo_emoji: string };
     talent?: { id: string; title: string; user?: { full_name: string; email: string } };
   };
@@ -150,7 +150,7 @@ function SafeDocCard({ doc }: { doc: SafeDocument }) {
               </span>
             </div>
             <div className="flex items-center gap-3 mt-1 text-xs text-gray-500">
-              <span>${(doc.deal?.equity_percent ?? 0).toLocaleString()} SAFE</span>
+              <span>${(doc.deal?.investment_amount ?? 0).toLocaleString()} SAFE</span>
               <span>Deal: {doc.deal?.status ?? '—'}</span>
               <span>Created: {new Date(doc.created_at).toLocaleDateString()}</span>
               {doc.updated_at !== doc.created_at && (

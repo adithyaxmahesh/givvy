@@ -10,7 +10,7 @@ export async function GET(request: NextRequest) {
     const sb = createAdminClient();
     const { data, error: dbErr } = await sb
       .from('safe_documents')
-      .select('*, deal:deals(id, status, equity_percent, startup:startups(id, name, logo_emoji), talent:talent_profiles(id, title, user:profiles!user_id(full_name, email)))')
+      .select('*, deal:deals(id, status, investment_amount, startup:startups(id, name, logo_emoji), talent:talent_profiles(id, title, user:profiles!user_id(full_name, email)))')
       .order('created_at', { ascending: false });
 
     if (dbErr) throw dbErr;

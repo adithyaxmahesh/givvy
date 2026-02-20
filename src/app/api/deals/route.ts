@@ -43,7 +43,7 @@ export async function GET(request: NextRequest) {
           let query = supabase
             .from('deals')
             .select(
-              '*, startup:startups(id, name, logo_emoji, tagline, stage, industry), talent:talent_profiles(id, title, user:profiles!user_id(full_name, avatar_url)), milestones(id, title, due_date, status, equity_unlock)',
+              '*, startup:startups(id, name, logo_emoji, tagline, stage, industry), talent:talent_profiles(id, title, user:profiles!user_id(full_name, avatar_url)), milestones(id, title, due_date, status, unlock_amount)',
               { count: 'exact' }
             );
 

@@ -68,7 +68,7 @@ export async function POST(
         title: parsed.data.title,
         description: parsed.data.description || null,
         due_date: parsed.data.due_date || null,
-        equity_unlock: parsed.data.unlock_amount,
+        unlock_amount: parsed.data.unlock_amount,
         status: 'pending',
         deliverables: parsed.data.deliverables,
       })
@@ -127,11 +127,7 @@ export async function PATCH(
       return NextResponse.json({ error: 'No valid fields to update' }, { status: 400 });
     }
 
-    // Map unlock_amount → equity_unlock for DB
-    if ('unlock_amount' in updates) {
-      updates.equity_unlock = updates.unlock_amount;
-      delete updates.unlock_amount;
-    }
+    // unlock_amount is the actual DB column name — no remapping needed
 
     const supabase = createAdminClient();
 
