@@ -143,7 +143,7 @@ WHERE post_id IN (
        OR email LIKE '%@equityexchange.io'
   )
 )
-OR proposer_id IN (
+OR sender_id IN (
   SELECT id FROM profiles
   WHERE email LIKE '%@demo.com'
      OR email LIKE '%@givvy.io'
