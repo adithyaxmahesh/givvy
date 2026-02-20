@@ -110,6 +110,60 @@ export async function PATCH(
       return NextResponse.json({ error: error.message }, { status: 500 });
     }
 
+    // Notify the other party when terms are updated or status changes
+    if (data && (updates.safe_terms || updates.status)) {
+      try {
+        const founderId = data.startup?.founder?.id;
+        const talentUserId = data.talent?.user?.id;
+        const startupName = data.startup?.name || 'a startup';
+        const otherUserId = user.id === founderId ? talentUserId : founderId;
+
+        if (otherUserId) {
+          const action = updates.status ? `Deal status updated to "${updates.status}"` : 'Deal terms updated';
+          await supabase.from('notifications').insert({
+            user_id: otherUserId,
+            title: 'Deal Updated',
+            description: `${action} for the deal with ${startupName}. Review the latest changes.`,
+            type: 'deal_updated',
+            link: `/deals/${id}`,
+            read: false,
+          });
+        }
+      } catch {
+        // Non-blocking
+      }
+
+      // Also update the SAFE document terms if they were changed
+      if (updates.safe_terms) {
+        try {
+          const { data: safeDoc } = await supabase
+            .from('safe_documents')
+            .select('id, version_history')
+            .eq('deal_id', id)
+            .order('created_at', { ascending: false })
+            .limit(1)
+            .maybeSingle();
+
+          if (safeDoc) {
+            const now = new Date().toISOString();
+            const versionHistory = safeDoc.version_history || [];
+            versionHistory.push({
+              version: versionHistory.length + 1,
+              date: now,
+              description: 'Terms updated during negotiation',
+              author: user.id,
+            });
+            await supabase
+              .from('safe_documents')
+              .update({ terms: updates.safe_terms, version_history: versionHistory, updated_at: now })
+              .eq('id', safeDoc.id);
+          }
+        } catch {
+          // Non-blocking
+        }
+      }
+    }
+
     return NextResponse.json({ data: fromDbFields(data) });
   } catch (err) {
     console.error('[deals/id] Unexpected error:', err);

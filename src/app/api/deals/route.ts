@@ -107,10 +107,65 @@ export async function POST(request: NextRequest) {
         .from('deals')
         .insert(dbData)
         .select(
-          '*, startup:startups(id, name, logo_emoji, tagline, stage, industry), talent:talent_profiles(id, title, user:profiles!user_id(full_name, avatar_url))'
+          '*, startup:startups(id, name, logo_emoji, tagline, stage, industry, founder_id), talent:talent_profiles(id, title, user_id, user:profiles!user_id(full_name, avatar_url))'
         )
         .single();
-      if (!error && data) return NextResponse.json({ data: fromDbFields(data) }, { status: 201 });
+      if (!error && data) {
+        const dealId = data.id;
+        const now = new Date().toISOString();
+
+        // Auto-generate a SAFE document for this deal
+        try {
+          await supabase.from('safe_documents').insert({
+            deal_id: dealId,
+            template: parsed.data.safe_terms?.template || 'yc-standard',
+            status: 'draft',
+            terms: parsed.data.safe_terms,
+            document_url: null,
+            version_history: [{ version: 1, date: now, description: 'SAFE document auto-generated from deal creation', author: user.id }],
+            audit_trail: [{ action: 'SAFE document generated', timestamp: now, actor: user.id }],
+            signatures: {
+              company: { signed: false, signer_name: '', signer_title: '', signed_at: null },
+              provider: { signed: false, signer_name: '', signer_title: '', signed_at: null },
+            },
+          });
+        } catch {
+          // Non-blocking
+        }
+
+        // Notify the other party about the deal
+        try {
+          const founderId = data.startup?.founder_id;
+          const talentUserId = data.talent?.user_id;
+          const startupName = data.startup?.name || 'a startup';
+          const talentName = data.talent?.user?.full_name || 'talent';
+
+          if (founderId && founderId !== user.id) {
+            await supabase.from('notifications').insert({
+              user_id: founderId,
+              title: 'New Deal Proposal',
+              description: `${talentName} has proposed a deal with ${startupName}. Review and negotiate terms.`,
+              type: 'deal_created',
+              link: `/deals/${dealId}`,
+              read: false,
+            });
+          }
+          if (talentUserId && talentUserId !== user.id) {
+            await supabase.from('notifications').insert({
+              user_id: talentUserId,
+              title: 'New Deal Proposal',
+              description: `A deal has been proposed with ${startupName}. Review and negotiate terms.`,
+              type: 'deal_created',
+              link: `/deals/${dealId}`,
+              read: false,
+            });
+          }
+        } catch {
+          // Non-blocking
+        }
+
+        return NextResponse.json({ data: fromDbFields(data) }, { status: 201 });
+      }
       if (error) {
         console.error('[deals] Insert failed:', error.message);
         return NextResponse.json({ error: error.message }, { status: 500 });

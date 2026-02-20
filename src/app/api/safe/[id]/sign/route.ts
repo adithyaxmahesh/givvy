@@ -108,6 +108,68 @@ export async function POST(
         .from('deals')
         .update({ status: 'signed', updated_at: now })
         .eq('id', dealId);
+
+      // Create portfolio holdings when SAFE is fully signed
+      try {
+        const { data: deal } = await supabase
+          .from('deals')
+          .select('*, startup:startups(id, name, founder_id), talent:talent_profiles(id, user_id)')
+          .eq('id', dealId)
+          .single();
+
+        if (deal) {
+          const investmentAmount = deal.equity_percent || deal.safe_terms?.investment_amount || 0;
+          const valuationCap = deal.safe_terms?.valuation_cap || 0;
+          const safeAmount = deal.safe_terms?.investment_amount || investmentAmount;
+
+          await supabase.from('portfolio_holdings').insert({
+            talent_id: deal.talent_id,
+            startup_id: deal.startup_id,
+            deal_id: dealId,
+            equity_percent: investmentAmount,
+            safe_amount: safeAmount,
+            valuation_cap: valuationCap,
+            status: 'vesting',
+            current_value: safeAmount,
+            return_multiple: 1.0,
+            date_issued: now,
+          });
+
+          // Notify both parties
+          const founderId = deal.startup?.founder_id;
+          const talentUserId = deal.talent?.user_id;
+          const startupName = deal.startup?.name || 'the startup';
+
+          const notifPromises = [];
+          if (founderId) {
+            notifPromises.push(
+              supabase.from('notifications').insert({
+                user_id: founderId,
+                title: 'SAFE Fully Executed',
+                description: `The SAFE agreement for your deal with ${startupName} has been fully signed by both parties.`,
+                type: 'safe_signed',
+                link: `/deals/${dealId}`,
+                read: false,
+              })
+            );
+          }
+          if (talentUserId) {
+            notifPromises.push(
+              supabase.from('notifications').insert({
+                user_id: talentUserId,
+                title: 'SAFE Fully Executed',
+                description: `The SAFE agreement for your deal with ${startupName} has been fully signed. Your equity is now vesting.`,
+                type: 'safe_signed',
+                link: `/deals/${dealId}`,
+                read: false,
+              })
+            );
+          }
+          await Promise.all(notifPromises);
+        }
+      } catch {
+        // Non-blocking — portfolio and notifications are best-effort
+      }
     }
 
     return NextResponse.json({

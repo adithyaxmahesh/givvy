@@ -134,6 +134,33 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: `Failed to submit proposal: ${error.message}` }, { status: 500 });
     }
 
+    // Notify the post author about the new proposal
+    try {
+      const { data: postData } = await supabase
+        .from('posts')
+        .select('title, author_id')
+        .eq('id', parsed.data.post_id)
+        .single();
+      if (postData) {
+        const { data: senderProfile } = await supabase
+          .from('profiles')
+          .select('full_name')
+          .eq('id', user.id)
+          .single();
+        const senderName = senderProfile?.full_name || 'Someone';
+        await supabase.from('notifications').insert({
+          user_id: postData.author_id,
+          title: 'New Proposal Received',
+          description: `${senderName} submitted a proposal on "${postData.title}".`,
+          type: 'proposal_received',
+          link: `/dashboard/posts`,
+          read: false,
+        });
+      }
+    } catch {
+      // Non-blocking
+    }
+
     return NextResponse.json({ data }, { status: 201 });
   } catch (err) {
     console.error('[proposals] Unexpected error:', err);

@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { getAuthUser } from '@/lib/auth';
 import { requireVerified } from '@/app/api/admin/_guard';
 import { postSchema } from '@/lib/validations';
 
@@ -18,7 +19,13 @@ export async function GET(request: NextRequest) {
     const type = searchParams.get('type');
     const category = searchParams.get('category');
     const status = searchParams.get('status') || 'active';
-    const authorId = searchParams.get('author_id');
+    let authorId = searchParams.get('author_id');
+    const authorParam = searchParams.get('author');
+
+    if (authorParam === 'me' && !authorId) {
+      const user = getAuthUser(request.headers.get('cookie'));
+      if (user) authorId = user.id;
+    }
 
     const supabase = getAdminClient();
     if (supabase) {
