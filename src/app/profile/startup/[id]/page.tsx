@@ -237,7 +237,7 @@ export default function StartupProfilePage({
 
             <div className="shrink-0">
               <Link
-                href={user ? '/deals' : '/signup'}
+                href={user ? `/deals/new?startup_id=${id}` : '/signup'}
                 className="btn-primary !px-8 !py-3.5 gap-2 shadow-brand"
               >
                 <Sparkles className="h-4 w-4" />
@@ -558,7 +558,7 @@ export default function StartupProfilePage({
             </div>
 
             <Link
-              href={user ? '/deals' : '/signup'}
+              href={user ? `/deals/new?startup_id=${id}` : '/signup'}
               className="btn-primary w-full !py-3.5 gap-2 shadow-brand"
             >
               <Sparkles className="h-4 w-4" />
@@ -653,7 +653,7 @@ function RoleCard({
             </div>
           )}
           <Link
-            href={isLoggedIn ? '/deals' : '/signup'}
+            href={isLoggedIn ? `/deals/new?startup_id=${role.startup_id}` : '/signup'}
             className="btn-primary !py-2 !px-4 !text-xs inline-flex gap-1.5"
           >
             <Sparkles className="h-3 w-3" />
