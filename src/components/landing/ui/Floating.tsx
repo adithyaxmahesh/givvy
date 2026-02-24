@@ -1,7 +1,7 @@
 'use client';
 
 import { motion, useScroll, useTransform } from 'framer-motion';
-import { type RefObject } from 'react';
+import { type ReactNode, type RefObject } from 'react';
 
 /* ─── Shared base props ────────────────────────────────────────── */
 interface FloatingBase {
@@ -67,7 +67,7 @@ export function FloatingIcon({
 /* ─── FloatingAvatar ───────────────────────────────────────────── */
 export interface FloatingAvatarData extends FloatingBase {
   gradient: string;
-  initials: string;
+  initials: ReactNode;
 }
 
 export function FloatingAvatar({
