@@ -5,15 +5,29 @@ import Link from 'next/link';
 const cols = [
   {
     title: 'Platform',
-    links: ['Browse Talent', 'How It Works', 'Community', 'Events'],
+    links: [
+      { label: 'Browse Projects', href: '/marketplace' },
+      { label: 'Post a Listing', href: '/dashboard/posts/new' },
+      { label: 'How It Works', href: '/#how-it-works' },
+      { label: 'SAFE Agreements', href: '/' },
+    ],
   },
   {
     title: 'Resources',
-    links: ['Help Center', 'Blog', 'API Docs', 'Status'],
+    links: [
+      { label: 'Help Center', href: '/' },
+      { label: 'Blog', href: '/' },
+      { label: 'API Docs', href: '/' },
+      { label: 'Status', href: '/' },
+    ],
   },
   {
     title: 'Legal',
-    links: ['Terms', 'Privacy', 'Cookies'],
+    links: [
+      { label: 'Terms', href: '/' },
+      { label: 'Privacy', href: '/' },
+      { label: 'Securities Disclaimer', href: '/' },
+    ],
   },
 ];
 
@@ -31,8 +45,8 @@ export function Footer() {
               </svg>
               <span className="text-sm font-bold text-white tracking-tight">Givvy</span>
             </div>
-            <p className="text-sm text-gray-500 max-w-[240px] leading-relaxed">
-              Learn crypto, earn rewards, and connect with a global community of learners.
+            <p className="text-sm text-gray-500 max-w-[260px] leading-relaxed">
+              The marketplace where startups hire top talent with equity. SAFE-powered agreements, milestone vesting, and a new way to build wealth.
             </p>
           </div>
 
@@ -43,8 +57,8 @@ export function Footer() {
                 <h4 className="text-xs font-semibold text-gray-300 uppercase tracking-wider mb-4">{c.title}</h4>
                 <ul className="space-y-2.5">
                   {c.links.map((l) => (
-                    <li key={l}>
-                      <Link href="/" className="text-sm text-gray-500 hover:text-white transition-colors">{l}</Link>
+                    <li key={l.label}>
+                      <Link href={l.href} className="text-sm text-gray-500 hover:text-white transition-colors">{l.label}</Link>
                     </li>
                   ))}
                 </ul>
@@ -53,12 +67,18 @@ export function Footer() {
           </div>
         </div>
 
-        <div className="mt-14 pt-8 border-t border-gray-700/50 flex flex-col sm:flex-row items-center justify-between gap-4">
-          <p className="text-xs text-gray-600">&copy; {new Date().getFullYear()} Givvy. All rights reserved.</p>
-          <div className="flex items-center gap-5">
-            {['Twitter', 'Discord', 'GitHub'].map((s) => (
-              <a key={s} href="/" className="text-xs text-gray-600 hover:text-gray-300 transition-colors">{s}</a>
-            ))}
+        <div className="mt-14 pt-8 border-t border-gray-700/50">
+          <p className="text-xs text-gray-600 leading-relaxed max-w-3xl mb-6">
+            <strong className="text-gray-400">Securities Disclaimer:</strong>{' '}
+            Givvy facilitates introductions between startups and professionals. Equity agreements, including SAFE notes and equity grants, are between the parties involved. Givvy does not provide investment advice, legal counsel, or act as a broker-dealer. All equity arrangements should be reviewed by qualified legal and financial professionals.
+          </p>
+          <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
+            <p className="text-xs text-gray-600">&copy; {new Date().getFullYear()} Givvy. All rights reserved.</p>
+            <div className="flex items-center gap-5">
+              {['Twitter', 'LinkedIn', 'GitHub'].map((s) => (
+                <a key={s} href="/" className="text-xs text-gray-600 hover:text-gray-300 transition-colors">{s}</a>
+              ))}
+            </div>
           </div>
         </div>
       </div>

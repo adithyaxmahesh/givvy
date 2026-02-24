@@ -5,14 +5,14 @@ import { motion } from 'framer-motion';
 import { FloatingAvatar, type FloatingAvatarData } from './ui/Floating';
 
 const avatars: FloatingAvatarData[] = [
-  { id: 'a1', gradient: 'linear-gradient(135deg,#667eea,#764ba2)', initials: 'JD', size: 80, x: '8%',  y: '12%', driftDuration: 7, driftAmount: 5, parallaxSpeed: 0.8, delay: 0.1 },
-  { id: 'a2', gradient: 'linear-gradient(135deg,#f5af19,#f12711)', initials: 'SK', size: 64, x: '30%', y: '5%',  driftDuration: 6, driftAmount: 6, parallaxSpeed: 0.5, delay: 0.2 },
-  { id: 'a3', gradient: 'linear-gradient(135deg,#43e97b,#38f9d7)', initials: 'RM', size: 72, x: '72%', y: '8%',  driftDuration: 8, driftAmount: 4, parallaxSpeed: 1.0, delay: 0.15 },
-  { id: 'a4', gradient: 'linear-gradient(135deg,#fa709a,#fee140)', initials: 'AW', size: 68, x: '88%', y: '25%', driftDuration: 5, driftAmount: 7, parallaxSpeed: 0.6, delay: 0.3 },
-  { id: 'a5', gradient: 'linear-gradient(135deg,#a18cd1,#fbc2eb)', initials: 'TC', size: 76, x: '5%',  y: '60%', driftDuration: 6.5, driftAmount: 5, parallaxSpeed: 1.2, delay: 0.25 },
-  { id: 'a6', gradient: 'linear-gradient(135deg,#4facfe,#00f2fe)', initials: 'LN', size: 70, x: '35%', y: '70%', driftDuration: 7.5, driftAmount: 6, parallaxSpeed: 0.7, delay: 0.35 },
-  { id: 'a7', gradient: 'linear-gradient(135deg,#30cfd0,#330867)', initials: 'MP', size: 66, x: '65%', y: '72%', driftDuration: 5.5, driftAmount: 4, parallaxSpeed: 0.9, delay: 0.4 },
-  { id: 'a8', gradient: 'linear-gradient(135deg,#f093fb,#f5576c)', initials: 'BK', size: 60, x: '90%', y: '62%', driftDuration: 6, driftAmount: 5, parallaxSpeed: 1.1, delay: 0.2 },
+  { id: 'a1', gradient: 'linear-gradient(135deg,#7c3aed,#6d28d9)', initials: 'JD', size: 80, x: '8%',  y: '12%', driftDuration: 7, driftAmount: 5, parallaxSpeed: 0.8, delay: 0.1 },
+  { id: 'a2', gradient: 'linear-gradient(135deg,#f59e0b,#d97706)', initials: 'SK', size: 64, x: '30%', y: '5%',  driftDuration: 6, driftAmount: 6, parallaxSpeed: 0.5, delay: 0.2 },
+  { id: 'a3', gradient: 'linear-gradient(135deg,#10b981,#059669)', initials: 'RM', size: 72, x: '72%', y: '8%',  driftDuration: 8, driftAmount: 4, parallaxSpeed: 1.0, delay: 0.15 },
+  { id: 'a4', gradient: 'linear-gradient(135deg,#f472b6,#ec4899)', initials: 'AW', size: 68, x: '88%', y: '25%', driftDuration: 5, driftAmount: 7, parallaxSpeed: 0.6, delay: 0.3 },
+  { id: 'a5', gradient: 'linear-gradient(135deg,#8b5cf6,#7c3aed)', initials: 'TC', size: 76, x: '5%',  y: '60%', driftDuration: 6.5, driftAmount: 5, parallaxSpeed: 1.2, delay: 0.25 },
+  { id: 'a6', gradient: 'linear-gradient(135deg,#3b82f6,#2563eb)', initials: 'LN', size: 70, x: '35%', y: '70%', driftDuration: 7.5, driftAmount: 6, parallaxSpeed: 0.7, delay: 0.35 },
+  { id: 'a7', gradient: 'linear-gradient(135deg,#06b6d4,#0891b2)', initials: 'MP', size: 66, x: '65%', y: '72%', driftDuration: 5.5, driftAmount: 4, parallaxSpeed: 0.9, delay: 0.4 },
+  { id: 'a8', gradient: 'linear-gradient(135deg,#f43f5e,#e11d48)', initials: 'BK', size: 60, x: '90%', y: '62%', driftDuration: 6, driftAmount: 5, parallaxSpeed: 1.1, delay: 0.2 },
 ];
 
 export function Community() {
@@ -48,10 +48,14 @@ export function Community() {
           className="text-center relative z-20 max-w-lg mx-auto"
         >
           <h2 className="font-display text-[36px] sm:text-[44px] lg:text-[52px] font-bold leading-tight tracking-tight text-[#1a1a1a] mb-4">
-            Join Our Community
+            Founders &
+            <br />
+            Professionals,
+            <br />
+            Together
           </h2>
           <p className="text-sm sm:text-base text-[#1a1a1a]/60 leading-relaxed">
-            Engage with fellow learners, share experiences, and ask questions. Gain insights from thought leaders in the crypto space.
+            Join a growing community where startup founders find world-class talent and professionals build equity portfolios in the companies they help create.
           </p>
         </motion.div>
       </div>

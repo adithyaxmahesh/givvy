@@ -7,9 +7,9 @@ import { Menu, X } from 'lucide-react';
 import { Button } from './ui/Button';
 
 const links = [
-  { label: 'Resources', href: '#how-it-works' },
-  { label: 'Tools', href: '#features' },
-  { label: 'Support', href: '#community' },
+  { label: 'For Startups', href: '#features' },
+  { label: 'For Talent', href: '#how-it-works' },
+  { label: 'Community', href: '#community' },
 ];
 
 function Logo() {
@@ -51,9 +51,12 @@ export function Navbar() {
           ))}
         </div>
 
-        <div className="hidden md:block">
+        <div className="hidden md:flex items-center gap-3">
+          <Link href="/login" className="text-sm font-medium text-gray-500 hover:text-[#1a1a1a] transition-colors px-3 py-2">
+            Sign In
+          </Link>
           <Link href="/signup">
-            <Button variant="dark" size="sm">Start Now</Button>
+            <Button variant="dark" size="sm">Get Started</Button>
           </Link>
         </div>
 
@@ -76,9 +79,14 @@ export function Navbar() {
                   {l.label}
                 </a>
               ))}
-              <Link href="/signup" onClick={() => setOpen(false)}>
-                <Button variant="dark" size="md" className="w-full mt-2">Start Now</Button>
-              </Link>
+              <div className="pt-3 border-t border-gray-100 flex flex-col gap-2">
+                <Link href="/login" onClick={() => setOpen(false)} className="text-center text-sm font-medium text-gray-600 py-2">
+                  Sign In
+                </Link>
+                <Link href="/signup" onClick={() => setOpen(false)}>
+                  <Button variant="dark" size="md" className="w-full">Get Started</Button>
+                </Link>
+              </div>
             </div>
           </motion.div>
         )}

@@ -3,13 +3,12 @@
 import { motion, useScroll, useTransform } from 'framer-motion';
 import { useRef } from 'react';
 import { PhoneMock } from './ui/PhoneMock';
-import { Button } from './ui/Button';
-import { Sun, Moon } from 'lucide-react';
+import { ArrowRight, Briefcase } from 'lucide-react';
 
 function GatewayPhoneContent() {
   return (
-    <div className="px-5 py-4 flex flex-col items-center">
-      <div className="flex items-center gap-2 mb-5 self-start">
+    <div className="px-4 py-4 flex flex-col">
+      <div className="flex items-center gap-2 mb-4 self-start">
         <svg width="14" height="14" viewBox="0 0 28 28" fill="none" className="text-[#1a1a1a]">
           <rect x="2" y="8" width="14" height="12" rx="4" stroke="currentColor" strokeWidth="2.5" />
           <rect x="12" y="8" width="14" height="12" rx="4" stroke="currentColor" strokeWidth="2.5" />
@@ -17,53 +16,64 @@ function GatewayPhoneContent() {
         <span className="text-[10px] font-bold text-[#1a1a1a]">Givvy</span>
       </div>
 
-      {/* Mini floating icons */}
-      <div className="relative w-full h-[100px] mb-4">
-        {[
-          { bg: '#8b5cf6', x: '15%', y: '5%', s: 28 },
-          { bg: '#22c55e', x: '60%', y: '0%', s: 26 },
-          { bg: '#3b82f6', x: '72%', y: '35%', s: 24 },
-          { bg: '#5eead4', x: '30%', y: '50%', s: 22 },
-          { bg: '#fbbf24', x: '10%', y: '55%', s: 24 },
-          { bg: '#1e1b4b', x: '48%', y: '30%', s: 26 },
-        ].map((c, i) => (
-          <motion.div
-            key={i}
-            animate={{ y: [0, -4, 0] }}
-            transition={{ duration: 3 + i * 0.5, repeat: Infinity, ease: 'easeInOut' }}
-            className="absolute rounded-md shadow-sm"
-            style={{ left: c.x, top: c.y, width: c.s, height: c.s, backgroundColor: c.bg }}
-          />
-        ))}
+      <div className="bg-gray-50 rounded-xl p-3 mb-3">
+        <div className="flex items-center gap-2 mb-2">
+          <div className="w-7 h-7 rounded-lg bg-brand-600 flex items-center justify-center">
+            <Briefcase className="w-3.5 h-3.5 text-white" />
+          </div>
+          <div>
+            <p className="text-[10px] font-bold text-[#1a1a1a]">Series A Legal Prep</p>
+            <p className="text-[8px] text-gray-400">NovaPay · FinTech</p>
+          </div>
+        </div>
+        <div className="flex gap-2 mb-2">
+          <span className="text-[8px] font-semibold bg-green-100 text-green-700 px-1.5 py-0.5 rounded-full">0.5% Equity</span>
+          <span className="text-[8px] font-semibold bg-blue-100 text-blue-700 px-1.5 py-0.5 rounded-full">SAFE · $4M Cap</span>
+        </div>
+        <p className="text-[8px] text-gray-500 leading-relaxed">
+          Corporate structuring, investor agreements, and compliance for upcoming Series A.
+        </p>
       </div>
 
-      <h3 className="text-sm font-bold text-[#1a1a1a] mb-1">Start Course</h3>
-      <p className="text-[9px] text-gray-500 text-center mb-3 leading-tight">
-        Designed to reward<br />your commitment to learning.
-      </p>
-      <button className="bg-[#1a1a1a] text-white text-[10px] font-semibold px-5 py-1.5 rounded-full">
-        Start Now
-      </button>
+      <div className="bg-gray-50 rounded-xl p-3">
+        <div className="flex items-center gap-2 mb-2">
+          <div className="w-7 h-7 rounded-lg bg-indigo-600 flex items-center justify-center">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M8 7l-5 5 5 5M16 7l5 5-5 5" stroke="white" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"/></svg>
+          </div>
+          <div>
+            <p className="text-[10px] font-bold text-[#1a1a1a]">Full-Stack MVP Build</p>
+            <p className="text-[8px] text-gray-400">Luma Health · HealthTech</p>
+          </div>
+        </div>
+        <div className="flex gap-2">
+          <span className="text-[8px] font-semibold bg-green-100 text-green-700 px-1.5 py-0.5 rounded-full">1.5% Equity</span>
+          <span className="text-[8px] font-semibold bg-blue-100 text-blue-700 px-1.5 py-0.5 rounded-full">SAFE · $6M Cap</span>
+        </div>
+      </div>
     </div>
   );
 }
 
-function ThemeToggle() {
+function StatRow() {
+  const stats = [
+    { value: '$0', label: 'Cash spent' },
+    { value: '47', label: 'Professionals hired' },
+    { value: '12', label: 'Startups funded' },
+  ];
+
   return (
     <motion.div
       initial={{ opacity: 0, y: 20 }}
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true }}
-      className="flex items-center justify-center mt-10"
+      className="flex items-center justify-center gap-8 sm:gap-14 mt-12"
     >
-      <div className="inline-flex items-center bg-charcoal/10 rounded-full p-1 gap-0.5">
-        <button className="flex items-center justify-center w-8 h-8 rounded-full bg-white shadow-sm transition-colors">
-          <Sun className="w-4 h-4 text-amber-500" />
-        </button>
-        <button className="flex items-center justify-center w-8 h-8 rounded-full transition-colors hover:bg-white/50">
-          <Moon className="w-4 h-4 text-gray-500" />
-        </button>
-      </div>
+      {stats.map((s) => (
+        <div key={s.label} className="text-center">
+          <p className="text-2xl sm:text-3xl font-bold text-[#1a1a1a]">{s.value}</p>
+          <p className="text-xs text-[#1a1a1a]/50 font-medium">{s.label}</p>
+        </div>
+      ))}
     </motion.div>
   );
 }
@@ -90,11 +100,13 @@ export function FeatureGateway() {
             transition={{ duration: 0.6 }}
           >
             <h2 className="font-display text-[36px] sm:text-[44px] lg:text-[52px] font-bold leading-[1.08] tracking-tight text-[#1a1a1a]">
-              Your Gateway
+              Preserve
               <br />
-              To Financial
+              Your Runway.
               <br />
-              Empowerment
+              Build Your
+              <br />
+              Team.
             </h2>
           </motion.div>
 
@@ -116,13 +128,16 @@ export function FeatureGateway() {
             transition={{ duration: 0.6, delay: 0.15 }}
             className="lg:text-right"
           >
-            <p className="text-sm sm:text-base text-[#1a1a1a]/70 leading-relaxed max-w-sm lg:ml-auto italic">
-              Learning about cryptocurrency can yield not only increased understanding and confidence but also tangible rewards.
+            <p className="text-sm sm:text-base text-[#1a1a1a]/70 leading-relaxed max-w-sm lg:ml-auto">
+              Top startups compensate lawyers, developers, designers, and marketers with equity — preserving cash for growth while giving professionals real upside in companies they help build.
             </p>
+            <a href="#how-it-works" className="inline-flex items-center gap-1.5 mt-4 text-sm font-semibold text-[#1a1a1a] hover:gap-2.5 transition-all">
+              Learn how it works <ArrowRight className="w-4 h-4" />
+            </a>
           </motion.div>
         </div>
 
-        <ThemeToggle />
+        <StatRow />
       </div>
     </section>
   );

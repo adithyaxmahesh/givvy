@@ -12,6 +12,7 @@
  *
  * HERO ICON POS     → src/components/landing/Hero.tsx  heroIcons[] array
  *                      Each entry: { x, y, size, rotate, driftAmount, parallaxSpeed }
+ *                      Icons represent service types: legal, code, design, marketing, etc.
  *
  * SECTION PADDING   → src/components/landing/Section.tsx  default py classes
  *                      Or override per-section via className prop
@@ -27,6 +28,13 @@
  * PARALLAX SPEED    → Each floating element parallaxSpeed (0.3 = subtle, 1.5 = heavy)
  *
  * NOISE INTENSITY   → globals.css  .landing-noise::after  opacity (currently 0.025)
+ *
+ * COPY / BRANDING   → Hero.tsx (headline, badge, subtitle)
+ *                      FeatureGateway.tsx (heading, stats, phone content)
+ *                      HowItWorks.tsx (card content, workflow steps)
+ *                      Community.tsx (title, description)
+ *                      Networking.tsx (portfolio phone, sector pills)
+ *                      Footer.tsx (description, disclaimer, links)
  * ─────────────────────────────────────────────────────────────────
  */
 

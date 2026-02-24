@@ -6,47 +6,51 @@ import { PhoneMock } from './ui/PhoneMock';
 import { FloatingPill, type FloatingPillData } from './ui/Floating';
 
 const leftPills: FloatingPillData[] = [
-  { id: 'p1', label: 'Next Block Expo',         size: 0, x: '0%',  y: '15%', side: 'left', driftDuration: 5,   driftAmount: 4, parallaxSpeed: 0.6, delay: 0.1 },
-  { id: 'p2', label: 'Paris Blockchain Week 2025', size: 0, x: '2%',  y: '40%', side: 'left', driftDuration: 6,   driftAmount: 3, parallaxSpeed: 0.9, delay: 0.25 },
-  { id: 'p3', label: 'Digital Assets Summit',   size: 0, x: '0%',  y: '65%', side: 'left', driftDuration: 5.5, driftAmount: 5, parallaxSpeed: 0.7, delay: 0.4 },
+  { id: 'p1', label: 'Pre-Seed Startups',  size: 0, x: '0%',  y: '15%', side: 'left',  driftDuration: 5,   driftAmount: 4, parallaxSpeed: 0.6, delay: 0.1 },
+  { id: 'p2', label: 'AI & Machine Learning', size: 0, x: '2%',  y: '40%', side: 'left',  driftDuration: 6,   driftAmount: 3, parallaxSpeed: 0.9, delay: 0.25 },
+  { id: 'p3', label: 'FinTech',            size: 0, x: '0%',  y: '65%', side: 'left',  driftDuration: 5.5, driftAmount: 5, parallaxSpeed: 0.7, delay: 0.4 },
 ];
 
 const rightPills: FloatingPillData[] = [
-  { id: 'p4', label: 'DS Blockchain Summit',    size: 0, x: '68%', y: '18%', side: 'right', driftDuration: 6,   driftAmount: 4, parallaxSpeed: 0.8, delay: 0.15 },
-  { id: 'p5', label: 'Blockchain Forum 2025',   size: 0, x: '70%', y: '45%', side: 'right', driftDuration: 5.5, driftAmount: 3, parallaxSpeed: 1.0, delay: 0.3 },
-  { id: 'p6', label: 'Consensus Toronto',       size: 0, x: '68%', y: '70%', side: 'right', driftDuration: 6.5, driftAmount: 5, parallaxSpeed: 0.5, delay: 0.45 },
+  { id: 'p4', label: 'SaaS Companies',     size: 0, x: '68%', y: '18%', side: 'right', driftDuration: 6,   driftAmount: 4, parallaxSpeed: 0.8, delay: 0.15 },
+  { id: 'p5', label: 'HealthTech',         size: 0, x: '70%', y: '45%', side: 'right', driftDuration: 5.5, driftAmount: 3, parallaxSpeed: 1.0, delay: 0.3 },
+  { id: 'p6', label: 'Climate & Energy',   size: 0, x: '68%', y: '70%', side: 'right', driftDuration: 6.5, driftAmount: 5, parallaxSpeed: 0.5, delay: 0.45 },
 ];
 
-function QRBlock() {
-  const rows = 8;
-  const cols = 8;
-  return (
-    <div className="grid gap-[2px] p-3 bg-lime-light rounded-xl" style={{ gridTemplateColumns: `repeat(${cols}, 1fr)` }}>
-      {Array.from({ length: rows * cols }).map((_, i) => {
-        const dark = [0,1,2,5,6,7, 8,15, 16,23, 40,41,42,45,46,47, 48,55, 56,57,58,61,62,63].includes(i)
-          || (i > 24 && i < 40 && Math.random() > 0.45);
-        return (
-          <div
-            key={i}
-            className={`w-3 h-3 sm:w-3.5 sm:h-3.5 rounded-[2px] ${dark ? 'bg-[#1a1a1a]' : 'bg-transparent'}`}
-          />
-        );
-      })}
-    </div>
-  );
-}
-
-function NetworkingPhoneContent() {
+function PortfolioPhoneContent() {
+  const holdings = [
+    { name: 'NovaPay', sector: 'FinTech', equity: '0.5%', value: '$12,500', safe: '$4M Cap', color: '#7c3aed' },
+    { name: 'Luma Health', sector: 'HealthTech', equity: '1.2%', value: '$36,000', safe: '$6M Cap', color: '#3b82f6' },
+    { name: 'Canopy AI', sector: 'AI/ML', equity: '0.8%', value: '$24,000', safe: '$8M Cap', color: '#10b981' },
+  ];
   return (
     <div className="px-4 py-3">
-      <span className="text-[9px] font-medium text-gray-400 uppercase tracking-wider">Upcoming</span>
-      <h3 className="text-base font-bold text-[#1a1a1a] mt-1 mb-0.5">Web3 Summit</h3>
-      <p className="text-[10px] text-gray-500 mb-0.5">7 Jun To 15 Jul, 2025</p>
-      <p className="text-[10px] text-gray-400 mb-2">Dubai</p>
-      <p className="text-[9px] text-gray-500 leading-relaxed mb-3">
-        Join 2000+ delegates as we explore the limitless possibilities of building a better world together.
-      </p>
-      <QRBlock />
+      <span className="text-[9px] font-medium text-gray-400 uppercase tracking-wider">Your Portfolio</span>
+      <h3 className="text-sm font-bold text-[#1a1a1a] mt-1 mb-0.5">3 Companies</h3>
+      <p className="text-[10px] text-gray-500 mb-3">Est. value: $72,500</p>
+
+      <div className="space-y-2">
+        {holdings.map((h) => (
+          <div key={h.name} className="bg-gray-50 rounded-lg px-2.5 py-2">
+            <div className="flex items-center gap-2 mb-1">
+              <div className="w-5 h-5 rounded-md flex items-center justify-center text-[8px] font-bold text-white" style={{ backgroundColor: h.color }}>
+                {h.name[0]}
+              </div>
+              <div className="flex-1 min-w-0">
+                <p className="text-[10px] font-bold text-[#1a1a1a] truncate">{h.name}</p>
+                <p className="text-[8px] text-gray-400">{h.sector}</p>
+              </div>
+              <div className="text-right">
+                <p className="text-[10px] font-bold text-[#1a1a1a]">{h.equity}</p>
+                <p className="text-[8px] text-green-600">{h.value}</p>
+              </div>
+            </div>
+            <div className="w-full bg-gray-200 rounded-full h-1">
+              <div className="h-1 rounded-full" style={{ backgroundColor: h.color, width: `${40 + Math.random() * 50}%` }} />
+            </div>
+          </div>
+        ))}
+      </div>
     </div>
   );
 }
@@ -67,13 +71,22 @@ export function Networking() {
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true, margin: '-60px' }}
           transition={{ duration: 0.6 }}
-          className="font-display text-[36px] sm:text-[44px] lg:text-[52px] font-bold leading-tight tracking-tight text-white text-center mb-16"
+          className="font-display text-[36px] sm:text-[44px] lg:text-[52px] font-bold leading-tight tracking-tight text-white text-center mb-4"
         >
-          Networking Opportunities
+          Build Your Equity Portfolio
         </motion.h2>
+        <motion.p
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.5, delay: 0.1 }}
+          className="text-center text-sm sm:text-base text-gray-400 max-w-md mx-auto mb-14 leading-relaxed"
+        >
+          Track equity across every startup you work with. Watch your portfolio grow as companies scale.
+        </motion.p>
 
         <div className="relative min-h-[480px] sm:min-h-[520px] flex items-center justify-center">
-          {/* Floating event pills — left */}
+          {/* Floating sector pills — left */}
           <div className="hidden lg:block">
             {leftPills.map((p) => (
               <FloatingPill key={p.id} data={p} containerRef={containerRef} />
@@ -83,11 +96,11 @@ export function Networking() {
           {/* Center phone */}
           <motion.div style={{ scale: phoneScale }} className="relative z-20">
             <PhoneMock float className="w-[240px] sm:w-[260px]">
-              <NetworkingPhoneContent />
+              <PortfolioPhoneContent />
             </PhoneMock>
           </motion.div>
 
-          {/* Floating event pills — right */}
+          {/* Floating sector pills — right */}
           <div className="hidden lg:block">
             {rightPills.map((p) => (
               <FloatingPill key={p.id} data={p} containerRef={containerRef} />
@@ -114,9 +127,9 @@ export function Networking() {
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
           transition={{ duration: 0.5, delay: 0.3 }}
-          className="text-center text-sm text-gray-400 mt-12 max-w-md mx-auto leading-relaxed"
+          className="text-center text-sm text-gray-500 mt-12 max-w-md mx-auto leading-relaxed"
         >
-          Connect with potential employers, investors, or collaborators.
+          Instead of writing checks, invest your time and expertise. Work becomes your venture capital.
         </motion.p>
       </div>
     </section>
