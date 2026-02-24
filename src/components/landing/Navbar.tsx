@@ -1,0 +1,88 @@
+'use client';
+
+import { motion, useScroll, useMotionValueEvent, AnimatePresence } from 'framer-motion';
+import Link from 'next/link';
+import { useState } from 'react';
+import { Menu, X } from 'lucide-react';
+import { Button } from './ui/Button';
+
+const links = [
+  { label: 'Resources', href: '#how-it-works' },
+  { label: 'Tools', href: '#features' },
+  { label: 'Support', href: '#community' },
+];
+
+function Logo() {
+  return (
+    <Link href="/" className="flex items-center gap-2">
+      <svg width="28" height="28" viewBox="0 0 28 28" fill="none" className="text-[#1a1a1a]">
+        <rect x="2" y="8" width="14" height="12" rx="4" stroke="currentColor" strokeWidth="2.5" />
+        <rect x="12" y="8" width="14" height="12" rx="4" stroke="currentColor" strokeWidth="2.5" />
+      </svg>
+      <span className="text-[15px] font-bold text-[#1a1a1a] tracking-tight">Givvy</span>
+    </Link>
+  );
+}
+
+export function Navbar() {
+  const [scrolled, setScrolled] = useState(false);
+  const [open, setOpen] = useState(false);
+  const { scrollY } = useScroll();
+
+  useMotionValueEvent(scrollY, 'change', (v) => setScrolled(v > 50));
+
+  return (
+    <motion.nav
+      initial={{ y: -20, opacity: 0 }}
+      animate={{ y: 0, opacity: 1 }}
+      transition={{ duration: 0.5 }}
+      className={`fixed top-0 inset-x-0 z-50 transition-all duration-300 ${
+        scrolled ? 'bg-white/80 backdrop-blur-xl shadow-sm' : 'bg-transparent'
+      }`}
+    >
+      <div className="max-w-[1200px] mx-auto px-5 sm:px-6 lg:px-8 flex items-center justify-between h-16">
+        <Logo />
+
+        <div className="hidden md:flex items-center gap-8">
+          {links.map((l) => (
+            <a key={l.label} href={l.href} className="text-sm font-medium text-gray-500 hover:text-[#1a1a1a] transition-colors">
+              {l.label}
+            </a>
+          ))}
+        </div>
+
+        <div className="hidden md:block">
+          <Link href="/signup">
+            <Button variant="dark" size="sm">Start Now</Button>
+          </Link>
+        </div>
+
+        <button onClick={() => setOpen(!open)} className="md:hidden p-2 text-gray-600" aria-label="Toggle menu">
+          {open ? <X size={20} /> : <Menu size={20} />}
+        </button>
+      </div>
+
+      <AnimatePresence>
+        {open && (
+          <motion.div
+            initial={{ opacity: 0, height: 0 }}
+            animate={{ opacity: 1, height: 'auto' }}
+            exit={{ opacity: 0, height: 0 }}
+            className="md:hidden overflow-hidden bg-white/95 backdrop-blur-xl border-t border-gray-100"
+          >
+            <div className="max-w-[1200px] mx-auto px-5 py-4 space-y-3">
+              {links.map((l) => (
+                <a key={l.label} href={l.href} onClick={() => setOpen(false)} className="block text-sm font-medium text-gray-600 py-2">
+                  {l.label}
+                </a>
+              ))}
+              <Link href="/signup" onClick={() => setOpen(false)}>
+                <Button variant="dark" size="md" className="w-full mt-2">Start Now</Button>
+              </Link>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </motion.nav>
+  );
+}
