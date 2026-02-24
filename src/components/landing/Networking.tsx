@@ -6,9 +6,9 @@ import { PhoneMock } from './ui/PhoneMock';
 import { FloatingPill, type FloatingPillData } from './ui/Floating';
 
 const leftPills: FloatingPillData[] = [
-  { id: 'p1', label: 'Pre-Seed Startups',  size: 0, x: '0%',  y: '15%', side: 'left',  driftDuration: 5,   driftAmount: 4, parallaxSpeed: 0.6, delay: 0.1 },
+  { id: 'p1', label: 'Pre-Seed Startups',    size: 0, x: '0%',  y: '15%', side: 'left',  driftDuration: 5,   driftAmount: 4, parallaxSpeed: 0.6, delay: 0.1 },
   { id: 'p2', label: 'AI & Machine Learning', size: 0, x: '2%',  y: '40%', side: 'left',  driftDuration: 6,   driftAmount: 3, parallaxSpeed: 0.9, delay: 0.25 },
-  { id: 'p3', label: 'FinTech',            size: 0, x: '0%',  y: '65%', side: 'left',  driftDuration: 5.5, driftAmount: 5, parallaxSpeed: 0.7, delay: 0.4 },
+  { id: 'p3', label: 'FinTech',              size: 0, x: '0%',  y: '65%', side: 'left',  driftDuration: 5.5, driftAmount: 5, parallaxSpeed: 0.7, delay: 0.4 },
 ];
 
 const rightPills: FloatingPillData[] = [
@@ -19,19 +19,26 @@ const rightPills: FloatingPillData[] = [
 
 function PortfolioPhoneContent() {
   const holdings = [
-    { name: 'NovaPay', sector: 'FinTech', equity: '0.5%', value: '$12,500', safe: '$4M Cap', color: '#7c3aed' },
-    { name: 'Luma Health', sector: 'HealthTech', equity: '1.2%', value: '$36,000', safe: '$6M Cap', color: '#3b82f6' },
-    { name: 'Canopy AI', sector: 'AI/ML', equity: '0.8%', value: '$24,000', safe: '$8M Cap', color: '#10b981' },
+    { name: 'NovaPay', sector: 'FinTech', equity: '0.5%', value: '$12,500', safe: '$4M Cap', color: '#7c3aed', barWidth: '65%' },
+    { name: 'Luma Health', sector: 'HealthTech', equity: '1.2%', value: '$36,000', safe: '$6M Cap', color: '#3b82f6', barWidth: '82%' },
+    { name: 'Canopy AI', sector: 'AI/ML', equity: '0.8%', value: '$24,000', safe: '$8M Cap', color: '#10b981', barWidth: '55%' },
   ];
   return (
     <div className="px-4 py-3">
       <span className="text-[9px] font-medium text-gray-400 uppercase tracking-wider">Your Portfolio</span>
       <h3 className="text-sm font-bold text-[#1a1a1a] mt-1 mb-0.5">3 Companies</h3>
-      <p className="text-[10px] text-gray-500 mb-3">Est. value: $72,500</p>
+      <p className="text-[10px] text-gray-500 mb-3">Est. value: <span className="text-green-600 font-semibold">$72,500</span></p>
 
-      <div className="space-y-2">
-        {holdings.map((h) => (
-          <div key={h.name} className="bg-gray-50 rounded-lg px-2.5 py-2">
+      <div className="space-y-2.5">
+        {holdings.map((h, i) => (
+          <motion.div
+            key={h.name}
+            initial={{ opacity: 0, x: -10 }}
+            whileInView={{ opacity: 1, x: 0 }}
+            viewport={{ once: true }}
+            transition={{ delay: 0.3 + i * 0.12, duration: 0.4 }}
+            className="bg-gray-50 rounded-xl px-2.5 py-2"
+          >
             <div className="flex items-center gap-2 mb-1">
               <div className="w-5 h-5 rounded-md flex items-center justify-center text-[8px] font-bold text-white" style={{ backgroundColor: h.color }}>
                 {h.name[0]}
@@ -42,13 +49,20 @@ function PortfolioPhoneContent() {
               </div>
               <div className="text-right">
                 <p className="text-[10px] font-bold text-[#1a1a1a]">{h.equity}</p>
-                <p className="text-[8px] text-green-600">{h.value}</p>
+                <p className="text-[8px] text-green-600 font-medium">{h.value}</p>
               </div>
             </div>
             <div className="w-full bg-gray-200 rounded-full h-1">
-              <div className="h-1 rounded-full" style={{ backgroundColor: h.color, width: `${40 + Math.random() * 50}%` }} />
+              <motion.div
+                initial={{ width: 0 }}
+                whileInView={{ width: h.barWidth }}
+                viewport={{ once: true }}
+                transition={{ delay: 0.5 + i * 0.12, duration: 0.8, ease: [0.25, 0.4, 0.25, 1] }}
+                className="h-1 rounded-full"
+                style={{ backgroundColor: h.color }}
+              />
             </div>
-          </div>
+          </motion.div>
         ))}
       </div>
     </div>
@@ -61,31 +75,35 @@ export function Networking() {
     target: containerRef,
     offset: ['start end', 'end start'],
   });
-  const phoneScale = useTransform(scrollYProgress, [0, 0.5], [0.92, 1]);
+  const phoneScale = useTransform(scrollYProgress, [0, 0.4], [0.88, 1]);
+  const phoneY = useTransform(scrollYProgress, [0, 0.4], [60, 0]);
+  const phoneRotate = useTransform(scrollYProgress, [0, 0.4], [-2, 0]);
 
   return (
     <section ref={containerRef} className="relative w-full overflow-hidden bg-charcoal landing-noise">
       <div className="relative z-10 max-w-[1200px] mx-auto px-5 sm:px-6 lg:px-8 py-20 sm:py-24 lg:py-28">
-        <motion.h2
-          initial={{ opacity: 0, y: 30 }}
-          whileInView={{ opacity: 1, y: 0 }}
+        <motion.div
+          initial={{ opacity: 0, y: 30, filter: 'blur(8px)' }}
+          whileInView={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
           viewport={{ once: true, margin: '-60px' }}
-          transition={{ duration: 0.6 }}
-          className="font-display text-[36px] sm:text-[44px] lg:text-[52px] font-bold leading-tight tracking-tight text-white text-center mb-4"
+          transition={{ duration: 0.7 }}
+          className="text-center mb-4"
         >
-          Build Your Equity Portfolio
-        </motion.h2>
+          <h2 className="font-display text-[36px] sm:text-[44px] lg:text-[52px] font-bold leading-tight tracking-tight text-white">
+            Build Your Equity Portfolio
+          </h2>
+        </motion.div>
         <motion.p
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
+          initial={{ opacity: 0, y: 20, filter: 'blur(4px)' }}
+          whileInView={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
           viewport={{ once: true }}
-          transition={{ duration: 0.5, delay: 0.1 }}
+          transition={{ duration: 0.5, delay: 0.15 }}
           className="text-center text-sm sm:text-base text-gray-400 max-w-md mx-auto mb-14 leading-relaxed"
         >
           Track equity across every startup you work with. Watch your portfolio grow as companies scale.
         </motion.p>
 
-        <div className="relative min-h-[480px] sm:min-h-[520px] flex items-center justify-center">
+        <div className="relative min-h-[520px] sm:min-h-[560px] flex items-center justify-center">
           {/* Floating sector pills — left */}
           <div className="hidden lg:block">
             {leftPills.map((p) => (
@@ -93,9 +111,12 @@ export function Networking() {
             ))}
           </div>
 
-          {/* Center phone */}
-          <motion.div style={{ scale: phoneScale }} className="relative z-20">
-            <PhoneMock float className="w-[240px] sm:w-[260px]">
+          {/* Center phone — full size with glow + scroll effects */}
+          <motion.div
+            style={{ scale: phoneScale, y: phoneY, rotateZ: phoneRotate }}
+            className="relative z-20"
+          >
+            <PhoneMock float glow className="w-[280px] sm:w-[300px] lg:w-[320px]">
               <PortfolioPhoneContent />
             </PhoneMock>
           </motion.div>
@@ -110,15 +131,22 @@ export function Networking() {
 
         {/* Mobile pills */}
         <div className="lg:hidden flex flex-wrap justify-center gap-2 mt-8">
-          {[...leftPills, ...rightPills].map((p) => (
-            <div key={p.id} className="flex items-center gap-2 bg-white rounded-full pl-3 pr-1.5 py-1.5 shadow-sm">
+          {[...leftPills, ...rightPills].map((p, i) => (
+            <motion.div
+              key={p.id}
+              initial={{ opacity: 0, y: 10 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ delay: 0.1 + i * 0.06 }}
+              className="flex items-center gap-2 bg-white rounded-full pl-3 pr-1.5 py-1.5 shadow-sm"
+            >
               <span className="text-xs font-medium text-gray-800">{p.label}</span>
               <div className="w-5 h-5 rounded bg-lime flex items-center justify-center">
                 <svg width="8" height="8" viewBox="0 0 12 12" fill="none">
                   <path d="M2 10L10 2M10 2H4M10 2V8" stroke="#1a1a1a" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
                 </svg>
               </div>
-            </div>
+            </motion.div>
           ))}
         </div>
 

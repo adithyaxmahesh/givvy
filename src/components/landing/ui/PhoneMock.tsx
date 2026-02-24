@@ -6,23 +6,38 @@ interface PhoneMockProps {
   children: React.ReactNode;
   className?: string;
   float?: boolean;
+  glow?: boolean;
 }
 
-export function PhoneMock({ children, className = '', float = true }: PhoneMockProps) {
+export function PhoneMock({ children, className = '', float = true, glow = false }: PhoneMockProps) {
   return (
     <motion.div
-      animate={float ? { y: [-8, 8, -8] } : undefined}
+      animate={float ? { y: [-10, 10, -10] } : undefined}
       transition={float ? { duration: 6, repeat: Infinity, ease: 'easeInOut' } : undefined}
       className={`relative ${className}`}
     >
-      <div className="relative bg-[#1a1a1a] rounded-[2.5rem] p-[3px] shadow-[0_20px_60px_rgba(0,0,0,0.3)]">
-        <div className="bg-white rounded-[2.35rem] overflow-hidden">
+      {glow && (
+        <div className="absolute -inset-8 rounded-[3.5rem] bg-gradient-to-b from-brand-500/20 via-brand-400/10 to-transparent blur-2xl pointer-events-none" />
+      )}
+
+      <div className="relative bg-[#1a1a1a] rounded-[3rem] p-[3px] shadow-[0_25px_80px_rgba(0,0,0,0.35),0_8px_20px_rgba(0,0,0,0.2)]">
+        {/* Side buttons */}
+        <div className="absolute -left-[2px] top-[80px] w-[3px] h-[28px] bg-[#2a2a2a] rounded-l-full" />
+        <div className="absolute -left-[2px] top-[120px] w-[3px] h-[44px] bg-[#2a2a2a] rounded-l-full" />
+        <div className="absolute -left-[2px] top-[172px] w-[3px] h-[44px] bg-[#2a2a2a] rounded-l-full" />
+        <div className="absolute -right-[2px] top-[130px] w-[3px] h-[56px] bg-[#2a2a2a] rounded-r-full" />
+
+        <div className="relative bg-white rounded-[2.75rem] overflow-hidden">
+          {/* Screen reflection */}
+          <div className="absolute inset-0 bg-gradient-to-br from-white/[0.08] via-transparent to-transparent pointer-events-none z-30" />
+
           {/* Dynamic Island */}
-          <div className="flex justify-center pt-2.5">
-            <div className="w-[90px] h-[24px] bg-[#1a1a1a] rounded-full" />
+          <div className="flex justify-center pt-3">
+            <div className="w-[100px] h-[28px] bg-[#1a1a1a] rounded-full" />
           </div>
+
           {/* Status Bar */}
-          <div className="flex items-center justify-between px-7 py-1 text-[10px] font-semibold text-[#1a1a1a]">
+          <div className="flex items-center justify-between px-8 py-1.5 text-[10px] font-semibold text-[#1a1a1a]">
             <span>18:23</span>
             <div className="flex items-center gap-1.5">
               <svg width="14" height="10" viewBox="0 0 14 10" fill="currentColor">
@@ -43,8 +58,14 @@ export function PhoneMock({ children, className = '', float = true }: PhoneMockP
               </div>
             </div>
           </div>
+
           {/* Content */}
-          <div className="min-h-[160px]">{children}</div>
+          <div>{children}</div>
+
+          {/* Home Indicator */}
+          <div className="flex justify-center pb-2 pt-3">
+            <div className="w-[120px] h-[4px] bg-[#1a1a1a]/20 rounded-full" />
+          </div>
         </div>
       </div>
     </motion.div>
