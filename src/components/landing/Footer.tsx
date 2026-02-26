@@ -2,6 +2,7 @@
 
 import { motion } from 'framer-motion';
 import Link from 'next/link';
+import Image from 'next/image';
 
 const cols = [
   {
@@ -51,12 +52,8 @@ export function Footer() {
         >
           {/* Brand */}
           <motion.div variants={fadeUp} className="shrink-0">
-            <div className="flex items-center gap-2 mb-4">
-              <svg width="24" height="24" viewBox="0 0 28 28" fill="none" className="text-white">
-                <rect x="2" y="8" width="14" height="12" rx="4" stroke="currentColor" strokeWidth="2.5" />
-                <rect x="12" y="8" width="14" height="12" rx="4" stroke="currentColor" strokeWidth="2.5" />
-              </svg>
-              <span className="text-sm font-bold text-white tracking-tight">Givvy</span>
+            <div className="mb-4">
+              <Image src="/givvy-logo.png" alt="Givvy" width={100} height={57} className="h-7 w-auto brightness-0 invert" />
             </div>
             <p className="text-sm text-gray-500 max-w-[260px] leading-relaxed">
               The marketplace where startups hire top talent with equity. SAFE-powered agreements, milestone vesting, and a new way to build wealth.

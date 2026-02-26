@@ -2,6 +2,7 @@
 
 import { motion, useScroll, useMotionValueEvent, AnimatePresence } from 'framer-motion';
 import Link from 'next/link';
+import Image from 'next/image';
 import { useState } from 'react';
 import { Menu, X } from 'lucide-react';
 import { Button } from './ui/Button';
@@ -14,12 +15,8 @@ const links = [
 
 function Logo() {
   return (
-    <Link href="/" className="flex items-center gap-2">
-      <svg width="28" height="28" viewBox="0 0 28 28" fill="none" className="text-[#1a1a1a]">
-        <rect x="2" y="8" width="14" height="12" rx="4" stroke="currentColor" strokeWidth="2.5" />
-        <rect x="12" y="8" width="14" height="12" rx="4" stroke="currentColor" strokeWidth="2.5" />
-      </svg>
-      <span className="text-[15px] font-bold text-[#1a1a1a] tracking-tight">Givvy</span>
+    <Link href="/" className="flex items-center">
+      <Image src="/givvy-logo.png" alt="Givvy" width={120} height={68} className="h-8 w-auto" priority />
     </Link>
   );
 }

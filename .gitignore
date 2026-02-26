@@ -8,3 +8,29 @@ node_modules/
 next-env.d.ts
 .vercel/
 *.log
+
+# Video project
+givvy-video/
+
+# Test artifacts & screenshots
+*-screenshots/
+*-report.json
+*-results.json
+*-analysis.json
+check-deal-created/
+deals-new-page-test/
+detailed-test-screenshots/
+founder-proposal-review/
+marketplace-overview-test/
+post-creation-test/
+proposal-test/
+propose-deal-flow/
+propose-deal-test/
+startup-profile-flow/
+talent-proposal-test/
+url-investigation/
+valid-startup-profile/
+
+# Remotion skills
+.agents/
+skills-lock.json
