@@ -10,7 +10,7 @@ function GatewayPhoneContent() {
   return (
     <div className="px-4 py-4 flex flex-col">
       <div className="flex items-center mb-4 self-start">
-        <Image src="/givvy-logo.png" alt="Givvy" width={80} height={46} className="h-5 w-auto" />
+        <Image src="/givvy-logo.png" alt="Givvy" width={120} height={68} className="h-7 w-auto" />
       </div>
 
       <motion.div

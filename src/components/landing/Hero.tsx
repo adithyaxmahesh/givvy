@@ -57,7 +57,7 @@ function PhoneContent() {
   return (
     <div className="px-4 py-3">
       <div className="flex items-center mb-3">
-        <Image src="/givvy-logo.png" alt="Givvy" width={80} height={46} className="h-5 w-auto" />
+        <Image src="/givvy-logo.png" alt="Givvy" width={120} height={68} className="h-7 w-auto" />
       </div>
       <p className="text-[9px] text-gray-400 uppercase tracking-wider mb-2 font-medium">Open Projects</p>
       <div className="space-y-2.5">

@@ -53,7 +53,7 @@ export function Footer() {
           {/* Brand */}
           <motion.div variants={fadeUp} className="shrink-0">
             <div className="mb-4">
-              <Image src="/givvy-logo.png" alt="Givvy" width={100} height={57} className="h-7 w-auto brightness-0 invert" />
+              <Image src="/givvy-logo.png" alt="Givvy" width={140} height={80} className="h-10 w-auto brightness-0 invert" />
             </div>
             <p className="text-sm text-gray-500 max-w-[260px] leading-relaxed">
               The marketplace where startups hire top talent with equity. SAFE-powered agreements, milestone vesting, and a new way to build wealth.

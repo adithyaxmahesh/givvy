@@ -16,7 +16,7 @@ const links = [
 function Logo() {
   return (
     <Link href="/" className="flex items-center">
-      <Image src="/givvy-logo.png" alt="Givvy" width={160} height={91} className="h-11 w-auto" priority />
+      <Image src="/givvy-logo.png" alt="Givvy" width={200} height={114} className="h-14 w-auto" priority />
     </Link>
   );
 }
