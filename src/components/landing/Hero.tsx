@@ -4,6 +4,7 @@ import { useRef } from 'react';
 import { motion, useScroll, useTransform } from 'framer-motion';
 import { Zap } from 'lucide-react';
 import Link from 'next/link';
+import Image from 'next/image';
 import { FloatingIcon, type FloatingIconData } from './ui/Floating';
 import { Badge } from './ui/Badge';
 import { Button } from './ui/Button';
@@ -55,12 +56,8 @@ const heroIcons: FloatingIconData[] = [
 function PhoneContent() {
   return (
     <div className="px-4 py-3">
-      <div className="flex items-center gap-2 mb-3">
-        <svg width="16" height="16" viewBox="0 0 28 28" fill="none" className="text-[#1a1a1a]">
-          <rect x="2" y="8" width="14" height="12" rx="4" stroke="currentColor" strokeWidth="2.5" />
-          <rect x="12" y="8" width="14" height="12" rx="4" stroke="currentColor" strokeWidth="2.5" />
-        </svg>
-        <span className="text-[11px] font-bold text-[#1a1a1a]">Givvy</span>
+      <div className="flex items-center mb-3">
+        <Image src="/givvy-logo.png" alt="Givvy" width={80} height={46} className="h-5 w-auto" />
       </div>
       <p className="text-[9px] text-gray-400 uppercase tracking-wider mb-2 font-medium">Open Projects</p>
       <div className="space-y-2.5">

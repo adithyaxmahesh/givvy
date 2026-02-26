@@ -2,18 +2,15 @@
 
 import { useEffect, useRef, useState } from 'react';
 import { motion, useScroll, useTransform, useInView } from 'framer-motion';
+import Image from 'next/image';
 import { PhoneMock } from './ui/PhoneMock';
 import { ArrowRight, Briefcase } from 'lucide-react';
 
 function GatewayPhoneContent() {
   return (
     <div className="px-4 py-4 flex flex-col">
-      <div className="flex items-center gap-2 mb-4 self-start">
-        <svg width="14" height="14" viewBox="0 0 28 28" fill="none" className="text-[#1a1a1a]">
-          <rect x="2" y="8" width="14" height="12" rx="4" stroke="currentColor" strokeWidth="2.5" />
-          <rect x="12" y="8" width="14" height="12" rx="4" stroke="currentColor" strokeWidth="2.5" />
-        </svg>
-        <span className="text-[10px] font-bold text-[#1a1a1a]">Givvy</span>
+      <div className="flex items-center mb-4 self-start">
+        <Image src="/givvy-logo.png" alt="Givvy" width={80} height={46} className="h-5 w-auto" />
       </div>
 
       <motion.div
