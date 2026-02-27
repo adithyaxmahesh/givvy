@@ -125,6 +125,9 @@ export async function POST(request: NextRequest) {
         post_id: parsed.data.post_id,
         sender_id: user.id,
         message: parsed.data.message,
+        pricing_type: parsed.data.pricing_type,
+        hourly_rate: parsed.data.pricing_type === 'hourly' ? parsed.data.hourly_rate : null,
+        project_amount: parsed.data.pricing_type === 'project' ? parsed.data.project_amount : null,
       })
       .select('*, sender:profiles!sender_id(id, full_name, email, role, avatar_url)')
       .single();

@@ -46,10 +46,8 @@ function NewDealContent() {
   const [investmentAmount, setInvestmentAmount] = useState('25000');
   const [vestingMonths, setVestingMonths] = useState('48');
   const [cliffMonths, setCliffMonths] = useState('12');
-  const [safeType, setSafeType] = useState<'post-money' | 'pre-money'>('post-money');
   const [valuationCap, setValuationCap] = useState('');
   const [discount, setDiscount] = useState('20');
-  const [template, setTemplate] = useState<'yc-standard' | 'yc-mfn' | 'custom'>('yc-standard');
   const [message, setMessage] = useState('');
 
   const [submitting, setSubmitting] = useState(false);
@@ -97,16 +95,16 @@ function NewDealContent() {
           vesting_months: parseInt(vestingMonths) || 48,
           cliff_months: parseInt(cliffMonths) || 12,
           safe_terms: {
-            type: safeType,
+            type: 'post-money',
             valuation_cap: parseFloat(valuationCap) || 0,
             discount: parseFloat(discount) || 0,
             investment_amount: amount,
             vesting_schedule: parseInt(vestingMonths) || 48,
             cliff_period: parseInt(cliffMonths) || 12,
             pro_rata: false,
-            mfn_clause: template === 'yc-mfn',
+            mfn_clause: false,
             board_seat: false,
-            template,
+            template: 'yc-standard',
           },
         }),
       });
@@ -214,33 +212,16 @@ function NewDealContent() {
 
         {startup && !needsProfile && (
           <form onSubmit={handleSubmit} className="space-y-6">
-            {/* SAFE Template */}
-            <div>
-              <label className="block text-sm font-semibold text-[#1A1A1A] mb-3">
-                SAFE Template
-              </label>
-              <div className="grid grid-cols-3 gap-3">
-                {[
-                  { value: 'yc-standard' as const, label: 'YC Standard', desc: 'Standard post-money SAFE' },
-                  { value: 'yc-mfn' as const, label: 'YC MFN', desc: 'Most favored nation clause' },
-                  { value: 'custom' as const, label: 'Custom', desc: 'Custom terms' },
-                ].map((t) => (
-                  <button
-                    key={t.value}
-                    type="button"
-                    onClick={() => setTemplate(t.value)}
-                    className={`p-4 rounded-xl border-2 text-left transition-all ${
-                      template === t.value
-                        ? 'border-brand-600 bg-brand-50'
-                        : 'border-[#E8E8E6] bg-white hover:border-[#D1D5DB]'
-                    }`}
-                  >
-                    <p className={`text-sm font-semibold ${template === t.value ? 'text-brand-700' : 'text-[#1A1A1A]'}`}>
-                      {t.label}
-                    </p>
-                    <p className="text-xs text-[#6B6B6B] mt-0.5">{t.desc}</p>
-                  </button>
-                ))}
+            {/* YC Standard SAFE — locked */}
+            <div className="p-5 rounded-xl bg-emerald-50 border border-emerald-200">
+              <div className="flex items-center gap-3">
+                <Shield className="h-6 w-6 text-emerald-600 shrink-0" />
+                <div>
+                  <p className="text-sm font-bold text-emerald-800">YC Standard Post-Money SAFE</p>
+                  <p className="text-xs text-emerald-600 mt-0.5">
+                    All deals on Givvy use Y Combinator's standard post-money SAFE agreement — the most trusted instrument in startup equity.
+                  </p>
+                </div>
               </div>
             </div>
 
@@ -263,37 +244,6 @@ function NewDealContent() {
                 />
               </div>
               <p className="text-xs text-[#9CA3AF] mt-1">The dollar value of equity compensation via SAFE note</p>
-            </div>
-
-            {/* SAFE Type */}
-            <div>
-              <label className="block text-sm font-semibold text-[#1A1A1A] mb-1.5">
-                SAFE Type
-              </label>
-              <div className="grid grid-cols-2 gap-3">
-                <button
-                  type="button"
-                  onClick={() => setSafeType('post-money')}
-                  className={`p-3 rounded-xl border-2 text-center transition-all ${
-                    safeType === 'post-money'
-                      ? 'border-brand-600 bg-brand-50 text-brand-700'
-                      : 'border-[#E8E8E6] bg-white text-[#6B6B6B] hover:border-[#D1D5DB]'
-                  }`}
-                >
-                  <span className="text-sm font-semibold">Post-Money</span>
-                </button>
-                <button
-                  type="button"
-                  onClick={() => setSafeType('pre-money')}
-                  className={`p-3 rounded-xl border-2 text-center transition-all ${
-                    safeType === 'pre-money'
-                      ? 'border-brand-600 bg-brand-50 text-brand-700'
-                      : 'border-[#E8E8E6] bg-white text-[#6B6B6B] hover:border-[#D1D5DB]'
-                  }`}
-                >
-                  <span className="text-sm font-semibold">Pre-Money</span>
-                </button>
-              </div>
             </div>
 
             {/* Valuation cap + discount */}
@@ -379,9 +329,9 @@ function NewDealContent() {
                 <span className="text-[#6B6B6B]">SAFE Amount</span>
                 <span className="font-medium text-[#1A1A1A]">{formatCurrency(parseFloat(investmentAmount) || 0)}</span>
                 <span className="text-[#6B6B6B]">Template</span>
-                <span className="font-medium text-[#1A1A1A] capitalize">{template.replace(/-/g, ' ')}</span>
+                <span className="font-medium text-[#1A1A1A]">YC Standard</span>
                 <span className="text-[#6B6B6B]">Type</span>
-                <span className="font-medium text-[#1A1A1A] capitalize">{safeType}</span>
+                <span className="font-medium text-[#1A1A1A]">Post-Money</span>
                 <span className="text-[#6B6B6B]">Vesting</span>
                 <span className="font-medium text-[#1A1A1A]">{vestingMonths} mo / {cliffMonths} mo cliff</span>
                 {valuationCap && (

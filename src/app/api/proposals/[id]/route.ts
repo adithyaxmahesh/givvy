@@ -45,7 +45,7 @@ export async function PUT(
 
     const { data: proposal } = await supabase
       .from('proposals')
-      .select('*, post:posts!post_id(id, title, author_id, type, category, equity_min, equity_max)')
+      .select('*, post:posts!post_id(id, title, author_id, type, category, equity_min, equity_max), pricing_type, hourly_rate, project_amount')
       .eq('id', params.id)
       .single();
 

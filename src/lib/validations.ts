@@ -251,7 +251,19 @@ export const proposalSchema = z.object({
     .string()
     .min(1, 'Please include a message')
     .max(5000, 'Message must be 5000 characters or less'),
-});
+  pricing_type: z.enum(['hourly', 'project'], {
+    required_error: 'Please select a pricing type',
+  }),
+  hourly_rate: z.coerce.number().min(0).nullable().default(null),
+  project_amount: z.coerce.number().min(0).nullable().default(null),
+}).refine(
+  (data) => {
+    if (data.pricing_type === 'hourly') return data.hourly_rate !== null && data.hourly_rate > 0;
+    if (data.pricing_type === 'project') return data.project_amount !== null && data.project_amount > 0;
+    return false;
+  },
+  { message: 'Please enter a rate or project amount', path: ['hourly_rate'] }
+);
 
 // ─── Inferred Types ────────────────────────────────────────────────────────────
 

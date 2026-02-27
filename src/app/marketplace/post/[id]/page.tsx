@@ -13,6 +13,8 @@ import {
   Clock,
   XCircle,
   Trash2,
+  DollarSign,
+  Shield,
 } from 'lucide-react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
@@ -27,6 +29,9 @@ export default function PostDetailPage({ params }: { params: { id: string } }) {
   const [proposals, setProposals] = useState<Proposal[]>([]);
   const [loading, setLoading] = useState(true);
   const [message, setMessage] = useState('');
+  const [pricingType, setPricingType] = useState<'hourly' | 'project'>('hourly');
+  const [hourlyRate, setHourlyRate] = useState('');
+  const [projectAmount, setProjectAmount] = useState('');
   const [submitting, setSubmitting] = useState(false);
   const [sent, setSent] = useState(false);
   const [error, setError] = useState('');
@@ -67,7 +72,13 @@ export default function PostDetailPage({ params }: { params: { id: string } }) {
       const res = await fetch('/api/proposals', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ post_id: params.id, message: message.trim() }),
+        body: JSON.stringify({
+          post_id: params.id,
+          message: message.trim(),
+          pricing_type: pricingType,
+          hourly_rate: pricingType === 'hourly' ? Number(hourlyRate) : null,
+          project_amount: pricingType === 'project' ? Number(projectAmount) : null,
+        }),
       });
       const json = await res.json();
       if (!res.ok) throw new Error(json.error || 'Failed to send proposal');
@@ -231,7 +242,7 @@ export default function PostDetailPage({ params }: { params: { id: string } }) {
           <div className="mt-6 bg-white border border-[#E8E8E6] rounded-xl p-6 sm:p-8">
             <h2 className="text-lg font-bold text-[#1A1A1A] mb-1">Send a Proposal</h2>
             <p className="text-sm text-[#6B6B6B] mb-5">
-              Introduce yourself and explain why you'd be a great fit.
+              Introduce yourself, set your rate, and propose a deal.
             </p>
 
             {sent ? (
@@ -249,19 +260,105 @@ export default function PostDetailPage({ params }: { params: { id: string } }) {
                     {error}
                   </div>
                 )}
-                <textarea
-                  value={message}
-                  onChange={(e) => setMessage(e.target.value)}
-                  placeholder="Hi, I'm interested in this opportunity. Here's what I can bring..."
-                  rows={4}
-                  className="input-field resize-none mb-4"
-                  maxLength={5000}
-                />
+
+                {/* Pricing Type Toggle */}
+                <div className="mb-5">
+                  <label className="block text-sm font-semibold text-[#1A1A1A] mb-2">Pricing Structure</label>
+                  <div className="grid grid-cols-2 gap-3">
+                    <button
+                      type="button"
+                      onClick={() => setPricingType('hourly')}
+                      className={`flex items-center gap-2 px-4 py-3 rounded-xl border-2 text-sm font-medium transition-all ${
+                        pricingType === 'hourly'
+                          ? 'border-brand-600 bg-brand-50 text-brand-700'
+                          : 'border-[#E8E8E6] bg-white text-[#6B6B6B] hover:border-gray-300'
+                      }`}
+                    >
+                      <Clock className="h-4 w-4" />
+                      Hourly Rate
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setPricingType('project')}
+                      className={`flex items-center gap-2 px-4 py-3 rounded-xl border-2 text-sm font-medium transition-all ${
+                        pricingType === 'project'
+                          ? 'border-brand-600 bg-brand-50 text-brand-700'
+                          : 'border-[#E8E8E6] bg-white text-[#6B6B6B] hover:border-gray-300'
+                      }`}
+                    >
+                      <DollarSign className="h-4 w-4" />
+                      Project-Based
+                    </button>
+                  </div>
+                </div>
+
+                {/* Rate / Amount Input */}
+                <div className="mb-5">
+                  <label className="block text-sm font-semibold text-[#1A1A1A] mb-2">
+                    {pricingType === 'hourly' ? 'Hourly Rate (USD)' : 'Total Project Amount (USD)'}
+                  </label>
+                  <div className="relative">
+                    <DollarSign className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-[#9CA3AF]" />
+                    {pricingType === 'hourly' ? (
+                      <input
+                        type="number"
+                        min="1"
+                        step="1"
+                        value={hourlyRate}
+                        onChange={(e) => setHourlyRate(e.target.value)}
+                        placeholder="150"
+                        className="input-field pl-9"
+                      />
+                    ) : (
+                      <input
+                        type="number"
+                        min="1"
+                        step="1"
+                        value={projectAmount}
+                        onChange={(e) => setProjectAmount(e.target.value)}
+                        placeholder="10000"
+                        className="input-field pl-9"
+                      />
+                    )}
+                  </div>
+                  <p className="text-xs text-[#9CA3AF] mt-1.5">
+                    {pricingType === 'hourly'
+                      ? 'This is the equivalent hourly rate for the equity you\'ll receive.'
+                      : 'This is the total equivalent value for the project scope.'}
+                  </p>
+                </div>
+
+                {/* YC Standard SAFE — locked */}
+                <div className="mb-5 p-4 rounded-xl bg-emerald-50 border border-emerald-200">
+                  <div className="flex items-center gap-2.5">
+                    <Shield className="h-5 w-5 text-emerald-600 shrink-0" />
+                    <div>
+                      <p className="text-sm font-semibold text-emerald-800">YC Standard SAFE</p>
+                      <p className="text-xs text-emerald-600">
+                        All deals on Givvy use Y Combinator's standard post-money SAFE agreement with 4-year vesting and 1-year cliff.
+                      </p>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Message */}
+                <div className="mb-4">
+                  <label className="block text-sm font-semibold text-[#1A1A1A] mb-2">Message</label>
+                  <textarea
+                    value={message}
+                    onChange={(e) => setMessage(e.target.value)}
+                    placeholder="Hi, I'm interested in this opportunity. Here's what I can bring..."
+                    rows={4}
+                    className="input-field resize-none"
+                    maxLength={5000}
+                  />
+                </div>
+
                 <div className="flex items-center justify-between">
                   <p className="text-xs text-[#9CA3AF]">{message.length}/5000</p>
                   <button
                     type="submit"
-                    disabled={submitting || !message.trim()}
+                    disabled={submitting || !message.trim() || (pricingType === 'hourly' ? !hourlyRate : !projectAmount)}
                     className="btn-primary px-5 py-2.5 text-sm gap-1.5 disabled:opacity-50 disabled:cursor-not-allowed"
                   >
                     {submitting ? (
@@ -357,6 +454,22 @@ function ProposalCard({
 
         <StatusBadge status={proposal.status} />
       </div>
+
+      {/* Pricing info */}
+      {proposal.pricing_type && (
+        <div className="flex items-center gap-2 mb-3">
+          <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-brand-50 text-brand-700 text-xs font-semibold">
+            <DollarSign className="h-3 w-3" />
+            {proposal.pricing_type === 'hourly'
+              ? `$${proposal.hourly_rate}/hr`
+              : `$${proposal.project_amount?.toLocaleString()} project`}
+          </span>
+          <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-emerald-50 text-emerald-700 text-xs font-semibold">
+            <Shield className="h-3 w-3" />
+            YC Standard SAFE
+          </span>
+        </div>
+      )}
 
       <p className="text-sm text-[#4B5563] leading-relaxed whitespace-pre-wrap mb-4">
         {proposal.message}

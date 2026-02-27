@@ -275,12 +275,16 @@ export interface Post {
 }
 
 export type ProposalStatus = 'pending' | 'accepted' | 'rejected';
+export type PricingType = 'hourly' | 'project';
 
 export interface Proposal {
   id: string;
   post_id: string;
   sender_id: string;
   message: string;
+  pricing_type: PricingType;
+  hourly_rate: number | null;
+  project_amount: number | null;
   status: ProposalStatus;
   created_at: string;
   updated_at: string;
