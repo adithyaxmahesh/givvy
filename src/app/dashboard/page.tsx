@@ -128,7 +128,7 @@ export default function DashboardPage() {
     (d) => !['completed', 'cancelled'].includes(d.status)
   );
   const completedDeals = deals.filter((d) => d.status === 'completed');
-  const totalInvestment = activeDeals.reduce((sum, d) => sum + d.investment_amount, 0);
+  const totalInvestment = completedDeals.reduce((sum, d) => sum + d.investment_amount, 0);
   const avgMatch =
     deals.length > 0
       ? Math.round(deals.reduce((s, d) => s + d.match_score, 0) / deals.length)
@@ -223,7 +223,7 @@ export default function DashboardPage() {
               value={formatCurrency(totalInvestment)}
               icon={<TrendingUp className="h-4 w-4" />}
               accent="text-emerald-600 bg-emerald-50"
-              sub={`Across ${activeDeals.length} deal${activeDeals.length !== 1 ? 's' : ''}`}
+              sub={`Across ${completedDeals.length} completed deal${completedDeals.length !== 1 ? 's' : ''}`}
             />
             <StatCard
               label="Avg Match Score"
