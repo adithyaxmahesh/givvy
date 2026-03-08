@@ -1,6 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { verifySessionToken, SESSION_COOKIE } from '@/lib/auth';
-import { tryCreateAdminClient } from '@/lib/supabase/admin';
 
 export async function GET(request: NextRequest) {
   try {
@@ -18,23 +17,8 @@ export async function GET(request: NextRequest) {
       return response;
     }
 
-    let verified = false;
-    const admin = tryCreateAdminClient();
-    if (admin) {
-      try {
-        const { data: profile } = await admin
-          .from('profiles')
-          .select('verified')
-          .eq('id', user.id)
-          .single();
-        verified = profile?.verified === true;
-      } catch {
-        verified = false;
-      }
-    }
-
     return NextResponse.json({
-      user: { ...user, verified },
+      user: { ...user, verified: true },
     });
   } catch (err) {
     console.error('[auth/session] Unexpected error:', err);

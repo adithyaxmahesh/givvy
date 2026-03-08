@@ -3,6 +3,8 @@ import { getAuthUser, DEMO_EMAILS } from '@/lib/auth';
 import { createAdminClient } from '@/lib/supabase/admin';
 import { toDbFields, fromDbFields } from '@/lib/utils';
 import { mockDeals, mockMessages, mockMilestones } from '@/lib/data';
+import { selectTemplate } from '@/lib/safe/templates';
+import { buildSAFEDocData, generateSAFEPDF } from '@/lib/safe/generator';
 
 export async function GET(
   request: NextRequest,
@@ -161,6 +163,126 @@ export async function PATCH(
         } catch {
           // Non-blocking
         }
+      }
+    }
+
+    // Auto-generate SAFE when deal reaches "terms-agreed"
+    if (updates.status === 'terms-agreed' && data) {
+      try {
+        const terms = data.safe_terms ?? {};
+        const { variant, label } = selectTemplate(terms);
+        const now = new Date().toISOString();
+
+        const safeDocData = {
+          deal_id: id,
+          template: `yc-${variant}` as string,
+          status: 'pending-signature',
+          terms: data.safe_terms,
+          document_url: null as string | null,
+          version_history: [
+            { version: 1, date: now, description: `Auto-generated ${label}`, author: 'system' },
+          ],
+          audit_trail: [
+            { action: `SAFE auto-generated (${label})`, timestamp: now, actor: 'system' },
+            { action: 'Sent for e-signature', timestamp: now, actor: 'system' },
+          ],
+          signatures: {
+            company: { signed: false, signer_name: '', signer_title: '', signed_at: null },
+            provider: { signed: false, signer_name: '', signer_title: '', signed_at: null },
+          },
+        };
+
+        const { data: existingSafe } = await supabase
+          .from('safe_documents')
+          .select('id')
+          .eq('deal_id', id)
+          .order('created_at', { ascending: false })
+          .limit(1)
+          .maybeSingle();
+
+        let safeDocRecord;
+        if (existingSafe) {
+          const { data: updated } = await supabase
+            .from('safe_documents')
+            .update({ ...safeDocData, updated_at: now })
+            .eq('id', existingSafe.id)
+            .select()
+            .single();
+          safeDocRecord = updated;
+        } else {
+          const { data: inserted } = await supabase
+            .from('safe_documents')
+            .insert(safeDocData)
+            .select()
+            .single();
+          safeDocRecord = inserted;
+        }
+
+        // Generate the PDF and store in Supabase Storage
+        if (safeDocRecord) {
+          try {
+            const pdfData = buildSAFEDocData(data, data.startup, data.talent);
+            const pdfBuffer = await generateSAFEPDF(pdfData);
+
+            const fileName = `safe-${id}-v1.pdf`;
+            const { error: uploadErr } = await supabase.storage
+              .from('safe-documents')
+              .upload(fileName, pdfBuffer, {
+                contentType: 'application/pdf',
+                upsert: true,
+              });
+
+            if (!uploadErr) {
+              const { data: urlData } = supabase.storage
+                .from('safe-documents')
+                .getPublicUrl(fileName);
+
+              if (urlData?.publicUrl) {
+                await supabase
+                  .from('safe_documents')
+                  .update({ document_url: urlData.publicUrl, updated_at: now })
+                  .eq('id', safeDocRecord.id);
+              }
+            }
+          } catch (pdfErr) {
+            console.warn('[deals/id] PDF generation failed (non-blocking):', pdfErr);
+          }
+        }
+
+        await supabase
+          .from('deals')
+          .update({ status: 'safe-generated', updated_at: now })
+          .eq('id', id);
+
+        // Notify both parties that SAFE is ready for signing
+        const founderId = data.startup?.founder?.id;
+        const talentUserId = data.talent?.user?.id;
+        const sName = data.startup?.name || 'the startup';
+
+        const notifs = [];
+        if (founderId) {
+          notifs.push(supabase.from('notifications').insert({
+            user_id: founderId,
+            title: 'SAFE Ready for Signing',
+            description: `The ${label} for your deal with ${sName} has been auto-generated and is ready for e-signature.`,
+            type: 'safe_generated',
+            link: `/deals/${id}`,
+            read: false,
+          }));
+        }
+        if (talentUserId) {
+          notifs.push(supabase.from('notifications').insert({
+            user_id: talentUserId,
+            title: 'SAFE Ready for Signing',
+            description: `The ${label} for your deal with ${sName} has been auto-generated and is ready for e-signature.`,
+            type: 'safe_generated',
+            link: `/deals/${id}`,
+            read: false,
+          }));
+        }
+        await Promise.all(notifs);
+      } catch (safeGenErr) {
+        console.error('[deals/id] SAFE auto-generation failed (non-blocking):', safeGenErr);
       }
     }
 

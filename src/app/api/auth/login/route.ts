@@ -80,20 +80,6 @@ async function trySupabaseLogin(
       });
     }
 
-    let verified = false;
-    if (admin) {
-      try {
-        const { data: profile } = await admin
-          .from('profiles')
-          .select('verified')
-          .eq('id', data.user.id)
-          .single();
-        verified = profile?.verified === true;
-      } catch {
-        verified = false;
-      }
-    }
-
     return {
       user: {
         id: data.user.id,
@@ -101,7 +87,7 @@ async function trySupabaseLogin(
         full_name: fullName,
         role,
         avatar_url: avatarUrl,
-        verified,
+        verified: true,
       },
       error: null,
     };

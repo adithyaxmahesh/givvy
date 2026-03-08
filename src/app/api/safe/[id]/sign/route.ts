@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getAuthUser } from '@/lib/auth';
 import { createAdminClient } from '@/lib/supabase/admin';
+import { buildSAFEDocData, generateSAFEPDF } from '@/lib/safe/generator';
 
 export async function POST(
   request: NextRequest,
@@ -109,15 +110,50 @@ export async function POST(
         .update({ status: 'signed', updated_at: now })
         .eq('id', dealId);
 
-      // Create portfolio holdings when SAFE is fully signed
+      // Generate and persist the final signed PDF, create portfolio, notify
       try {
         const { data: deal } = await supabase
           .from('deals')
-          .select('*, startup:startups(id, name, founder_id), talent:talent_profiles(id, user_id)')
+          .select(
+            '*, startup:startups(*, founder:profiles!founder_id(*)), talent:talent_profiles(*, user:profiles!user_id(*))'
+          )
           .eq('id', dealId)
           .single();
 
         if (deal) {
+          // Persist final signed PDF to Supabase Storage
+          try {
+            const pdfData = buildSAFEDocData(deal, deal.startup, deal.talent);
+            const pdfBuffer = await generateSAFEPDF(pdfData);
+
+            const signedFileName = `safe-${dealId}-signed.pdf`;
+            const { error: uploadErr } = await supabase.storage
+              .from('safe-documents')
+              .upload(signedFileName, pdfBuffer, {
+                contentType: 'application/pdf',
+                upsert: true,
+              });
+
+            if (!uploadErr) {
+              const { data: urlData } = supabase.storage
+                .from('safe-documents')
+                .getPublicUrl(signedFileName);
+
+              if (urlData?.publicUrl) {
+                await supabase
+                  .from('safe_documents')
+                  .update({
+                    signed_document_url: urlData.publicUrl,
+                    document_url: urlData.publicUrl,
+                    updated_at: now,
+                  })
+                  .eq('id', safeDoc.id);
+              }
+            }
+          } catch (pdfErr) {
+            console.warn('[safe/sign] Signed PDF upload failed (non-blocking):', pdfErr);
+          }
+
           const investmentAmount = deal.investment_amount || deal.safe_terms?.investment_amount || 0;
           const valuationCap = deal.safe_terms?.valuation_cap || 0;
           const safeAmount = deal.safe_terms?.investment_amount || investmentAmount;
@@ -135,9 +171,8 @@ export async function POST(
             date_issued: now,
           });
 
-          // Notify both parties
-          const founderId = deal.startup?.founder_id;
-          const talentUserId = deal.talent?.user_id;
+          const founderId = deal.startup?.founder_id ?? deal.startup?.founder?.id;
+          const talentUserId = deal.talent?.user_id ?? deal.talent?.user?.id;
           const startupName = deal.startup?.name || 'the startup';
 
           const notifPromises = [];
@@ -146,7 +181,7 @@ export async function POST(
               supabase.from('notifications').insert({
                 user_id: founderId,
                 title: 'SAFE Fully Executed',
-                description: `The SAFE agreement for your deal with ${startupName} has been fully signed by both parties.`,
+                description: `The SAFE agreement for your deal with ${startupName} has been fully signed by both parties. Download your copy from the deal page.`,
                 type: 'safe_signed',
                 link: `/deals/${dealId}`,
                 read: false,
@@ -158,7 +193,7 @@ export async function POST(
               supabase.from('notifications').insert({
                 user_id: talentUserId,
                 title: 'SAFE Fully Executed',
-                description: `The SAFE agreement for your deal with ${startupName} has been fully signed. Your equity is now vesting.`,
+                description: `The SAFE agreement for your deal with ${startupName} has been fully signed. Your equity is now vesting. Download your copy from the deal page.`,
                 type: 'safe_signed',
                 link: `/deals/${dealId}`,
                 read: false,

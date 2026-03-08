@@ -42,7 +42,7 @@ export type HoldingStatus = 'active' | 'vesting' | 'vested' | 'exited';
 
 export type Availability = 'full-time' | 'part-time' | 'contract';
 
-export type SAFETemplate = 'yc-standard' | 'yc-mfn' | 'custom';
+export type SAFETemplate = 'yc-standard' | 'yc-mfn' | 'yc-valuation-cap' | 'yc-discount' | 'custom';
 
 export type SAFEDocStatus = 'draft' | 'pending-signature' | 'signed' | 'voided';
 
@@ -222,6 +222,7 @@ export interface SAFEDocument {
   status: SAFEDocStatus;
   terms: SAFETerms;
   document_url: string | null;
+  signed_document_url: string | null;
   version_history: VersionEntry[];
   audit_trail: AuditEntry[];
   signatures: Record<string, SignatureData>;

@@ -180,7 +180,7 @@ export default function OnboardingQuestionsPage() {
         const data = await res.json().catch(() => ({}));
         throw new Error(data.error || 'Failed to save');
       }
-      router.push('/pending');
+      router.push('/dashboard');
     } catch (err: any) {
       setError(err.message ?? 'Something went wrong');
     } finally {

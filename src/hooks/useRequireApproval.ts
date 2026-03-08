@@ -1,21 +1,9 @@
 'use client';
 
-import { useAuth } from '@/lib/auth-context';
-import { useRouter } from 'next/navigation';
-import { useEffect } from 'react';
-
 /**
- * Redirects to /pending if the user is logged in but not approved (verified).
- * Use on pages that require approval: dashboard, deals, onboarding founder/talent, etc.
+ * No-op — approval gate has been removed. All signed-up users have full access.
+ * Kept as a stub so existing call sites don't break.
  */
 export function useRequireApproval() {
-  const { user, loading } = useAuth();
-  const router = useRouter();
-
-  useEffect(() => {
-    if (loading || !user) return;
-    if (user.verified === false || user.verified === undefined) {
-      router.replace('/pending');
-    }
-  }, [loading, user, router]);
+  // No approval check needed
 }

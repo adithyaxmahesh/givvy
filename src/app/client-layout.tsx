@@ -32,6 +32,7 @@ const navLinks = [
   { label: 'Dashboard', href: '/dashboard', icon: LayoutDashboard },
   { label: 'My Posts', href: '/dashboard/posts', icon: PenSquare },
   { label: 'Deals', href: '/deals', icon: FileText },
+  { label: 'Documents', href: '/documents', icon: Shield },
 ];
 
 const ADMIN_EMAILS = ['adithyamahesh123@gmail.com'];
@@ -39,6 +40,7 @@ const ADMIN_EMAILS = ['adithyamahesh123@gmail.com'];
 const profileMenuItems = [
   { label: 'Dashboard', href: '/dashboard', icon: LayoutDashboard },
   { label: 'My Posts', href: '/dashboard/posts', icon: PenSquare },
+  { label: 'My Documents', href: '/documents', icon: Shield },
   { label: 'Settings', href: '/dashboard/settings', icon: Settings },
   { label: 'My Deals', href: '/deals', icon: FileText },
 ];

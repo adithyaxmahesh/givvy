@@ -31,6 +31,9 @@ import {
   TrendingUp,
   ChevronRight,
   RefreshCw,
+  Download,
+  Circle,
+  Pen,
 } from 'lucide-react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
@@ -53,6 +56,81 @@ const fadeUp = {
     transition: { delay: i * 0.05, duration: 0.35, ease: 'easeOut' },
   }),
 };
+
+function SAFEProgress({ deal, safeDoc }: { deal: Deal; safeDoc: any }) {
+  const steps = [
+    { key: 'terms', label: 'Terms Agreed' },
+    { key: 'generated', label: 'SAFE Generated' },
+    { key: 'company', label: 'Company Signed' },
+    { key: 'provider', label: 'Provider Signed' },
+    { key: 'executed', label: 'Fully Executed' },
+  ];
+
+  const getStepState = (key: string): 'done' | 'active' | 'pending' => {
+    const status = deal.status;
+    const companySigned = safeDoc?.signatures?.company?.signed;
+    const providerSigned = safeDoc?.signatures?.provider?.signed;
+
+    switch (key) {
+      case 'terms':
+        return ['terms-agreed', 'safe-generated', 'signed', 'active', 'completed'].includes(status) ? 'done' : status === 'negotiating' ? 'active' : 'pending';
+      case 'generated':
+        if (['safe-generated', 'signed', 'active', 'completed'].includes(status) || safeDoc) return 'done';
+        return status === 'terms-agreed' ? 'active' : 'pending';
+      case 'company':
+        if (companySigned) return 'done';
+        return safeDoc && safeDoc.status === 'pending-signature' ? 'active' : 'pending';
+      case 'provider':
+        if (providerSigned) return 'done';
+        return companySigned && safeDoc?.status === 'pending-signature' ? 'active' : 'pending';
+      case 'executed':
+        if (safeDoc?.status === 'signed' || status === 'signed' || status === 'active' || status === 'completed') return 'done';
+        return companySigned && providerSigned ? 'active' : 'pending';
+      default:
+        return 'pending';
+    }
+  };
+
+  return (
+    <div className="flex items-center gap-0.5">
+      {steps.map((step, i) => {
+        const state = getStepState(step.key);
+        return (
+          <div key={step.key} className="flex items-center gap-0.5 flex-1">
+            <div className="flex flex-col items-center flex-1">
+              <div
+                className={cn(
+                  'h-5 w-5 rounded-full flex items-center justify-center transition-all',
+                  state === 'done' && 'bg-emerald-500 text-white',
+                  state === 'active' && 'bg-brand-600 text-white ring-2 ring-brand-200',
+                  state === 'pending' && 'bg-gray-200 text-gray-400',
+                )}
+              >
+                {state === 'done' ? (
+                  <CheckCircle2 className="h-3 w-3" />
+                ) : (
+                  <Circle className="h-2.5 w-2.5" />
+                )}
+              </div>
+              <span className={cn(
+                'text-[9px] mt-1 text-center leading-tight',
+                state === 'done' ? 'text-emerald-600 font-medium' : state === 'active' ? 'text-brand-600 font-medium' : 'text-gray-400',
+              )}>
+                {step.label}
+              </span>
+            </div>
+            {i < steps.length - 1 && (
+              <div className={cn(
+                'h-0.5 flex-1 rounded-full -mt-3.5',
+                state === 'done' ? 'bg-emerald-300' : 'bg-gray-200',
+              )} />
+            )}
+          </div>
+        );
+      })}
+    </div>
+  );
+}
 
 function DealSkeleton() {
   return (
@@ -146,6 +224,9 @@ export default function DealNegotiationPage({
   const [signingSafe, setSigningSafe] = useState(false);
   const [signerName, setSignerName] = useState('');
   const [signerTitle, setSignerTitle] = useState('');
+  const [showSignConfirm, setShowSignConfirm] = useState<'company' | 'provider' | null>(null);
+  const [agreeingTerms, setAgreeingTerms] = useState(false);
+  const [downloadingPdf, setDownloadingPdf] = useState(false);
 
   const [mobileTab, setMobileTab] = useState<MobileTab>('chat');
 
@@ -212,6 +293,22 @@ export default function DealNegotiationPage({
     } catch { /* network error — SAFE doc may not exist yet */ }
   }, [id]);
 
+  const handleAgreeTerms = async () => {
+    setAgreeingTerms(true);
+    try {
+      const res = await fetch(`/api/deals/${id}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ status: 'terms-agreed' }),
+      });
+      if (res.ok) {
+        await fetchDeal();
+        await fetchSafeDoc();
+      }
+    } catch { /* agree failed silently */ }
+    setAgreeingTerms(false);
+  };
+
   const handleGenerateSafe = async () => {
     setGeneratingSafe(true);
     try {
@@ -240,12 +337,30 @@ export default function DealNegotiationPage({
       if (res.ok) {
         const json = await res.json();
         setSafeDoc(json.data);
-        setSignerName('');
-        setSignerTitle('');
         await fetchDeal();
       }
     } catch { /* sign failed silently */ }
     setSigningSafe(false);
+    setShowSignConfirm(null);
+  };
+
+  const handleDownloadPdf = async () => {
+    setDownloadingPdf(true);
+    try {
+      const res = await fetch(`/api/safe/${id}/pdf`);
+      if (res.ok) {
+        const blob = await res.blob();
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `safe-${id.slice(0, 8)}.pdf`;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+      }
+    } catch { /* download failed silently */ }
+    setDownloadingPdf(false);
   };
 
   useEffect(() => {
@@ -258,6 +373,19 @@ export default function DealNegotiationPage({
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [messages]);
+
+  // Auto-fill signer info from logged-in user's profile
+  useEffect(() => {
+    if (!user || !deal) return;
+    const isFounder = user.id === deal.startup?.founder?.id;
+    if (isFounder) {
+      setSignerName(deal.startup?.founder?.full_name || user.full_name || '');
+      setSignerTitle('CEO & Founder');
+    } else {
+      setSignerName(user.full_name || deal.talent?.user?.full_name || '');
+      setSignerTitle(deal.talent?.title || 'Contributor');
+    }
+  }, [user, deal]);
 
   const handleSendMessage = async () => {
     if (!newMessage.trim() || sending) return;
@@ -746,105 +874,250 @@ export default function DealNegotiationPage({
             SAFE Document
           </h3>
 
-          {!safeDoc ? (
-            <button
-              onClick={handleGenerateSafe}
-              disabled={generatingSafe}
-              className="btn-primary w-full !py-2.5 gap-2 text-xs disabled:opacity-50"
-            >
-              {generatingSafe ? (
-                <Loader2 className="h-3.5 w-3.5 animate-spin" />
-              ) : (
-                <FileText className="h-3.5 w-3.5" />
-              )}
-              Generate SAFE Document
-            </button>
-          ) : (
-            <div className="space-y-3">
-              <div className="flex items-center justify-between">
-                <span className="text-xs text-gray-500">Status</span>
-                <span className={cn('badge !text-[10px] !px-2 !py-0.5 capitalize', getStatusColor(safeDoc.status))}>
-                  {safeDoc.status?.replace('-', ' ')}
-                </span>
-              </div>
+          {/* Progress Indicator */}
+          <SAFEProgress deal={deal} safeDoc={safeDoc} />
 
-              <div className="space-y-2">
-                <div className="flex items-center justify-between text-xs">
-                  <span className="text-gray-500">Company</span>
-                  {safeDoc.signatures?.company?.signed ? (
-                    <span className="flex items-center gap-1 text-green-600 font-medium">
-                      <CheckCircle2 className="h-3 w-3" />
-                      {safeDoc.signatures.company.signer_name}
-                    </span>
+          {/* Pre-SAFE: Agree to Terms or Generate */}
+          {!safeDoc && deal.status !== 'safe-generated' && deal.status !== 'signed' && (
+            <div className="space-y-2 mt-3">
+              {deal.status === 'negotiating' || deal.status === 'proposed' ? (
+                <button
+                  onClick={handleAgreeTerms}
+                  disabled={agreeingTerms}
+                  className="btn-primary w-full !py-2.5 gap-2 text-xs disabled:opacity-50"
+                >
+                  {agreeingTerms ? (
+                    <Loader2 className="h-3.5 w-3.5 animate-spin" />
                   ) : (
-                    <span className="text-amber-600">Unsigned</span>
-                  )}
-                </div>
-                <div className="flex items-center justify-between text-xs">
-                  <span className="text-gray-500">Provider</span>
-                  {safeDoc.signatures?.provider?.signed ? (
-                    <span className="flex items-center gap-1 text-green-600 font-medium">
-                      <CheckCircle2 className="h-3 w-3" />
-                      {safeDoc.signatures.provider.signer_name}
-                    </span>
-                  ) : (
-                    <span className="text-amber-600">Unsigned</span>
-                  )}
-                </div>
-              </div>
-
-              {safeDoc.status !== 'signed' && (
-                <div className="pt-2 space-y-2">
-                  <input
-                    type="text"
-                    value={signerName}
-                    onChange={(e) => setSignerName(e.target.value)}
-                    placeholder="Your full name"
-                    className="input-field !py-2 !text-xs"
-                  />
-                  <input
-                    type="text"
-                    value={signerTitle}
-                    onChange={(e) => setSignerTitle(e.target.value)}
-                    placeholder="Title (optional)"
-                    className="input-field !py-2 !text-xs"
-                  />
-                  <div className="flex gap-2">
-                    {!safeDoc.signatures?.company?.signed && (
-                      <button
-                        onClick={() => handleSignSafe('company')}
-                        disabled={signingSafe || !signerName.trim()}
-                        className="flex-1 py-2 px-3 rounded-lg text-xs font-semibold text-white bg-emerald-600 hover:bg-emerald-700 disabled:opacity-50 transition-colors flex items-center justify-center gap-1.5"
-                      >
-                        {signingSafe ? <Loader2 className="h-3 w-3 animate-spin" /> : <CheckCircle2 className="h-3 w-3" />}
-                        Sign as Company
-                      </button>
-                    )}
-                    {!safeDoc.signatures?.provider?.signed && (
-                      <button
-                        onClick={() => handleSignSafe('provider')}
-                        disabled={signingSafe || !signerName.trim()}
-                        className="flex-1 py-2 px-3 rounded-lg text-xs font-semibold text-white bg-emerald-600 hover:bg-emerald-700 disabled:opacity-50 transition-colors flex items-center justify-center gap-1.5"
-                      >
-                        {signingSafe ? <Loader2 className="h-3 w-3 animate-spin" /> : <CheckCircle2 className="h-3 w-3" />}
-                        Sign as Provider
-                      </button>
-                    )}
-                  </div>
-                </div>
-              )}
-
-              {safeDoc.status === 'signed' && (
-                <div className="p-3 rounded-xl bg-green-50 border border-green-200">
-                  <p className="text-xs text-green-700 font-medium flex items-center gap-1.5">
                     <CheckCircle2 className="h-3.5 w-3.5" />
-                    SAFE fully executed — both parties signed
+                  )}
+                  Agree to Terms & Generate SAFE
+                </button>
+              ) : (
+                <button
+                  onClick={handleGenerateSafe}
+                  disabled={generatingSafe}
+                  className="btn-primary w-full !py-2.5 gap-2 text-xs disabled:opacity-50"
+                >
+                  {generatingSafe ? (
+                    <Loader2 className="h-3.5 w-3.5 animate-spin" />
+                  ) : (
+                    <FileText className="h-3.5 w-3.5" />
+                  )}
+                  Generate SAFE Document
+                </button>
+              )}
+            </div>
+          )}
+
+          {/* SAFE exists */}
+          {safeDoc && (
+            <div className="space-y-3 mt-3">
+              {/* Fully Executed — prominent signed document card */}
+              {safeDoc.status === 'signed' && (
+                <div className="p-4 rounded-xl bg-green-50 border border-green-200 space-y-3">
+                  <p className="text-xs text-green-700 font-semibold flex items-center gap-1.5">
+                    <CheckCircle2 className="h-4 w-4" />
+                    SAFE Fully Executed
                   </p>
+                  <div className="space-y-1.5">
+                    <div className="flex items-center justify-between text-xs">
+                      <span className="text-green-600">Company</span>
+                      <span className="text-green-800 font-medium">{safeDoc.signatures?.company?.signer_name} — {safeDoc.signatures?.company?.signed_at ? new Date(safeDoc.signatures.company.signed_at).toLocaleDateString() : ''}</span>
+                    </div>
+                    <div className="flex items-center justify-between text-xs">
+                      <span className="text-green-600">Provider</span>
+                      <span className="text-green-800 font-medium">{safeDoc.signatures?.provider?.signer_name} — {safeDoc.signatures?.provider?.signed_at ? new Date(safeDoc.signatures.provider.signed_at).toLocaleDateString() : ''}</span>
+                    </div>
+                  </div>
+                  <button
+                    onClick={handleDownloadPdf}
+                    disabled={downloadingPdf}
+                    className="w-full py-2.5 px-3 rounded-lg text-xs font-semibold text-white bg-emerald-600 hover:bg-emerald-700 disabled:opacity-50 transition-colors flex items-center justify-center gap-1.5"
+                  >
+                    {downloadingPdf ? (
+                      <Loader2 className="h-3.5 w-3.5 animate-spin" />
+                    ) : (
+                      <Download className="h-3.5 w-3.5" />
+                    )}
+                    Download Signed SAFE
+                  </button>
                 </div>
+              )}
+
+              {/* Pending signature state */}
+              {safeDoc.status !== 'signed' && (
+                <>
+                  {/* Download draft PDF button */}
+                  <button
+                    onClick={handleDownloadPdf}
+                    disabled={downloadingPdf}
+                    className="w-full py-2 px-3 rounded-lg text-xs font-semibold text-brand-700 bg-brand-50 border border-brand-200 hover:bg-brand-100 disabled:opacity-50 transition-colors flex items-center justify-center gap-1.5"
+                  >
+                    {downloadingPdf ? (
+                      <Loader2 className="h-3.5 w-3.5 animate-spin" />
+                    ) : (
+                      <Download className="h-3.5 w-3.5" />
+                    )}
+                    Download Draft SAFE PDF
+                  </button>
+
+                  {/* Signature Status */}
+                  <div className="space-y-2">
+                    <div className="flex items-center justify-between text-xs">
+                      <span className="text-gray-500">Company Signature</span>
+                      {safeDoc.signatures?.company?.signed ? (
+                        <span className="flex items-center gap-1 text-green-600 font-medium">
+                          <CheckCircle2 className="h-3 w-3" />
+                          {safeDoc.signatures.company.signer_name}
+                        </span>
+                      ) : (
+                        <span className="text-amber-600 font-medium">Awaiting</span>
+                      )}
+                    </div>
+                    <div className="flex items-center justify-between text-xs">
+                      <span className="text-gray-500">Provider Signature</span>
+                      {safeDoc.signatures?.provider?.signed ? (
+                        <span className="flex items-center gap-1 text-green-600 font-medium">
+                          <CheckCircle2 className="h-3 w-3" />
+                          {safeDoc.signatures.provider.signer_name}
+                        </span>
+                      ) : (
+                        <span className="text-amber-600 font-medium">Awaiting</span>
+                      )}
+                    </div>
+                  </div>
+
+                  {/* Role-based Sign UI */}
+                  {(() => {
+                    const isFounder = user?.id === deal.startup?.founder?.id;
+                    const myParty: 'company' | 'provider' = isFounder ? 'company' : 'provider';
+                    const alreadySigned = safeDoc.signatures?.[myParty]?.signed;
+
+                    if (alreadySigned) {
+                      return (
+                        <div className="p-3 rounded-xl bg-blue-50 border border-blue-200">
+                          <p className="text-xs text-blue-700 font-medium flex items-center gap-1.5">
+                            <CheckCircle2 className="h-3.5 w-3.5" />
+                            You have signed. Waiting for the other party.
+                          </p>
+                        </div>
+                      );
+                    }
+
+                    return (
+                      <div className="pt-2 space-y-2">
+                        <div className="grid grid-cols-2 gap-2">
+                          <div>
+                            <label className="block text-[10px] font-medium text-gray-500 mb-1">Full Name</label>
+                            <input
+                              type="text"
+                              value={signerName}
+                              onChange={(e) => setSignerName(e.target.value)}
+                              placeholder="Your full name"
+                              className="input-field !py-2 !text-xs"
+                            />
+                          </div>
+                          <div>
+                            <label className="block text-[10px] font-medium text-gray-500 mb-1">Title</label>
+                            <input
+                              type="text"
+                              value={signerTitle}
+                              onChange={(e) => setSignerTitle(e.target.value)}
+                              placeholder="CEO, Engineer, etc."
+                              className="input-field !py-2 !text-xs"
+                            />
+                          </div>
+                        </div>
+                        <button
+                          onClick={() => setShowSignConfirm(myParty)}
+                          disabled={signingSafe || !signerName.trim()}
+                          className="w-full py-2.5 px-3 rounded-lg text-xs font-semibold text-white bg-emerald-600 hover:bg-emerald-700 disabled:opacity-50 transition-colors flex items-center justify-center gap-1.5"
+                        >
+                          <Pen className="h-3 w-3" />
+                          Sign as {isFounder ? 'Company' : 'Provider'}
+                        </button>
+                      </div>
+                    );
+                  })()}
+                </>
               )}
             </div>
           )}
         </div>
+
+        {/* Sign Confirmation Dialog */}
+        <AnimatePresence>
+          {showSignConfirm && (
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4"
+              onClick={() => setShowSignConfirm(null)}
+            >
+              <motion.div
+                initial={{ scale: 0.95, opacity: 0 }}
+                animate={{ scale: 1, opacity: 1 }}
+                exit={{ scale: 0.95, opacity: 0 }}
+                onClick={(e) => e.stopPropagation()}
+                className="bg-white rounded-2xl shadow-xl p-6 max-w-md w-full space-y-4"
+              >
+                <div className="flex items-center gap-3">
+                  <div className="h-10 w-10 rounded-full bg-emerald-100 flex items-center justify-center">
+                    <Pen className="h-5 w-5 text-emerald-600" />
+                  </div>
+                  <div>
+                    <h3 className="text-base font-bold text-gray-900">Confirm E-Signature</h3>
+                    <p className="text-xs text-gray-500">This action is legally binding</p>
+                  </div>
+                </div>
+
+                <div className="p-3 rounded-xl bg-amber-50 border border-amber-200">
+                  <p className="text-xs text-amber-800 leading-relaxed">
+                    By signing, you agree to the terms of this YC Standard Post-Money SAFE agreement between <strong>{deal.startup?.name}</strong> and <strong>{deal.talent?.user?.full_name}</strong> for <strong>{formatCurrency(investmentAmount)}</strong>.
+                  </p>
+                </div>
+
+                <div className="space-y-1.5">
+                  <div className="flex justify-between text-xs">
+                    <span className="text-gray-500">Signer:</span>
+                    <span className="font-medium text-gray-900">{signerName}</span>
+                  </div>
+                  <div className="flex justify-between text-xs">
+                    <span className="text-gray-500">Title:</span>
+                    <span className="font-medium text-gray-900">{signerTitle || '—'}</span>
+                  </div>
+                  <div className="flex justify-between text-xs">
+                    <span className="text-gray-500">Signing as:</span>
+                    <span className="font-medium text-gray-900 capitalize">{showSignConfirm}</span>
+                  </div>
+                </div>
+
+                <div className="flex gap-3 pt-2">
+                  <button
+                    onClick={() => setShowSignConfirm(null)}
+                    className="flex-1 py-2.5 rounded-lg text-xs font-semibold text-gray-600 bg-gray-100 hover:bg-gray-200 transition-colors"
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    onClick={() => handleSignSafe(showSignConfirm)}
+                    disabled={signingSafe}
+                    className="flex-1 py-2.5 rounded-lg text-xs font-semibold text-white bg-emerald-600 hover:bg-emerald-700 disabled:opacity-50 transition-colors flex items-center justify-center gap-1.5"
+                  >
+                    {signingSafe ? (
+                      <Loader2 className="h-3.5 w-3.5 animate-spin" />
+                    ) : (
+                      <CheckCircle2 className="h-3.5 w-3.5" />
+                    )}
+                    Confirm & Sign
+                  </button>
+                </div>
+              </motion.div>
+            </motion.div>
+          )}
+        </AnimatePresence>
 
         <div className="mt-6 pt-5 border-t border-gray-100">
           <h3 className="text-xs font-semibold text-gray-900 mb-3 flex items-center gap-1.5">

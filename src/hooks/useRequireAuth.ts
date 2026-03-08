@@ -5,9 +5,8 @@ import { useRouter, usePathname } from 'next/navigation';
 import { useEffect } from 'react';
 
 /**
- * Redirects to /login if the user is not signed in,
- * then to /pending if signed in but not yet approved.
- * Use on pages that require authentication: marketplace, profiles, etc.
+ * Redirects to /login if the user is not signed in.
+ * All signed-up users have full access — no approval gate.
  */
 export function useRequireAuth() {
   const { user, loading } = useAuth();
@@ -18,10 +17,8 @@ export function useRequireAuth() {
     if (loading) return;
     if (!user) {
       router.replace(`/login?redirect=${encodeURIComponent(pathname)}`);
-    } else if (user.verified === false || user.verified === undefined) {
-      router.replace('/pending');
     }
   }, [loading, user, router, pathname]);
 
-  return { user, loading, authenticated: !loading && !!user && user.verified === true };
+  return { user, loading, authenticated: !loading && !!user };
 }

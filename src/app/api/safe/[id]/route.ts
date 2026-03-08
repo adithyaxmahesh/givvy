@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { getAuthUser, DEMO_EMAILS } from '@/lib/auth';
 import { createAdminClient } from '@/lib/supabase/admin';
 import { mockDeals } from '@/lib/data';
+import { selectTemplate } from '@/lib/safe/templates';
 
 export async function GET(
   request: NextRequest,
@@ -96,10 +97,11 @@ export async function POST(
     }
 
     const now = new Date().toISOString();
+    const { variant, label } = selectTemplate(deal.safe_terms ?? {});
 
     const safeDocData = {
       deal_id: dealId,
-      template: deal.safe_terms?.template || 'yc-standard',
+      template: `yc-${variant}` as string,
       status: 'pending-signature',
       terms: deal.safe_terms,
       document_url: null,
