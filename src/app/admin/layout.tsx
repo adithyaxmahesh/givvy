@@ -8,6 +8,7 @@ import {
   Briefcase,
   FileText,
   GitMerge,
+  Inbox,
   LayoutDashboard,
   MessageSquare,
   PieChart,
@@ -20,6 +21,7 @@ import type { ReactNode } from 'react';
 
 const sidebarLinks = [
   { label: 'Overview', href: '/admin', icon: LayoutDashboard },
+  { label: 'Leads', href: '/admin/leads', icon: Inbox },
   { label: 'Users', href: '/admin/users', icon: Users },
   { label: 'Startups', href: '/admin/startups', icon: Building2 },
   { label: 'Talent', href: '/admin/talent', icon: UserCheck },

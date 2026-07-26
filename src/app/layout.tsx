@@ -1,4 +1,4 @@
-import { Inter, Sora } from 'next/font/google';
+import { Inter, Newsreader, Sora } from 'next/font/google';
 import './globals.css';
 import ClientLayout from './client-layout';
 import type { Metadata } from 'next';
@@ -16,22 +16,30 @@ const sora = Sora({
   weight: ['400', '500', '600', '700'],
 });
 
+const newsreader = Newsreader({
+  subsets: ['latin'],
+  variable: '--font-newsreader',
+  display: 'swap',
+  weight: ['300', '400', '500', '600'],
+  style: ['normal', 'italic'],
+});
+
 export const metadata: Metadata = {
-  title: 'Givvy - Hire Top Talent. Pay with Equity.',
+  title: 'Givvy - Hire Fractional Talent with Cash or Equity.',
   description:
-    'The global talent marketplace where startups hire world-class engineers, designers, and marketers with equity compensation. SAFE-powered agreements, AI matching, and milestone-based vesting.',
+    'The global marketplace where startups hire fractional CFOs, SDRs, operators, engineers, and advisors with cash, equity, or blended compensation. SAFE-powered agreements, AI matching, and milestone-based vesting.',
   openGraph: {
     type: 'website',
-    title: 'Givvy - Hire Top Talent. Pay with Equity.',
+    title: 'Givvy - Hire Fractional Talent with Cash or Equity.',
     description:
-      'The global talent marketplace where startups hire world-class talent with equity. SAFE agreements, AI matching, milestone vesting.',
+      'The global talent marketplace where startups hire world-class fractional talent with cash, equity, or blended compensation.',
     siteName: 'Givvy',
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'Givvy - Hire Top Talent. Pay with Equity.',
+    title: 'Givvy - Hire Fractional Talent with Cash or Equity.',
     description:
-      'The global talent marketplace where startups hire world-class talent with equity.',
+      'The global talent marketplace where startups hire world-class fractional talent with cash, equity, or blended compensation.',
   },
   other: {
     'theme-color': '#7c3aed',
@@ -48,7 +56,7 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en" className={`${inter.variable} ${sora.variable} scroll-smooth`}>
+    <html lang="en" className={`${inter.variable} ${sora.variable} ${newsreader.variable} scroll-smooth`}>
       <body className="font-sans antialiased">
         <ClientLayout>{children}</ClientLayout>
       </body>

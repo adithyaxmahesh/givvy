@@ -25,8 +25,19 @@ import {
 import Link from 'next/link';
 import { Suspense, useCallback, useEffect, useState } from 'react';
 import { useSearchParams } from 'next/navigation';
+import {
+  COMPENSATION_TYPES,
+  MARKETPLACE_CATEGORIES,
+  MARKETPLACE_SECTIONS,
+  WORK_TYPES,
+  getCategoryLabel,
+  getCompensationTypeLabel,
+  getMarketplaceSectionDescription,
+  getMarketplaceSectionLabel,
+  getWorkTypeLabel,
+} from '@/lib/fractional';
 
-type Tab = 'posts' | 'talent' | 'startups';
+type Tab = 'fractional-hires' | 'equity-work' | 'talent' | 'startups';
 
 const STAGES = [
   { value: '', label: 'All Stages' },
@@ -37,21 +48,12 @@ const STAGES = [
   { value: 'growth', label: 'Growth' },
 ];
 
-const CATEGORIES = [
-  { value: '', label: 'All Categories' },
-  { value: 'engineering', label: 'Engineering' },
-  { value: 'design', label: 'Design' },
-  { value: 'legal', label: 'Legal' },
-  { value: 'finance', label: 'Finance' },
-  { value: 'marketing', label: 'Marketing' },
-  { value: 'consulting', label: 'Consulting' },
-  { value: 'media', label: 'Media' },
-  { value: 'operations', label: 'Operations' },
-];
+const CATEGORIES = [{ value: '', label: 'All Categories' }, ...MARKETPLACE_CATEGORIES];
 
 const AVAILABILITY = [
   { value: '', label: 'All Availability' },
   { value: 'full-time', label: 'Full-time' },
+  { value: 'fractional', label: 'Fractional' },
   { value: 'part-time', label: 'Part-time' },
   { value: 'contract', label: 'Contract' },
 ];
@@ -61,6 +63,9 @@ const POST_TYPES = [
   { value: 'seeking', label: 'Seeking Talent' },
   { value: 'offering', label: 'Offering Services' },
 ];
+
+const WORK_TYPE_FILTERS = [{ value: '', label: 'All Work' }, ...WORK_TYPES];
+const COMPENSATION_FILTERS = [{ value: '', label: 'All Compensation' }, ...COMPENSATION_TYPES];
 
 export default function MarketplacePage() {
   return (
@@ -79,13 +84,15 @@ function MarketplaceContent() {
   useRequireAuth();
   const searchParams = useSearchParams();
 
-  const initialTab = (searchParams.get('tab') as Tab) || 'posts';
+  const initialTab = ((searchParams.get('section') || searchParams.get('tab')) as Tab) || 'fractional-hires';
   const [tab, setTab] = useState<Tab>(initialTab);
   const [search, setSearch] = useState('');
   const [stage, setStage] = useState('');
   const [category, setCategory] = useState('');
   const [availability, setAvailability] = useState('');
   const [postType, setPostType] = useState('');
+  const [workType, setWorkType] = useState('');
+  const [compensationType, setCompensationType] = useState('');
   const [startups, setStartups] = useState<Startup[]>([]);
   const [talent, setTalent] = useState<TalentProfile[]>([]);
   const [posts, setPosts] = useState<Post[]>([]);
@@ -114,8 +121,11 @@ function MarketplaceContent() {
         const json = await res.json();
         setTalent(json.data ?? []);
       } else {
+        params.set('marketplace_section', tab);
         if (postType) params.set('type', postType);
         if (category) params.set('category', category);
+        if (workType) params.set('work_type', workType);
+        if (compensationType) params.set('compensation_type', compensationType);
         const res = await fetch(`/api/posts?${params}`);
         if (!res.ok) throw new Error('Failed to fetch posts');
         const json = await res.json();
@@ -126,7 +136,7 @@ function MarketplaceContent() {
     } finally {
       setLoading(false);
     }
-  }, [tab, search, stage, category, availability, postType]);
+  }, [tab, search, stage, category, availability, postType, workType, compensationType]);
 
   useEffect(() => {
     const timer = setTimeout(fetchData, 300);
@@ -142,10 +152,18 @@ function MarketplaceContent() {
   }
 
   const tabs: { key: Tab; label: string; icon: React.ReactNode }[] = [
-    { key: 'posts', label: 'Posts', icon: <FileText className="h-4 w-4" /> },
+    { key: 'fractional-hires', label: 'Fractional Hires', icon: <Briefcase className="h-4 w-4" /> },
+    { key: 'equity-work', label: 'Equity Work', icon: <FileText className="h-4 w-4" /> },
     { key: 'talent', label: 'Talent', icon: <Users className="h-4 w-4" /> },
     { key: 'startups', label: 'Startups', icon: <Building2 className="h-4 w-4" /> },
   ];
+  const browsingPosts = tab === 'fractional-hires' || tab === 'equity-work';
+  const pageTitle = browsingPosts ? getMarketplaceSectionLabel(tab) : tab === 'talent' ? 'Talent' : 'Startups';
+  const pageDescription = browsingPosts
+    ? getMarketplaceSectionDescription(tab)
+    : tab === 'talent'
+      ? 'Browse professionals available for fractional roles, equity-backed work, and startup advisory projects.'
+      : 'Browse startups hiring fractional talent and offering equity-backed opportunities.';
 
   return (
     <div className="min-h-screen bg-[#FAFAF8]">
@@ -153,10 +171,10 @@ function MarketplaceContent() {
         <div className="section-container py-10">
           <div className="max-w-2xl">
             <h1 className="text-3xl font-bold text-[#1A1A1A] tracking-tight">
-              Marketplace
+              {pageTitle}
             </h1>
             <p className="text-[#6B6B6B] mt-2 text-base leading-relaxed">
-              Browse equity opportunities, find talent, and connect through SAFE-based deals.
+              {pageDescription}
             </p>
           </div>
 
@@ -166,7 +184,7 @@ function MarketplaceContent() {
               <input
                 type="text"
                 placeholder={
-                  tab === 'posts' ? 'Search posts...'
+                  browsingPosts ? `Search ${pageTitle.toLowerCase()}...`
                     : tab === 'talent' ? 'Search by skill, title, or bio...'
                     : 'Search startups...'
                 }
@@ -200,6 +218,8 @@ function MarketplaceContent() {
                   setCategory('');
                   setAvailability('');
                   setPostType('');
+                  setWorkType('');
+                  setCompensationType('');
                 }}
                 className={`flex items-center gap-2 px-4 py-2.5 text-sm font-medium rounded-t-lg border-b-2 transition-all ${
                   tab === t.key
@@ -218,7 +238,7 @@ function MarketplaceContent() {
       <div className="section-container py-4">
         <div className="flex flex-wrap items-center gap-2">
           <Filter className="h-4 w-4 text-[#9CA3AF]" />
-          {tab === 'posts' && (
+          {browsingPosts && (
             <>
               <select
                 value={postType}
@@ -233,6 +253,22 @@ function MarketplaceContent() {
                 className="text-sm px-3 py-1.5 rounded-lg border border-[#E8E8E6] bg-white text-[#1A1A1A] focus:outline-none focus:ring-2 focus:ring-brand-600/10"
               >
                 {CATEGORIES.map((c) => <option key={c.value} value={c.value}>{c.label}</option>)}
+              </select>
+              {tab === 'fractional-hires' && (
+                <select
+                  value={workType}
+                  onChange={(e) => setWorkType(e.target.value)}
+                  className="text-sm px-3 py-1.5 rounded-lg border border-[#E8E8E6] bg-white text-[#1A1A1A] focus:outline-none focus:ring-2 focus:ring-brand-600/10"
+                >
+                  {WORK_TYPE_FILTERS.map((t) => <option key={t.value} value={t.value}>{t.label}</option>)}
+                </select>
+              )}
+              <select
+                value={compensationType}
+                onChange={(e) => setCompensationType(e.target.value)}
+                className="text-sm px-3 py-1.5 rounded-lg border border-[#E8E8E6] bg-white text-[#1A1A1A] focus:outline-none focus:ring-2 focus:ring-brand-600/10"
+              >
+                {COMPENSATION_FILTERS.map((t) => <option key={t.value} value={t.value}>{t.label}</option>)}
               </select>
             </>
           )}
@@ -291,13 +327,17 @@ function MarketplaceContent() {
           </div>
         ) : (
           <>
-            {tab === 'posts' && (
+            {browsingPosts && (
               <div>
                 {posts.length === 0 ? (
                   <EmptyState
                     icon={<FileText className="h-10 w-10 text-[#D1D5DB]" />}
-                    title="No posts yet"
-                    description="Be the first to post — share what you're looking for or what you can offer."
+                    title={`No ${pageTitle.toLowerCase()} posts yet`}
+                    description={
+                      tab === 'fractional-hires'
+                        ? 'Be the first to post a fractional hiring need or fractional service offering.'
+                        : 'Be the first to post an equity-backed startup work opportunity or service.'
+                    }
                     action={
                       user ? (
                         <Link href="/dashboard/posts/new" className="btn-primary px-5 py-2.5 text-sm mt-4 inline-flex items-center gap-1.5">
@@ -378,10 +418,16 @@ function PostCard({ post }: { post: Post }) {
   const authorName = post.author?.full_name ?? 'Unknown';
   const isSeek = post.type === 'seeking';
   const hasEquity = (post.equity_min > 0 || post.equity_max > 0);
+  const hasCash = (post.cash_min > 0 || post.cash_max > 0);
   const equityLabel = hasEquity
     ? post.equity_min === post.equity_max
       ? formatCurrency(post.equity_min)
       : `${formatCurrency(post.equity_min)}–${formatCurrency(post.equity_max)}`
+    : null;
+  const cashLabel = hasCash
+    ? post.cash_min === post.cash_max
+      ? formatCurrency(post.cash_min)
+      : `${formatCurrency(post.cash_min)}–${formatCurrency(post.cash_max)}`
     : null;
 
   return (
@@ -423,16 +469,42 @@ function PostCard({ post }: { post: Post }) {
           </div>
         )}
 
-        <div className="mt-auto pt-4 flex items-center justify-between">
-          {post.category && (
-            <span className="text-xs text-[#6B6B6B] capitalize">{post.category}</span>
-          )}
-          {equityLabel && (
-            <span className="flex items-center gap-1 text-xs font-semibold text-brand-600">
-              <DollarSign className="h-3 w-3" />
-              {equityLabel}
+        <div className="mt-3 flex flex-wrap gap-1.5">
+          {post.marketplace_section && (
+            <span className="px-2 py-0.5 rounded-full bg-brand-50 text-brand-700 text-xs font-medium">
+              {getMarketplaceSectionLabel(post.marketplace_section)}
             </span>
           )}
+          {post.work_type && (
+            <span className="px-2 py-0.5 rounded-full bg-[#F5F5F3] text-[#6B6B6B] text-xs font-medium">
+              {getWorkTypeLabel(post.work_type)}
+            </span>
+          )}
+          {post.compensation_type && (
+            <span className="px-2 py-0.5 rounded-full bg-[#F5F5F3] text-[#6B6B6B] text-xs font-medium">
+              {getCompensationTypeLabel(post.compensation_type)}
+            </span>
+          )}
+        </div>
+
+        <div className="mt-auto pt-4 flex items-center justify-between gap-3">
+          {post.category && (
+            <span className="text-xs text-[#6B6B6B]">{getCategoryLabel(post.category)}</span>
+          )}
+          <div className="flex flex-col items-end gap-1">
+            {equityLabel && (
+              <span className="flex items-center gap-1 text-xs font-semibold text-brand-600">
+                <DollarSign className="h-3 w-3" />
+                {equityLabel} equity
+              </span>
+            )}
+            {cashLabel && (
+              <span className="flex items-center gap-1 text-xs font-semibold text-emerald-600">
+                <DollarSign className="h-3 w-3" />
+                {cashLabel} cash
+              </span>
+            )}
+          </div>
         </div>
 
         <div className="mt-3 flex items-center justify-center gap-1.5 py-2 rounded-lg bg-brand-50 text-brand-600 text-xs font-medium opacity-0 group-hover:opacity-100 transition-opacity">

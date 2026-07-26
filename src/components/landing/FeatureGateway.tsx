@@ -150,7 +150,7 @@ export function FeatureGateway() {
             className="lg:text-right"
           >
             <p className="text-sm sm:text-base text-[#1a1a1a]/70 leading-relaxed max-w-sm lg:ml-auto">
-              Top startups compensate lawyers, developers, designers, and marketers with equity — preserving cash for growth while giving professionals real upside in companies they help build.
+              Top startups bring in fractional CFOs, SDRs, operators, engineers, and advisors with cash, equity, or blended offers — preserving runway while giving professionals real upside in companies they help build.
             </p>
             <motion.a
               href="#how-it-works"

@@ -63,7 +63,20 @@ export async function PUT(
     }
 
     const body = await request.json();
-    const allowed = ['title', 'description', 'category', 'equity_min', 'equity_max', 'tags', 'status'] as const;
+    const allowed = [
+      'title',
+      'description',
+      'category',
+      'marketplace_section',
+      'work_type',
+      'compensation_type',
+      'equity_min',
+      'equity_max',
+      'cash_min',
+      'cash_max',
+      'tags',
+      'status',
+    ] as const;
     const updates: Record<string, unknown> = { updated_at: new Date().toISOString() };
     for (const key of allowed) {
       if (key in body) updates[key] = body[key];

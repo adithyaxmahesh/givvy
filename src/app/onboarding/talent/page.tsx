@@ -17,20 +17,13 @@ import {
 } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
+import { MARKETPLACE_CATEGORIES } from '@/lib/fractional';
 
-const CATEGORIES = [
-  { value: 'engineering', label: 'Engineering', emoji: '💻' },
-  { value: 'design', label: 'Design', emoji: '🎨' },
-  { value: 'legal', label: 'Legal', emoji: '⚖️' },
-  { value: 'finance', label: 'Finance', emoji: '📊' },
-  { value: 'marketing', label: 'Marketing', emoji: '📈' },
-  { value: 'consulting', label: 'Consulting', emoji: '🤝' },
-  { value: 'media', label: 'Media', emoji: '🎬' },
-  { value: 'operations', label: 'Operations', emoji: '⚙️' },
-];
+const CATEGORIES = MARKETPLACE_CATEGORIES;
 
 const AVAILABILITIES = [
   { value: 'full-time', label: 'Full-Time', desc: 'Available for full commitment' },
+  { value: 'fractional', label: 'Fractional', desc: 'Available for recurring part-time work' },
   { value: 'part-time', label: 'Part-Time', desc: 'Available 10-20 hours/week' },
   { value: 'contract', label: 'Contract', desc: 'Project-based availability' },
 ];
@@ -40,7 +33,9 @@ const COMMON_SKILLS: Record<string, string[]> = {
   design: ['Figma', 'Design Systems', 'User Research', 'Prototyping', 'Data Viz', 'Illustration', 'Motion Design'],
   legal: ['SAFE Agreements', 'Corporate Law', 'SEC Compliance', 'IP Law', 'Contract Drafting', 'M&A'],
   finance: ['Financial Modeling', 'Fundraising', 'FP&A', 'Valuation', 'Tax Strategy', 'Cap Table Management'],
+  sales: ['Outbound SDR', 'Founder-Led Sales', 'Pipeline Building', 'CRM Setup', 'Enterprise Sales', 'Sales Ops'],
   marketing: ['Growth Strategy', 'SEO', 'Content Marketing', 'Paid Acquisition', 'Analytics', 'Email Marketing'],
+  product: ['Product Strategy', 'Roadmapping', 'User Research', 'Pricing', 'Analytics', 'Product-Led Growth'],
   consulting: ['Strategy', 'Market Research', 'Business Development', 'Process Optimization', 'Go-to-Market'],
   media: ['Video Production', 'Content Writing', 'Social Media', 'PR', 'Brand Strategy', 'Podcasting'],
   operations: ['DevOps', 'Project Management', 'Agile', 'Supply Chain', 'HR Operations', 'Customer Success'],

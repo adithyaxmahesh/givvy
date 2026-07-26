@@ -2,7 +2,7 @@
 
 import { useAuth } from '@/lib/auth-context';
 import { useRequireAuth } from '@/hooks/useRequireAuth';
-import { getInitials, getAvatarColor } from '@/lib/utils';
+import { getInitials, getAvatarColor, formatCurrency } from '@/lib/utils';
 import type { Post, Proposal } from '@/lib/types';
 import {
   ArrowLeft,
@@ -19,6 +19,13 @@ import {
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
+import {
+  COMPENSATION_TYPES,
+  getCategoryLabel,
+  getCompensationTypeLabel,
+  getMarketplaceSectionLabel,
+  getWorkTypeLabel,
+} from '@/lib/fractional';
 
 export default function PostDetailPage({ params }: { params: { id: string } }) {
   const { user } = useAuth();
@@ -30,8 +37,11 @@ export default function PostDetailPage({ params }: { params: { id: string } }) {
   const [loading, setLoading] = useState(true);
   const [message, setMessage] = useState('');
   const [pricingType, setPricingType] = useState<'hourly' | 'project'>('hourly');
+  const [compensationType, setCompensationType] = useState<'equity' | 'cash' | 'blended'>('blended');
   const [hourlyRate, setHourlyRate] = useState('');
   const [projectAmount, setProjectAmount] = useState('');
+  const [proposedEquityAmount, setProposedEquityAmount] = useState('');
+  const [proposedCashAmount, setProposedCashAmount] = useState('');
   const [submitting, setSubmitting] = useState(false);
   const [sent, setSent] = useState(false);
   const [error, setError] = useState('');
@@ -76,8 +86,18 @@ export default function PostDetailPage({ params }: { params: { id: string } }) {
           post_id: params.id,
           message: message.trim(),
           pricing_type: pricingType,
+          marketplace_section: post?.marketplace_section ?? 'fractional-hires',
+          compensation_type: compensationType,
           hourly_rate: pricingType === 'hourly' ? Number(hourlyRate) : null,
           project_amount: pricingType === 'project' ? Number(projectAmount) : null,
+          proposed_equity_amount:
+            compensationType === 'equity' || compensationType === 'blended'
+              ? Number(proposedEquityAmount || 0)
+              : null,
+          proposed_cash_amount:
+            compensationType === 'cash' || compensationType === 'blended'
+              ? Number(proposedCashAmount || 0)
+              : null,
         }),
       });
       const json = await res.json();
@@ -149,21 +169,27 @@ export default function PostDetailPage({ params }: { params: { id: string } }) {
 
   const isSeek = post.type === 'seeking';
   const hasEquity = post.equity_min > 0 || post.equity_max > 0;
+  const hasCash = post.cash_min > 0 || post.cash_max > 0;
   const equityLabel = hasEquity
     ? post.equity_min === post.equity_max
-      ? `${post.equity_min}%`
-      : `${post.equity_min}–${post.equity_max}%`
+      ? formatCurrency(post.equity_min)
+      : `${formatCurrency(post.equity_min)}–${formatCurrency(post.equity_max)}`
+    : null;
+  const cashLabel = hasCash
+    ? post.cash_min === post.cash_max
+      ? formatCurrency(post.cash_min)
+      : `${formatCurrency(post.cash_min)}–${formatCurrency(post.cash_max)}`
     : null;
 
   return (
     <div className="min-h-screen bg-[var(--color-bg,#FAFAF8)]">
       <div className="section-container max-w-3xl py-10">
         <Link
-          href="/marketplace?tab=posts"
+          href={`/marketplace?section=${post.marketplace_section}`}
           className="inline-flex items-center gap-1.5 text-sm text-[#6B6B6B] hover:text-[#1A1A1A] transition-colors mb-6"
         >
           <ArrowLeft className="h-4 w-4" />
-          Back to Posts
+          Back to {getMarketplaceSectionLabel(post.marketplace_section)}
         </Link>
 
         {/* Post content */}
@@ -206,11 +232,25 @@ export default function PostDetailPage({ params }: { params: { id: string } }) {
             >
               {isSeek ? 'Seeking Talent' : 'Offering Services'}
             </span>
+            {post.marketplace_section && (
+              <span className="badge bg-brand-50 text-brand-700 text-xs">
+                {getMarketplaceSectionLabel(post.marketplace_section)}
+              </span>
+            )}
             {post.category && (
-              <span className="badge bg-gray-100 text-[#6B6B6B] text-xs capitalize">{post.category}</span>
+              <span className="badge bg-gray-100 text-[#6B6B6B] text-xs">{getCategoryLabel(post.category)}</span>
+            )}
+            {post.work_type && (
+              <span className="badge bg-blue-50 text-blue-700 text-xs">{getWorkTypeLabel(post.work_type)}</span>
+            )}
+            {post.compensation_type && (
+              <span className="badge bg-purple-50 text-purple-700 text-xs">{getCompensationTypeLabel(post.compensation_type)}</span>
             )}
             {equityLabel && (
               <span className="badge bg-brand-50 text-brand-700 text-xs">{equityLabel} equity</span>
+            )}
+            {cashLabel && (
+              <span className="badge bg-emerald-50 text-emerald-700 text-xs">{cashLabel} cash</span>
             )}
           </div>
 
@@ -242,7 +282,9 @@ export default function PostDetailPage({ params }: { params: { id: string } }) {
           <div className="mt-6 bg-white border border-[#E8E8E6] rounded-xl p-6 sm:p-8">
             <h2 className="text-lg font-bold text-[#1A1A1A] mb-1">Send a Proposal</h2>
             <p className="text-sm text-[#6B6B6B] mb-5">
-              Introduce yourself, set your rate, and propose a deal.
+              {post.marketplace_section === 'fractional-hires'
+                ? 'Introduce yourself, set your rate, and propose a cash/equity mix.'
+                : 'Introduce yourself and propose the SAFE or stock-backed work terms.'}
             </p>
 
             {sent ? (
@@ -292,6 +334,28 @@ export default function PostDetailPage({ params }: { params: { id: string } }) {
                   </div>
                 </div>
 
+                {/* Compensation Type Toggle */}
+                <div className="mb-5">
+                  <label className="block text-sm font-semibold text-[#1A1A1A] mb-2">Compensation Mix</label>
+                  <div className="grid sm:grid-cols-3 gap-3">
+                    {COMPENSATION_TYPES.map((item) => (
+                      <button
+                        key={item.value}
+                        type="button"
+                        onClick={() => setCompensationType(item.value)}
+                        className={`text-left px-4 py-3 rounded-xl border-2 text-sm transition-all ${
+                          compensationType === item.value
+                            ? 'border-brand-600 bg-brand-50 text-brand-700'
+                            : 'border-[#E8E8E6] bg-white text-[#6B6B6B] hover:border-gray-300'
+                        }`}
+                      >
+                        <span className="block font-medium">{item.label}</span>
+                        <span className="block text-xs leading-relaxed mt-1">{item.description}</span>
+                      </button>
+                    ))}
+                  </div>
+                </div>
+
                 {/* Rate / Amount Input */}
                 <div className="mb-5">
                   <label className="block text-sm font-semibold text-[#1A1A1A] mb-2">
@@ -327,6 +391,46 @@ export default function PostDetailPage({ params }: { params: { id: string } }) {
                       : 'This is the total equivalent value for the project scope.'}
                   </p>
                 </div>
+
+                {(compensationType === 'equity' || compensationType === 'blended') && (
+                  <div className="mb-5">
+                    <label className="block text-sm font-semibold text-[#1A1A1A] mb-2">
+                      Proposed SAFE / Stock Value (USD)
+                    </label>
+                    <div className="relative">
+                      <DollarSign className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-[#9CA3AF]" />
+                      <input
+                        type="number"
+                        min="0"
+                        step="1000"
+                        value={proposedEquityAmount}
+                        onChange={(e) => setProposedEquityAmount(e.target.value)}
+                        placeholder={post.equity_max ? String(post.equity_max) : '25000'}
+                        className="input-field pl-9"
+                      />
+                    </div>
+                  </div>
+                )}
+
+                {(compensationType === 'cash' || compensationType === 'blended') && (
+                  <div className="mb-5">
+                    <label className="block text-sm font-semibold text-[#1A1A1A] mb-2">
+                      Proposed Cash Amount (USD)
+                    </label>
+                    <div className="relative">
+                      <DollarSign className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-[#9CA3AF]" />
+                      <input
+                        type="number"
+                        min="0"
+                        step="500"
+                        value={proposedCashAmount}
+                        onChange={(e) => setProposedCashAmount(e.target.value)}
+                        placeholder={post.cash_max ? String(post.cash_max) : '5000'}
+                        className="input-field pl-9"
+                      />
+                    </div>
+                  </div>
+                )}
 
                 {/* YC Standard SAFE — locked */}
                 <div className="mb-5 p-4 rounded-xl bg-emerald-50 border border-emerald-200">
@@ -457,13 +561,35 @@ function ProposalCard({
 
       {/* Pricing info */}
       {proposal.pricing_type && (
-        <div className="flex items-center gap-2 mb-3">
+        <div className="flex flex-wrap items-center gap-2 mb-3">
+          {proposal.marketplace_section && (
+            <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-brand-50 text-brand-700 text-xs font-semibold">
+              {getMarketplaceSectionLabel(proposal.marketplace_section)}
+            </span>
+          )}
           <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-brand-50 text-brand-700 text-xs font-semibold">
             <DollarSign className="h-3 w-3" />
             {proposal.pricing_type === 'hourly'
               ? `$${proposal.hourly_rate}/hr`
               : `$${proposal.project_amount?.toLocaleString()} project`}
           </span>
+          {proposal.compensation_type && (
+            <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-purple-50 text-purple-700 text-xs font-semibold">
+              {getCompensationTypeLabel(proposal.compensation_type)}
+            </span>
+          )}
+          {proposal.proposed_equity_amount && proposal.proposed_equity_amount > 0 && (
+            <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-brand-50 text-brand-700 text-xs font-semibold">
+              <DollarSign className="h-3 w-3" />
+              {formatCurrency(proposal.proposed_equity_amount)} equity
+            </span>
+          )}
+          {proposal.proposed_cash_amount && proposal.proposed_cash_amount > 0 && (
+            <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-emerald-50 text-emerald-700 text-xs font-semibold">
+              <DollarSign className="h-3 w-3" />
+              {formatCurrency(proposal.proposed_cash_amount)} cash
+            </span>
+          )}
           <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-emerald-50 text-emerald-700 text-xs font-semibold">
             <Shield className="h-3 w-3" />
             YC Standard SAFE

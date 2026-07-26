@@ -57,8 +57,12 @@ export async function POST(request: NextRequest) {
               title: role.title,
               category: role.category || '',
               requirements: role.requirements || [],
-              equity_range: `${role.equity_min || 0}-${role.equity_max || 0}%`,
+              equity_range: `$${role.equity_min || 0}-$${role.equity_max || 0}`,
               cash_equivalent: role.cash_equivalent || null,
+              marketplace_section: role.marketplace_section || null,
+              work_type: role.work_type || null,
+              compensation_type: role.compensation_type || null,
+              cash_range: role.cash_min || role.cash_max ? `$${role.cash_min || 0}-$${role.cash_max || 0}` : null,
             };
           }
         }

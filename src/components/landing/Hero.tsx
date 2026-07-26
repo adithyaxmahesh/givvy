@@ -128,9 +128,9 @@ export function Hero() {
             transition={{ duration: 0.8, delay: 0.15, ease: [0.25, 0.4, 0.25, 1] }}
             className="font-display text-[42px] sm:text-[56px] lg:text-[68px] font-bold leading-[1.05] tracking-tight text-[#1a1a1a] mb-4"
           >
-            Hire Top Talent.
+            Hire Fractional Talent.
             <br />
-            Pay With Equity.
+            Pay With Cash, Equity, or Both.
           </motion.h1>
 
           <motion.p
@@ -139,7 +139,7 @@ export function Hero() {
             transition={{ duration: 0.6, delay: 0.3 }}
             className="text-base sm:text-lg text-gray-500 max-w-md mx-auto mb-8 leading-relaxed"
           >
-            The marketplace where startups hire lawyers, developers, designers, and marketers with equity instead of cash.
+            The marketplace where startups hire fractional CFOs, SDRs, operators, engineers, and advisors with cash, equity, or blended compensation.
           </motion.p>
 
           <motion.div

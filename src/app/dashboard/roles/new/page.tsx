@@ -14,24 +14,25 @@ import {
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useCallback, useEffect, useState } from 'react';
-
-const CATEGORIES = [
-  { value: 'engineering', label: 'Engineering' },
-  { value: 'design', label: 'Design' },
-  { value: 'legal', label: 'Legal' },
-  { value: 'finance', label: 'Finance' },
-  { value: 'marketing', label: 'Marketing' },
-  { value: 'consulting', label: 'Consulting' },
-  { value: 'media', label: 'Media' },
-  { value: 'operations', label: 'Operations' },
-];
+import {
+  COMPENSATION_TYPES,
+  MARKETPLACE_CATEGORIES,
+  MARKETPLACE_SECTIONS,
+  WORK_TYPES,
+  type MarketplaceSection,
+} from '@/lib/fractional';
 
 interface FormData {
   startup_id: string;
   title: string;
   category: string;
+  marketplace_section: MarketplaceSection;
+  work_type: string;
+  compensation_type: string;
   equity_min: number;
   equity_max: number;
+  cash_min: number;
+  cash_max: number;
   cash_equivalent: string;
   description: string;
   requirements: string[];
@@ -42,8 +43,13 @@ const initialForm: FormData = {
   startup_id: '',
   title: '',
   category: '',
-  equity_min: 0.5,
-  equity_max: 2.0,
+  marketplace_section: 'fractional-hires',
+  work_type: 'fractional',
+  compensation_type: 'blended',
+  equity_min: 25000,
+  equity_max: 75000,
+  cash_min: 0,
+  cash_max: 0,
   cash_equivalent: '',
   description: '',
   requirements: [],
@@ -102,6 +108,24 @@ export default function NewRolePage() {
   const update = (fields: Partial<FormData>) =>
     setForm((prev) => ({ ...prev, ...fields }));
 
+  const selectMarketplaceSection = (section: MarketplaceSection) => {
+    if (section === 'fractional-hires') {
+      update({
+        marketplace_section: section,
+        work_type: 'fractional',
+        compensation_type: 'blended',
+      });
+      return;
+    }
+    update({
+      marketplace_section: section,
+      work_type: 'project',
+      compensation_type: 'equity',
+      cash_min: 0,
+      cash_max: 0,
+    });
+  };
+
   const addReq = () => {
     const val = reqInput.trim();
     if (val && !form.requirements.includes(val)) {
@@ -129,8 +153,13 @@ export default function NewRolePage() {
         body: JSON.stringify({
           title: form.title,
           category: form.category || undefined,
+          marketplace_section: form.marketplace_section,
+          work_type: form.work_type,
+          compensation_type: form.compensation_type,
           equity_min: form.equity_min,
           equity_max: form.equity_max,
+          cash_min: form.cash_min,
+          cash_max: form.cash_max,
           cash_equivalent: form.cash_equivalent || undefined,
           description: form.description || undefined,
           requirements: form.requirements,
@@ -182,7 +211,7 @@ export default function NewRolePage() {
           </Link>
           <h1 className="text-2xl font-bold text-[#1A1A1A]">Post an Open Role</h1>
           <p className="text-sm text-[#6B6B6B] mt-1">
-            Describe the role and equity offer to attract the right talent.
+            Post to Fractional Hires for cash/blended roles or Equity Work for SAFE-backed work.
           </p>
         </div>
 
@@ -230,6 +259,30 @@ export default function NewRolePage() {
 
             {/* Title */}
             <div>
+              <label className="block text-sm font-medium text-[#1A1A1A] mb-2">
+                Section
+              </label>
+              <div className="grid sm:grid-cols-2 gap-3">
+                {MARKETPLACE_SECTIONS.map((section) => (
+                  <button
+                    key={section.value}
+                    type="button"
+                    onClick={() => selectMarketplaceSection(section.value)}
+                    className={`text-left p-4 rounded-xl border transition-all ${
+                      form.marketplace_section === section.value
+                        ? 'border-brand-500 bg-brand-50 text-brand-700'
+                        : 'border-gray-200 bg-white text-gray-600 hover:border-gray-300'
+                    }`}
+                  >
+                    <span className="block text-sm font-semibold">{section.label}</span>
+                    <span className="block text-xs leading-relaxed mt-1">{section.description}</span>
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            {/* Title */}
+            <div>
               <label className="block text-sm font-medium text-[#1A1A1A] mb-1.5">
                 Role Title *
               </label>
@@ -237,9 +290,37 @@ export default function NewRolePage() {
                 type="text"
                 value={form.title}
                 onChange={(e) => update({ title: e.target.value })}
-                placeholder="e.g. Senior Full-Stack Engineer"
+                placeholder={
+                  form.marketplace_section === 'fractional-hires'
+                    ? 'e.g. Fractional CFO or SDR'
+                    : 'e.g. Equity-backed growth project'
+                }
                 className="input-field"
               />
+            </div>
+
+            {/* Work type */}
+            <div>
+              <label className="block text-sm font-medium text-[#1A1A1A] mb-2">
+                Work Type
+              </label>
+              <div className="grid sm:grid-cols-2 gap-2">
+                {WORK_TYPES.map((item) => (
+                  <button
+                    key={item.value}
+                    type="button"
+                    onClick={() => update({ work_type: item.value })}
+                    className={`text-left px-3 py-2.5 rounded-lg text-sm border transition-all ${
+                      form.work_type === item.value
+                        ? 'border-brand-500 bg-brand-50 text-brand-700'
+                        : 'border-gray-200 bg-white text-gray-600 hover:border-gray-300'
+                    }`}
+                  >
+                    <span className="font-medium">{item.label}</span>
+                    <span className="block text-xs opacity-80 mt-0.5">{item.description}</span>
+                  </button>
+                ))}
+              </div>
             </div>
 
             {/* Category */}
@@ -248,7 +329,7 @@ export default function NewRolePage() {
                 Category
               </label>
               <div className="flex flex-wrap gap-2">
-                {CATEGORIES.map((c) => (
+                {MARKETPLACE_CATEGORIES.map((c) => (
                   <button
                     key={c.value}
                     type="button"
@@ -265,49 +346,105 @@ export default function NewRolePage() {
               </div>
             </div>
 
+            {/* Compensation type */}
+            <div>
+              <label className="block text-sm font-medium text-[#1A1A1A] mb-2">
+                Compensation
+              </label>
+              <div className="grid sm:grid-cols-3 gap-2">
+                {COMPENSATION_TYPES.map((item) => (
+                  <button
+                    key={item.value}
+                    type="button"
+                    onClick={() => update({ compensation_type: item.value })}
+                    className={`text-left px-3 py-2.5 rounded-lg text-sm border transition-all ${
+                      form.compensation_type === item.value
+                        ? 'border-brand-500 bg-brand-50 text-brand-700'
+                        : 'border-gray-200 bg-white text-gray-600 hover:border-gray-300'
+                    }`}
+                  >
+                    <span className="font-medium">{item.label}</span>
+                    <span className="block text-xs opacity-80 mt-0.5">{item.description}</span>
+                  </button>
+                ))}
+              </div>
+            </div>
+
             {/* Equity range */}
             <div className="grid grid-cols-2 gap-4">
               <div>
                 <label className="block text-sm font-medium text-[#1A1A1A] mb-1.5">
-                  Equity Min (%) *
+                  SAFE / Stock Min ($) *
                 </label>
                 <input
                   type="number"
                   value={form.equity_min}
                   onChange={(e) => update({ equity_min: parseFloat(e.target.value) || 0 })}
                   min={0}
-                  max={100}
-                  step={0.1}
+                  step={1000}
                   className="input-field"
                 />
               </div>
               <div>
                 <label className="block text-sm font-medium text-[#1A1A1A] mb-1.5">
-                  Equity Max (%) *
+                  SAFE / Stock Max ($) *
                 </label>
                 <input
                   type="number"
                   value={form.equity_max}
                   onChange={(e) => update({ equity_max: parseFloat(e.target.value) || 0 })}
                   min={0}
-                  max={100}
-                  step={0.1}
+                  step={1000}
                   className="input-field"
                 />
               </div>
             </div>
 
             {/* Cash equivalent + duration */}
+            {form.marketplace_section === 'fractional-hires' && (
+              <div className="grid grid-cols-2 gap-4">
+              <div>
+                <label className="block text-sm font-medium text-[#1A1A1A] mb-1.5">
+                  Cash Min ($)
+                </label>
+                <input
+                  type="number"
+                  min={0}
+                  step={500}
+                  value={form.cash_min}
+                  onChange={(e) => update({ cash_min: parseFloat(e.target.value) || 0 })}
+                  placeholder="e.g. 3000"
+                  className="input-field"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-[#1A1A1A] mb-1.5">
+                  Cash Max ($)
+                </label>
+                <input
+                  type="number"
+                  min={0}
+                  step={500}
+                  value={form.cash_max}
+                  onChange={(e) => update({ cash_max: parseFloat(e.target.value) || 0 })}
+                  placeholder="e.g. 8000"
+                  className="input-field"
+                />
+              </div>
+              </div>
+            )}
+
+            {/* Cash equivalent + duration */}
             <div className="grid grid-cols-2 gap-4">
               <div>
                 <label className="block text-sm font-medium text-[#1A1A1A] mb-1.5">
-                  Cash Equivalent ($)
+                  Cash Equivalent Note
                 </label>
                 <input
                   type="text"
                   value={form.cash_equivalent}
                   onChange={(e) => update({ cash_equivalent: e.target.value })}
-                  placeholder="e.g. 120000"
+                  placeholder="e.g. Monthly retainer negotiable"
                   className="input-field"
                 />
               </div>

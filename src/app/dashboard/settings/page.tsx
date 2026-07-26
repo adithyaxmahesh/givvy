@@ -3,6 +3,7 @@
 import { useAuth } from '@/lib/auth-context';
 import { useRequireApproval } from '@/hooks/useRequireApproval';
 import { getInitials, formatCurrency } from '@/lib/utils';
+import { MARKETPLACE_CATEGORIES } from '@/lib/fractional';
 import {
   Bell,
   Briefcase,
@@ -31,10 +32,7 @@ const tabs: { id: SettingsTab; label: string; icon: typeof User }[] = [
   { id: 'security', label: 'Security', icon: Shield },
 ];
 
-const CATEGORIES = [
-  'engineering', 'design', 'legal', 'finance',
-  'marketing', 'consulting', 'media', 'operations',
-];
+const CATEGORIES = MARKETPLACE_CATEGORIES.map((category) => category.value);
 
 const notificationSettings = [
   { id: 'deal-updates', label: 'Deal Updates', description: 'Get notified when deal status changes', enabled: true },

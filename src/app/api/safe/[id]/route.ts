@@ -33,8 +33,8 @@ export async function GET(
               { action: 'Sent for signature', timestamp: mockDeal.updated_at, actor: 'system' },
             ],
             signatures: {
-              founder: { signed: false, signer_name: '', signer_title: '', signed_at: null },
-              talent: { signed: false, signer_name: '', signer_title: '', signed_at: null },
+              company: { signed: false, signer_name: '', signer_title: '', signed_at: null },
+              provider: { signed: false, signer_name: '', signer_title: '', signed_at: null },
             },
             created_at: mockDeal.created_at,
             updated_at: mockDeal.updated_at,

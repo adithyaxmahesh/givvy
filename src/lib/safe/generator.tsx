@@ -9,154 +9,260 @@ import {
 import { renderToBuffer } from '@react-pdf/renderer';
 import { selectTemplate, renderTemplate, buildTemplateVars } from './templates';
 import type { YCSAFEVariant } from './templates';
+import type { SignatureData } from '../types';
 
 const styles = StyleSheet.create({
   page: {
-    padding: 60,
+    padding: 72,
     fontFamily: 'Helvetica',
     fontSize: 10,
-    lineHeight: 1.6,
-    color: '#1a1a2e',
+    lineHeight: 1.5,
+    color: '#000000',
   },
-  header: {
-    textAlign: 'center',
-    marginBottom: 30,
-    borderBottomWidth: 2,
-    borderBottomColor: '#7c3aed',
-    paddingBottom: 20,
+  securitiesNotice: {
+    fontSize: 8,
+    lineHeight: 1.4,
+    color: '#000000',
+    marginBottom: 24,
+    textAlign: 'justify',
   },
-  headerTitle: {
-    fontSize: 20,
-    fontFamily: 'Helvetica-Bold',
-    color: '#7c3aed',
-    marginBottom: 4,
-  },
-  headerSubtitle: {
+  companyName: {
     fontSize: 12,
-    color: '#6b7280',
-    fontFamily: 'Helvetica',
-  },
-  partiesSection: {
-    marginBottom: 24,
-    padding: 16,
-    backgroundColor: '#f5f3ff',
-    borderRadius: 4,
-  },
-  partiesTitle: {
-    fontSize: 13,
     fontFamily: 'Helvetica-Bold',
-    color: '#4c1d95',
-    marginBottom: 10,
+    textAlign: 'center',
+    marginBottom: 8,
   },
-  partyRow: {
-    flexDirection: 'row',
-    marginBottom: 6,
-  },
-  partyLabel: {
-    width: 100,
+  documentTitle: {
+    fontSize: 14,
     fontFamily: 'Helvetica-Bold',
-    fontSize: 10,
-    color: '#374151',
-  },
-  partyValue: {
-    flex: 1,
-    fontSize: 10,
-    color: '#1f2937',
-  },
-  termsSection: {
-    marginBottom: 24,
-  },
-  termsTitle: {
-    fontSize: 13,
-    fontFamily: 'Helvetica-Bold',
-    color: '#4c1d95',
-    marginBottom: 10,
-    borderBottomWidth: 1,
-    borderBottomColor: '#e5e7eb',
-    paddingBottom: 6,
-  },
-  termRow: {
-    flexDirection: 'row',
+    textAlign: 'center',
     marginBottom: 4,
-    paddingVertical: 3,
   },
-  termLabel: {
-    width: 160,
-    fontFamily: 'Helvetica-Bold',
+  documentSubtitle: {
     fontSize: 10,
-    color: '#374151',
+    textAlign: 'center',
+    marginBottom: 24,
+    color: '#333333',
   },
-  termValue: {
-    flex: 1,
-    fontSize: 10,
-    color: '#1f2937',
-  },
-  bodyText: {
+  certifiesBlock: {
     fontSize: 10,
     lineHeight: 1.6,
-    color: '#374151',
-    marginBottom: 12,
+    color: '#000000',
+    marginBottom: 16,
     textAlign: 'justify',
   },
   sectionTitle: {
     fontSize: 11,
     fontFamily: 'Helvetica-Bold',
-    color: '#1f2937',
-    marginTop: 16,
+    color: '#000000',
+    marginTop: 18,
     marginBottom: 8,
   },
-  signatureSection: {
-    marginTop: 40,
-    borderTopWidth: 1,
-    borderTopColor: '#e5e7eb',
-    paddingTop: 20,
-  },
-  signatureTitle: {
-    fontSize: 13,
+  subsectionTitle: {
+    fontSize: 10,
     fontFamily: 'Helvetica-Bold',
-    color: '#4c1d95',
+    color: '#000000',
+    marginTop: 10,
+    marginBottom: 4,
+  },
+  bodyText: {
+    fontSize: 10,
+    lineHeight: 1.6,
+    color: '#000000',
+    marginBottom: 8,
+    textAlign: 'justify',
+  },
+  witnessBlock: {
+    fontSize: 10,
+    fontFamily: 'Helvetica-Bold',
+    marginTop: 30,
     marginBottom: 20,
+    textAlign: 'center',
+  },
+  signatureSection: {
+    marginTop: 20,
   },
   signatureBlock: {
     flexDirection: 'row',
     justifyContent: 'space-between',
+    marginTop: 10,
   },
   signatureColumn: {
     width: '45%',
   },
-  signatureLabel: {
+  signaturePartyLabel: {
     fontSize: 10,
     fontFamily: 'Helvetica-Bold',
-    color: '#374151',
-    marginBottom: 6,
+    color: '#000000',
+    marginBottom: 16,
+  },
+  signatureLineLabel: {
+    fontSize: 9,
+    color: '#000000',
+    marginBottom: 2,
   },
   signatureLine: {
     borderBottomWidth: 1,
-    borderBottomColor: '#9ca3af',
+    borderBottomColor: '#000000',
     marginBottom: 4,
-    height: 30,
+    height: 24,
   },
-  signatureSubtext: {
+  signatureNameRendered: {
+    fontFamily: 'Times-Italic',
+    fontSize: 16,
+    color: '#00008B',
+    height: 24,
+    borderBottomWidth: 1,
+    borderBottomColor: '#000000',
+    marginBottom: 4,
+    paddingBottom: 2,
+  },
+  signatureDateRendered: {
+    fontSize: 10,
+    color: '#000000',
+    height: 20,
+    borderBottomWidth: 1,
+    borderBottomColor: '#000000',
+    marginBottom: 4,
+  },
+  signatureFieldLabel: {
     fontSize: 8,
-    color: '#6b7280',
-    marginBottom: 2,
+    color: '#555555',
+    marginBottom: 12,
+  },
+  esignBadge: {
+    marginTop: 4,
+    padding: 4,
+    backgroundColor: '#f0f9f0',
+    borderWidth: 1,
+    borderColor: '#22c55e',
+    borderRadius: 2,
+  },
+  esignBadgeText: {
+    fontSize: 7,
+    color: '#15803d',
+    fontFamily: 'Helvetica-Bold',
+  },
+  esignDetails: {
+    fontSize: 7,
+    color: '#15803d',
+    marginTop: 1,
+  },
+  certificationPage: {
+    padding: 72,
+    fontFamily: 'Helvetica',
+    fontSize: 10,
+    lineHeight: 1.5,
+    color: '#000000',
+  },
+  certificationHeader: {
+    borderBottomWidth: 2,
+    borderBottomColor: '#000000',
+    paddingBottom: 12,
+    marginBottom: 24,
+  },
+  certificationTitle: {
+    fontSize: 16,
+    fontFamily: 'Helvetica-Bold',
+    marginBottom: 4,
+  },
+  certificationSubtitle: {
+    fontSize: 10,
+    color: '#555555',
+  },
+  certTable: {
+    marginTop: 12,
+    marginBottom: 24,
+  },
+  certRow: {
+    flexDirection: 'row',
+    borderBottomWidth: 1,
+    borderBottomColor: '#e5e5e5',
+    paddingVertical: 8,
+  },
+  certRowHeader: {
+    flexDirection: 'row',
+    borderBottomWidth: 2,
+    borderBottomColor: '#000000',
+    paddingVertical: 6,
+    backgroundColor: '#f5f5f5',
+  },
+  certCellLabel: {
+    width: 140,
+    fontSize: 9,
+    fontFamily: 'Helvetica-Bold',
+    color: '#333333',
+  },
+  certCellValue: {
+    flex: 1,
+    fontSize: 9,
+    color: '#000000',
+  },
+  certSectionTitle: {
+    fontSize: 12,
+    fontFamily: 'Helvetica-Bold',
+    marginTop: 20,
+    marginBottom: 8,
+    color: '#000000',
+  },
+  auditRow: {
+    flexDirection: 'row',
+    paddingVertical: 4,
+    borderBottomWidth: 1,
+    borderBottomColor: '#f0f0f0',
+  },
+  auditTimestamp: {
+    width: 160,
+    fontSize: 8,
+    color: '#555555',
+  },
+  auditAction: {
+    flex: 1,
+    fontSize: 8,
+    color: '#000000',
+  },
+  legalNotice: {
+    marginTop: 30,
+    padding: 16,
+    backgroundColor: '#f9f9f9',
+    borderWidth: 1,
+    borderColor: '#e5e5e5',
+    borderRadius: 4,
+  },
+  legalNoticeTitle: {
+    fontSize: 9,
+    fontFamily: 'Helvetica-Bold',
+    marginBottom: 6,
+  },
+  legalNoticeText: {
+    fontSize: 8,
+    lineHeight: 1.5,
+    color: '#333333',
   },
   footer: {
     position: 'absolute',
     bottom: 30,
-    left: 60,
-    right: 60,
+    left: 72,
+    right: 72,
     flexDirection: 'row',
     justifyContent: 'space-between',
     borderTopWidth: 1,
-    borderTopColor: '#e5e7eb',
-    paddingTop: 8,
+    borderTopColor: '#cccccc',
+    paddingTop: 6,
   },
   footerText: {
-    fontSize: 8,
-    color: '#9ca3af',
+    fontSize: 7,
+    color: '#999999',
   },
 });
+
+export interface SignatureInfo {
+  signed: boolean;
+  signer_name: string;
+  signer_title: string;
+  signed_at: string | null;
+  ip_address?: string;
+}
 
 export interface SAFEDocumentData {
   companyName: string;
@@ -174,6 +280,16 @@ export interface SAFEDocumentData {
   template: string;
   proRata: boolean;
   mfnClause: boolean;
+  signatures?: {
+    company?: SignatureInfo;
+    provider?: SignatureInfo;
+  };
+  auditTrail?: Array<{
+    action: string;
+    timestamp: string;
+    actor: string;
+  }>;
+  documentId?: string;
 }
 
 const VARIANT_LABELS: Record<YCSAFEVariant, string> = {
@@ -181,6 +297,250 @@ const VARIANT_LABELS: Record<YCSAFEVariant, string> = {
   'discount': 'Post-Money Discount',
   'mfn': 'Most Favored Nation',
 };
+
+function formatSignatureDate(dateStr: string | null): string {
+  if (!dateStr) return '';
+  try {
+    return new Date(dateStr).toLocaleDateString('en-US', {
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit',
+      timeZoneName: 'short',
+    });
+  } catch {
+    return dateStr;
+  }
+}
+
+function SignatureColumnBlock({
+  label,
+  entityName,
+  signerNameDefault,
+  signerTitleDefault,
+  signatureData,
+}: {
+  label: string;
+  entityName: string;
+  signerNameDefault: string;
+  signerTitleDefault: string;
+  signatureData?: SignatureInfo;
+}) {
+  const isSigned = signatureData?.signed === true;
+  const signerName = isSigned ? signatureData.signer_name : signerNameDefault;
+  const signerTitle = isSigned ? signatureData.signer_title : signerTitleDefault;
+  const signedAt = isSigned ? signatureData.signed_at : null;
+
+  return (
+    <View style={styles.signatureColumn}>
+      <Text style={styles.signaturePartyLabel}>
+        {label}: {entityName}
+      </Text>
+
+      <Text style={styles.signatureFieldLabel}>Signature:</Text>
+      {isSigned ? (
+        <View>
+          <Text style={styles.signatureNameRendered}>
+            /s/ {signerName}
+          </Text>
+          <View style={styles.esignBadge}>
+            <Text style={styles.esignBadgeText}>ELECTRONICALLY SIGNED</Text>
+            <Text style={styles.esignDetails}>
+              Signed: {formatSignatureDate(signedAt)}
+            </Text>
+            {signatureData?.ip_address && (
+              <Text style={styles.esignDetails}>
+                IP: {signatureData.ip_address}
+              </Text>
+            )}
+          </View>
+        </View>
+      ) : (
+        <View style={styles.signatureLine} />
+      )}
+
+      <Text style={styles.signatureFieldLabel}>Name:</Text>
+      <Text style={{ fontSize: 10, marginBottom: 8 }}>{signerName}</Text>
+
+      <Text style={styles.signatureFieldLabel}>Title:</Text>
+      <Text style={{ fontSize: 10, marginBottom: 8 }}>{signerTitle}</Text>
+
+      <Text style={styles.signatureFieldLabel}>Date:</Text>
+      {isSigned ? (
+        <Text style={styles.signatureDateRendered}>
+          {formatSignatureDate(signedAt)}
+        </Text>
+      ) : (
+        <View
+          style={{
+            borderBottomWidth: 1,
+            borderBottomColor: '#000000',
+            height: 20,
+            marginBottom: 4,
+          }}
+        />
+      )}
+    </View>
+  );
+}
+
+function ESignCertificationPage({
+  data,
+}: {
+  data: SAFEDocumentData;
+}) {
+  const companySig = data.signatures?.company;
+  const providerSig = data.signatures?.provider;
+  const allSigned = companySig?.signed && providerSig?.signed;
+
+  if (!allSigned) return null;
+
+  return (
+    <Page size="LETTER" style={styles.certificationPage}>
+      <View style={styles.certificationHeader}>
+        <Text style={styles.certificationTitle}>
+          Electronic Signature Certification
+        </Text>
+        <Text style={styles.certificationSubtitle}>
+          Certificate of Completion — SAFE Agreement
+        </Text>
+      </View>
+
+      <View style={styles.certTable}>
+        <Text style={styles.certSectionTitle}>Document Details</Text>
+        <View style={styles.certRow}>
+          <Text style={styles.certCellLabel}>Document Type</Text>
+          <Text style={styles.certCellValue}>
+            SAFE (Simple Agreement for Future Equity)
+          </Text>
+        </View>
+        <View style={styles.certRow}>
+          <Text style={styles.certCellLabel}>Company</Text>
+          <Text style={styles.certCellValue}>{data.companyName}</Text>
+        </View>
+        <View style={styles.certRow}>
+          <Text style={styles.certCellLabel}>Investor</Text>
+          <Text style={styles.certCellValue}>{data.investorName}</Text>
+        </View>
+        <View style={styles.certRow}>
+          <Text style={styles.certCellLabel}>Investment Amount</Text>
+          <Text style={styles.certCellValue}>{data.investmentAmount}</Text>
+        </View>
+        {data.documentId && (
+          <View style={styles.certRow}>
+            <Text style={styles.certCellLabel}>Document ID</Text>
+            <Text style={styles.certCellValue}>{data.documentId}</Text>
+          </View>
+        )}
+        <View style={styles.certRow}>
+          <Text style={styles.certCellLabel}>Status</Text>
+          <Text style={styles.certCellValue}>
+            FULLY EXECUTED — All parties have signed
+          </Text>
+        </View>
+      </View>
+
+      <View style={styles.certTable}>
+        <Text style={styles.certSectionTitle}>Signer Details</Text>
+
+        <View style={styles.certRowHeader}>
+          <Text style={{ ...styles.certCellLabel, width: 100 }}>Party</Text>
+          <Text style={{ ...styles.certCellLabel, width: 120 }}>Name</Text>
+          <Text style={{ ...styles.certCellLabel, width: 80 }}>Title</Text>
+          <Text style={{ ...styles.certCellLabel, flex: 1 }}>
+            Signed At
+          </Text>
+          <Text style={{ ...styles.certCellLabel, width: 80 }}>IP Address</Text>
+        </View>
+
+        {companySig && (
+          <View style={styles.certRow}>
+            <Text style={{ ...styles.certCellValue, width: 100 }}>Company</Text>
+            <Text style={{ ...styles.certCellValue, width: 120 }}>
+              {companySig.signer_name}
+            </Text>
+            <Text style={{ ...styles.certCellValue, width: 80 }}>
+              {companySig.signer_title}
+            </Text>
+            <Text style={{ ...styles.certCellValue, flex: 1 }}>
+              {formatSignatureDate(companySig.signed_at)}
+            </Text>
+            <Text style={{ ...styles.certCellValue, width: 80 }}>
+              {companySig.ip_address || 'N/A'}
+            </Text>
+          </View>
+        )}
+
+        {providerSig && (
+          <View style={styles.certRow}>
+            <Text style={{ ...styles.certCellValue, width: 100 }}>Investor</Text>
+            <Text style={{ ...styles.certCellValue, width: 120 }}>
+              {providerSig.signer_name}
+            </Text>
+            <Text style={{ ...styles.certCellValue, width: 80 }}>
+              {providerSig.signer_title}
+            </Text>
+            <Text style={{ ...styles.certCellValue, flex: 1 }}>
+              {formatSignatureDate(providerSig.signed_at)}
+            </Text>
+            <Text style={{ ...styles.certCellValue, width: 80 }}>
+              {providerSig.ip_address || 'N/A'}
+            </Text>
+          </View>
+        )}
+      </View>
+
+      {data.auditTrail && data.auditTrail.length > 0 && (
+        <View>
+          <Text style={styles.certSectionTitle}>Audit Trail</Text>
+          {data.auditTrail.map((entry, i) => (
+            <View key={i} style={styles.auditRow}>
+              <Text style={styles.auditTimestamp}>
+                {formatSignatureDate(entry.timestamp)}
+              </Text>
+              <Text style={styles.auditAction}>{entry.action}</Text>
+            </View>
+          ))}
+        </View>
+      )}
+
+      <View style={styles.legalNotice}>
+        <Text style={styles.legalNoticeTitle}>
+          Electronic Signature Disclosure
+        </Text>
+        <Text style={styles.legalNoticeText}>
+          This document was executed using electronic signatures in compliance
+          with the United States Electronic Signatures in Global and National
+          Commerce Act (E-SIGN Act, 15 U.S.C. § 7001 et seq.) and the Uniform
+          Electronic Transactions Act (UETA). All parties consented to
+          conduct this transaction electronically and agreed that electronic
+          signatures carry the same legal weight and enforceability as
+          handwritten signatures. Each party has received a copy of this
+          fully executed agreement.
+        </Text>
+        <Text style={{ ...styles.legalNoticeText, marginTop: 6 }}>
+          The signing events were captured with timestamps and IP addresses
+          to provide a verifiable audit trail. This certificate confirms that
+          all signatures shown on this document are valid and were applied by
+          the identified signers on the dates and times indicated.
+        </Text>
+      </View>
+
+      <View style={styles.footer} fixed>
+        <Text style={styles.footerText}>
+          Electronic Signature Certification — Givvy Platform
+        </Text>
+        <Text
+          style={styles.footerText}
+          render={({ pageNumber, totalPages }) =>
+            `Page ${pageNumber} of ${totalPages}`
+          }
+        />
+      </View>
+    </Page>
+  );
+}
 
 export function SAFEDocument({ data }: { data: SAFEDocumentData }) {
   const { variant, template: tmpl } = selectTemplate({
@@ -201,134 +561,173 @@ export function SAFEDocument({ data }: { data: SAFEDocumentData }) {
     date: data.date,
   });
 
-  const paragraphs = rendered
+  const allSigned =
+    data.signatures?.company?.signed && data.signatures?.provider?.signed;
+
+  const sigBlockMarker = 'IN WITNESS WHEREOF';
+  const sigBlockIndex = rendered.indexOf(sigBlockMarker);
+
+  const bodyContent =
+    sigBlockIndex >= 0 ? rendered.substring(0, sigBlockIndex) : rendered;
+
+  const paragraphs = bodyContent
     .split('\n\n')
     .map((p) => p.trim())
     .filter(Boolean);
 
+  const isNumberedSection = (text: string) =>
+    /^\d+\.\s/.test(text) || /^Section\s+\d+/i.test(text);
+
+  const isSubsection = (text: string) =>
+    /^\([a-z]\)\s/i.test(text) || /^\([ivxlc]+\)\s/i.test(text);
+
+  const isAllCapsHeading = (text: string) =>
+    text === text.toUpperCase() && text.length < 100 && text.length > 3;
+
+  const isDefinitionLine = (text: string) =>
+    /^"[^"]+"\s+means\s/i.test(text);
+
   return (
     <Document>
       <Page size="LETTER" style={styles.page}>
-        <View style={styles.header}>
-          <Text style={styles.headerTitle}>
-            SAFE (Simple Agreement for Future Equity)
-          </Text>
-          <Text style={styles.headerSubtitle}>
-            {VARIANT_LABELS[variant]} — Generated by Givvy
-          </Text>
-        </View>
-
-        <View style={styles.partiesSection}>
-          <Text style={styles.partiesTitle}>Parties</Text>
-          <View style={styles.partyRow}>
-            <Text style={styles.partyLabel}>Company:</Text>
-            <Text style={styles.partyValue}>{data.companyName}</Text>
-          </View>
-          <View style={styles.partyRow}>
-            <Text style={styles.partyLabel}>Founder:</Text>
-            <Text style={styles.partyValue}>
-              {data.founderName} — {data.founderTitle}
-            </Text>
-          </View>
-          <View style={styles.partyRow}>
-            <Text style={styles.partyLabel}>Investor:</Text>
-            <Text style={styles.partyValue}>
-              {data.investorName} — {data.investorTitle}
-            </Text>
-          </View>
-          <View style={styles.partyRow}>
-            <Text style={styles.partyLabel}>Date:</Text>
-            <Text style={styles.partyValue}>{data.date}</Text>
-          </View>
-        </View>
-
-        <View style={styles.termsSection}>
-          <Text style={styles.termsTitle}>Key Terms</Text>
-          <View style={styles.termRow}>
-            <Text style={styles.termLabel}>SAFE Type:</Text>
-            <Text style={styles.termValue}>{VARIANT_LABELS[variant]}</Text>
-          </View>
-          <View style={styles.termRow}>
-            <Text style={styles.termLabel}>Investment Amount:</Text>
-            <Text style={styles.termValue}>{data.investmentAmount}</Text>
-          </View>
-          {variant === 'valuation-cap' && (
-            <View style={styles.termRow}>
-              <Text style={styles.termLabel}>Post-Money Valuation Cap:</Text>
-              <Text style={styles.termValue}>{data.valuationCap}</Text>
-            </View>
-          )}
-          {variant === 'discount' && (
-            <View style={styles.termRow}>
-              <Text style={styles.termLabel}>Discount Rate:</Text>
-              <Text style={styles.termValue}>{data.discountRate}%</Text>
-            </View>
-          )}
-          <View style={styles.termRow}>
-            <Text style={styles.termLabel}>Vesting:</Text>
-            <Text style={styles.termValue}>
-              {data.vestingMonths} months with {data.cliffMonths}-month cliff
-            </Text>
-          </View>
-          <View style={styles.termRow}>
-            <Text style={styles.termLabel}>Governing Law:</Text>
-            <Text style={styles.termValue}>State of {data.state}</Text>
-          </View>
-        </View>
-
-        <View>
-          <Text style={styles.termsTitle}>Full Agreement</Text>
-          {paragraphs.map((paragraph, index) => {
-            const isHeading =
-              paragraph === paragraph.toUpperCase() &&
-              paragraph.length < 80;
-            return isHeading ? (
+        {paragraphs.map((paragraph, index) => {
+          if (isAllCapsHeading(paragraph) && paragraph.length < 30) {
+            if (
+              paragraph.includes('SAFE') &&
+              paragraph.includes('SIMPLE AGREEMENT')
+            ) {
+              return (
+                <Text key={index} style={styles.documentTitle}>
+                  {paragraph}
+                </Text>
+              );
+            }
+            if (paragraph === data.companyName.toUpperCase() || index <= 3) {
+              return (
+                <Text key={index} style={styles.companyName}>
+                  {paragraph}
+                </Text>
+              );
+            }
+            return (
               <Text key={index} style={styles.sectionTitle}>
                 {paragraph}
               </Text>
-            ) : (
+            );
+          }
+
+          if (
+            isAllCapsHeading(paragraph) &&
+            paragraph.includes('NOT BEEN REGISTERED')
+          ) {
+            return (
+              <Text key={index} style={styles.securitiesNotice}>
+                {paragraph}
+              </Text>
+            );
+          }
+
+          if (isNumberedSection(paragraph)) {
+            const match = paragraph.match(/^(\d+\.\s*[^\n.]+?)(?:\n|$)/);
+            if (match && paragraph.length > 60) {
+              return (
+                <View key={index}>
+                  <Text style={styles.sectionTitle}>
+                    {match[1]}
+                  </Text>
+                  <Text style={styles.bodyText}>
+                    {paragraph.substring(match[1].length).trim()}
+                  </Text>
+                </View>
+              );
+            }
+            return (
+              <Text key={index} style={styles.sectionTitle}>
+                {paragraph}
+              </Text>
+            );
+          }
+
+          if (isSubsection(paragraph)) {
+            return (
               <Text key={index} style={styles.bodyText}>
                 {paragraph}
               </Text>
             );
-          })}
-        </View>
+          }
+
+          if (isDefinitionLine(paragraph)) {
+            return (
+              <Text key={index} style={styles.bodyText}>
+                {paragraph}
+              </Text>
+            );
+          }
+
+          return (
+            <Text key={index} style={styles.bodyText}>
+              {paragraph}
+            </Text>
+          );
+        })}
+
+        <Text style={styles.witnessBlock}>
+          IN WITNESS WHEREOF, the undersigned have caused this Safe to be
+          duly executed and delivered.
+        </Text>
 
         <View style={styles.signatureSection}>
-          <Text style={styles.signatureTitle}>Signatures</Text>
           <View style={styles.signatureBlock}>
-            <View style={styles.signatureColumn}>
-              <Text style={styles.signatureLabel}>
-                COMPANY: {data.companyName}
-              </Text>
-              <View style={styles.signatureLine} />
-              <Text style={styles.signatureSubtext}>
-                {data.founderName}
-              </Text>
-              <Text style={styles.signatureSubtext}>
-                {data.founderTitle}
-              </Text>
-              <Text style={styles.signatureSubtext}>Date: ____________</Text>
-            </View>
-            <View style={styles.signatureColumn}>
-              <Text style={styles.signatureLabel}>
-                INVESTOR: {data.investorName}
-              </Text>
-              <View style={styles.signatureLine} />
-              <Text style={styles.signatureSubtext}>
-                {data.investorName}
-              </Text>
-              <Text style={styles.signatureSubtext}>
-                {data.investorTitle}
-              </Text>
-              <Text style={styles.signatureSubtext}>Date: ____________</Text>
-            </View>
+            <SignatureColumnBlock
+              label="COMPANY"
+              entityName={data.companyName}
+              signerNameDefault={data.founderName}
+              signerTitleDefault={data.founderTitle}
+              signatureData={data.signatures?.company}
+            />
+            <SignatureColumnBlock
+              label="INVESTOR"
+              entityName={data.investorName}
+              signerNameDefault={data.investorName}
+              signerTitleDefault={data.investorTitle}
+              signatureData={data.signatures?.provider}
+            />
           </View>
         </View>
 
+        {allSigned && (
+          <View
+            style={{
+              marginTop: 20,
+              padding: 8,
+              backgroundColor: '#f0f9f0',
+              borderWidth: 1,
+              borderColor: '#22c55e',
+              borderRadius: 4,
+              alignItems: 'center',
+            }}
+          >
+            <Text
+              style={{
+                fontSize: 9,
+                fontFamily: 'Helvetica-Bold',
+                color: '#15803d',
+              }}
+            >
+              THIS DOCUMENT HAS BEEN FULLY EXECUTED BY ALL PARTIES VIA
+              ELECTRONIC SIGNATURE
+            </Text>
+            <Text style={{ fontSize: 8, color: '#15803d', marginTop: 2 }}>
+              Executed in compliance with the E-SIGN Act (15 U.S.C. § 7001) and
+              UETA. See attached Electronic Signature Certification for details.
+            </Text>
+          </View>
+        )}
+
         <View style={styles.footer} fixed>
           <Text style={styles.footerText}>
-            Givvy — Confidential
+            {allSigned ? 'Fully Executed' : 'Draft'} — SAFE Agreement —{' '}
+            {data.companyName}
           </Text>
           <Text
             style={styles.footerText}
@@ -338,6 +737,8 @@ export function SAFEDocument({ data }: { data: SAFEDocumentData }) {
           />
         </View>
       </Page>
+
+      <ESignCertificationPage data={data} />
     </Document>
   );
 }
@@ -351,16 +752,36 @@ export async function generateSAFEPDF(
   return Buffer.from(buffer);
 }
 
-/**
- * Build SAFEDocumentData from deal + startup + talent records.
- * Used by the auto-generation flow and PDF download endpoint.
- */
 export function buildSAFEDocData(
   deal: any,
   startup: any,
-  talent: any
+  talent: any,
+  safeDoc?: { signatures?: Record<string, any>; audit_trail?: any[]; id?: string } | null
 ): SAFEDocumentData {
   const vars = buildTemplateVars(deal, startup, talent);
+
+  const signatures: SAFEDocumentData['signatures'] = {};
+  if (safeDoc?.signatures) {
+    if (safeDoc.signatures.company) {
+      signatures.company = {
+        signed: safeDoc.signatures.company.signed ?? false,
+        signer_name: safeDoc.signatures.company.signer_name ?? '',
+        signer_title: safeDoc.signatures.company.signer_title ?? '',
+        signed_at: safeDoc.signatures.company.signed_at ?? null,
+        ip_address: safeDoc.signatures.company.ip_address,
+      };
+    }
+    if (safeDoc.signatures.provider) {
+      signatures.provider = {
+        signed: safeDoc.signatures.provider.signed ?? false,
+        signer_name: safeDoc.signatures.provider.signer_name ?? '',
+        signer_title: safeDoc.signatures.provider.signer_title ?? '',
+        signed_at: safeDoc.signatures.provider.signed_at ?? null,
+        ip_address: safeDoc.signatures.provider.ip_address,
+      };
+    }
+  }
+
   return {
     companyName: vars.company_name,
     founderName: vars.founder_name,
@@ -377,5 +798,8 @@ export function buildSAFEDocData(
     template: deal.safe_terms?.template ?? 'yc-standard',
     proRata: deal.safe_terms?.pro_rata ?? false,
     mfnClause: deal.safe_terms?.mfn_clause ?? false,
+    signatures: Object.keys(signatures).length > 0 ? signatures : undefined,
+    auditTrail: safeDoc?.audit_trail ?? undefined,
+    documentId: safeDoc?.id,
   };
 }

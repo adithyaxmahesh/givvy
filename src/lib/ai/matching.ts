@@ -18,6 +18,10 @@ export interface RoleInfo {
   requirements: string[];
   equity_range: string;
   cash_equivalent?: string | null;
+  marketplace_section?: string | null;
+  work_type?: string | null;
+  compensation_type?: string | null;
+  cash_range?: string | null;
 }
 
 export interface StartupInfo {
@@ -83,6 +87,18 @@ function buildUserPrompt(
 - Equity Range: ${role.equity_range}`;
     if (role.cash_equivalent) {
       prompt += `\n- Cash Equivalent: ${role.cash_equivalent}`;
+    }
+    if (role.marketplace_section) {
+      prompt += `\n- Marketplace Section: ${role.marketplace_section}`;
+    }
+    if (role.work_type) {
+      prompt += `\n- Work Type: ${role.work_type}`;
+    }
+    if (role.compensation_type) {
+      prompt += `\n- Compensation Type: ${role.compensation_type}`;
+    }
+    if (role.cash_range) {
+      prompt += `\n- Cash Range: ${role.cash_range}`;
     }
   }
 

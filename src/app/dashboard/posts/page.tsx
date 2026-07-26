@@ -17,6 +17,7 @@ import {
 } from 'lucide-react';
 import Link from 'next/link';
 import { useEffect, useState } from 'react';
+import { getCategoryLabel, getMarketplaceSectionLabel } from '@/lib/fractional';
 
 export default function MyPostsPage() {
   const { user, loading: authLoading } = useAuth();
@@ -175,8 +176,13 @@ export default function MyPostsPage() {
                           >
                             {isSeek ? 'Seeking' : 'Offering'}
                           </span>
+                          {post.marketplace_section && (
+                            <span className="badge bg-brand-50 text-brand-700 text-xs">
+                              {getMarketplaceSectionLabel(post.marketplace_section)}
+                            </span>
+                          )}
                           {post.category && (
-                            <span className="badge bg-gray-100 text-[#6B6B6B] text-xs capitalize">{post.category}</span>
+                            <span className="badge bg-gray-100 text-[#6B6B6B] text-xs">{getCategoryLabel(post.category)}</span>
                           )}
                           <span className="text-xs text-[#9CA3AF]">
                             {formatTimeAgo(post.created_at)}

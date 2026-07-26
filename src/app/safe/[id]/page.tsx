@@ -109,13 +109,13 @@ export default function SAFEDocumentPage({
       const doc = json.data as SAFEDocument;
       setSafeDoc(doc);
 
-      if (doc.signatures?.founder) {
-        setFounderName(doc.signatures.founder.signer_name || '');
-        setFounderTitle(doc.signatures.founder.signer_title || '');
+      if (doc.signatures?.company) {
+        setFounderName(doc.signatures.company.signer_name || '');
+        setFounderTitle(doc.signatures.company.signer_title || '');
       }
-      if (doc.signatures?.talent) {
-        setTalentName(doc.signatures.talent.signer_name || '');
-        setTalentTitle(doc.signatures.talent.signer_title || '');
+      if (doc.signatures?.provider) {
+        setTalentName(doc.signatures.provider.signer_name || '');
+        setTalentTitle(doc.signatures.provider.signer_title || '');
       }
     } catch (err: unknown) {
       const message = err instanceof Error ? err.message : 'Something went wrong';
@@ -266,8 +266,8 @@ export default function SAFEDocumentPage({
     ...rawTerms,
     investment_amount: (rawTerms as any).investment_amount ?? (rawTerms as any).equity_percent ?? 0,
   };
-  const founderSig = safeDoc.signatures?.founder;
-  const talentSig = safeDoc.signatures?.talent;
+  const founderSig = safeDoc.signatures?.company;
+  const talentSig = safeDoc.signatures?.provider;
 
   const templateLabel =
     safeDoc.template === 'yc-standard'
@@ -783,6 +783,7 @@ function SignatureBlock({
   signing: boolean;
 }) {
   const isSigned = sigData?.signed;
+  const [agreed, setAgreed] = useState(false);
 
   return (
     <motion.div
@@ -806,33 +807,46 @@ function SignatureBlock({
       </div>
 
       {isSigned ? (
-        <div className="space-y-2">
-          <div className="border-b-2 border-gray-800 pb-1 mb-2">
+        <div className="space-y-3">
+          <div className="border-b-2 border-blue-900 pb-1 mb-2">
             <p
-              className="text-lg text-gray-800 italic"
-              style={{ fontFamily: 'cursive, "Brush Script MT", serif' }}
+              className="text-xl text-blue-900 italic"
+              style={{ fontFamily: '"Times New Roman", Georgia, serif' }}
             >
-              {sigData.signer_name}
+              /s/ {sigData.signer_name}
             </p>
           </div>
           <p className="text-sm text-gray-700 font-medium">{sigData.signer_name}</p>
           <p className="text-xs text-gray-500">{sigData.signer_title}</p>
           {sigData.signed_at && (
-            <p className="text-xs text-green-600 flex items-center gap-1 mt-2">
-              <CheckCircle2 className="h-3 w-3" />
-              Signed on {formatDate(sigData.signed_at)}
-            </p>
+            <div className="mt-3 p-3 rounded-lg bg-green-50 border border-green-200">
+              <p className="text-xs font-semibold text-green-700 flex items-center gap-1">
+                <Shield className="h-3 w-3" />
+                ELECTRONICALLY SIGNED
+              </p>
+              <p className="text-[11px] text-green-600 mt-1">
+                Signed: {formatDate(sigData.signed_at)}
+              </p>
+              {sigData.ip_address && (
+                <p className="text-[11px] text-green-600">
+                  IP Address: {sigData.ip_address}
+                </p>
+              )}
+              <p className="text-[10px] text-green-500 mt-1">
+                Valid under E-SIGN Act (15 U.S.C. § 7001) and UETA
+              </p>
+            </div>
           )}
         </div>
       ) : (
         <div className="space-y-3">
           <div>
-            <label className="block text-xs text-gray-500 mb-1">Full Name</label>
+            <label className="block text-xs text-gray-500 mb-1">Full Legal Name</label>
             <input
               type="text"
               value={name}
               onChange={(e) => setName(e.target.value)}
-              placeholder="Enter full name"
+              placeholder="Enter your full legal name"
               className="input-field !py-2 !text-sm"
             />
           </div>
@@ -846,9 +860,32 @@ function SignatureBlock({
               className="input-field !py-2 !text-sm"
             />
           </div>
+          {name.trim() && (
+            <div className="p-3 rounded-lg bg-gray-100 border border-gray-200">
+              <p className="text-[10px] text-gray-500 mb-1">Signature Preview</p>
+              <p
+                className="text-lg text-blue-900 italic border-b border-gray-300 pb-1"
+                style={{ fontFamily: '"Times New Roman", Georgia, serif' }}
+              >
+                /s/ {name}
+              </p>
+            </div>
+          )}
+          <label className="flex items-start gap-2 cursor-pointer">
+            <input
+              type="checkbox"
+              checked={agreed}
+              onChange={(e) => setAgreed(e.target.checked)}
+              className="mt-0.5 h-4 w-4 rounded border-gray-300 text-brand-600 focus:ring-brand-500"
+            />
+            <span className="text-[11px] text-gray-600 leading-tight">
+              I agree that my electronic signature is the legal equivalent of my
+              manual signature on this document, pursuant to the E-SIGN Act and UETA.
+            </span>
+          </label>
           <button
             onClick={onSign}
-            disabled={signing || !name.trim()}
+            disabled={signing || !name.trim() || !agreed}
             className="btn-primary w-full !py-2.5 gap-2 text-sm disabled:opacity-50"
           >
             {signing ? (
@@ -856,8 +893,11 @@ function SignatureBlock({
             ) : (
               <Pen className="h-4 w-4" />
             )}
-            Sign Document
+            Apply Electronic Signature
           </button>
+          <p className="text-[10px] text-gray-400 text-center">
+            By signing, you agree this constitutes a legally binding electronic signature.
+          </p>
         </div>
       )}
     </motion.div>

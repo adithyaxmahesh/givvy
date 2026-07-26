@@ -12,6 +12,7 @@ import {
   Tag,
 } from 'lucide-react';
 import Link from 'next/link';
+import { getMarketplaceSectionLabel } from '@/lib/fractional';
 
 interface Proposal {
   id: string;
@@ -25,6 +26,7 @@ interface Post {
   title: string;
   description: string;
   category: string;
+  marketplace_section: string;
   equity_min: number;
   equity_max: number;
   tags: string[];
@@ -207,6 +209,11 @@ function PostCard({
             <span className={`px-2 py-0.5 rounded-full text-xs font-medium capitalize ${STATUS_COLORS[post.status] || 'bg-gray-100'}`}>
               {post.status}
             </span>
+            {post.marketplace_section && (
+              <span className="px-2 py-0.5 rounded-full text-xs font-medium bg-purple-100 text-purple-700">
+                {getMarketplaceSectionLabel(post.marketplace_section)}
+              </span>
+            )}
           </div>
           <p className="text-sm text-gray-500 mt-1 line-clamp-2">{post.description}</p>
           <div className="flex items-center gap-4 mt-2 text-xs text-gray-500 flex-wrap">

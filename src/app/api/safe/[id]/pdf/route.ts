@@ -28,20 +28,17 @@ export async function GET(
       return NextResponse.json({ error: 'Deal not found' }, { status: 404 });
     }
 
-    // Authorization: only deal participants (founder or talent) can download
     const founderId = deal.startup?.founder?.id ?? deal.startup?.founder_id;
     const talentUserId = deal.talent?.user?.id ?? deal.talent?.user_id;
     const isParticipant = user.id === founderId || user.id === talentUserId;
-    // Also allow admin users
     const { isAdmin } = await import('@/lib/auth');
     if (!isParticipant && !isAdmin(user.email)) {
       return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
     }
 
-    // Check if a signed PDF already exists in storage
     const { data: safeDoc } = await supabase
       .from('safe_documents')
-      .select('signed_document_url, document_url, status')
+      .select('*')
       .eq('deal_id', dealId)
       .order('created_at', { ascending: false })
       .limit(1)
@@ -49,7 +46,6 @@ export async function GET(
 
     const storedUrl = safeDoc?.signed_document_url || safeDoc?.document_url;
     if (storedUrl && safeDoc?.status === 'signed') {
-      // Serve stored signed PDF via redirect
       try {
         const storageRes = await fetch(storedUrl);
         if (storageRes.ok) {
@@ -73,8 +69,16 @@ export async function GET(
       }
     }
 
-    // Generate on the fly
-    const pdfData = buildSAFEDocData(deal, deal.startup, deal.talent);
+    const pdfData = buildSAFEDocData(
+      deal,
+      deal.startup,
+      deal.talent,
+      safeDoc ? {
+        signatures: safeDoc.signatures,
+        audit_trail: safeDoc.audit_trail,
+        id: safeDoc.id,
+      } : null
+    );
     const pdfBuffer = await generateSAFEPDF(pdfData);
 
     const companySlug = (deal.startup?.name || 'company')

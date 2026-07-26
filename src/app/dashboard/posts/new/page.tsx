@@ -13,29 +13,29 @@ import {
   X,
 } from 'lucide-react';
 import Link from 'next/link';
-
-const CATEGORIES = [
-  'Engineering',
-  'Design',
-  'Legal',
-  'Finance',
-  'Marketing',
-  'Consulting',
-  'Media',
-  'Operations',
-  'Other',
-];
+import {
+  COMPENSATION_TYPES,
+  MARKETPLACE_CATEGORIES,
+  MARKETPLACE_SECTIONS,
+  WORK_TYPES,
+  type MarketplaceSection,
+} from '@/lib/fractional';
 
 export default function NewPostPage() {
   const { user } = useAuth();
   useRequireApproval();
   const router = useRouter();
 
+  const [marketplaceSection, setMarketplaceSection] = useState<MarketplaceSection>('fractional-hires');
   const [type, setType] = useState<'seeking' | 'offering' | ''>('');
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
   const [category, setCategory] = useState('');
+  const [workType, setWorkType] = useState('fractional');
+  const [compensationType, setCompensationType] = useState<'equity' | 'cash' | 'blended'>('blended');
   const [equityAmount, setEquityAmount] = useState('');
+  const [cashMin, setCashMin] = useState('');
+  const [cashMax, setCashMax] = useState('');
   const [tagInput, setTagInput] = useState('');
   const [tags, setTags] = useState<string[]>([]);
   const [submitting, setSubmitting] = useState(false);
@@ -51,6 +51,19 @@ export default function NewPostPage() {
 
   const removeTag = (tag: string) => {
     setTags(tags.filter((t) => t !== tag));
+  };
+
+  const selectMarketplaceSection = (section: MarketplaceSection) => {
+    setMarketplaceSection(section);
+    if (section === 'fractional-hires') {
+      setWorkType('fractional');
+      setCompensationType('blended');
+      return;
+    }
+    setWorkType('project');
+    setCompensationType('equity');
+    setCashMin('');
+    setCashMax('');
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -69,14 +82,19 @@ export default function NewPostPage() {
           title: title.trim(),
           description: description.trim(),
           category,
+          marketplace_section: marketplaceSection,
+          work_type: workType,
+          compensation_type: compensationType,
           equity_min: equityAmount ? parseFloat(equityAmount) : 0,
           equity_max: equityAmount ? parseFloat(equityAmount) : 0,
+          cash_min: cashMin ? parseFloat(cashMin) : 0,
+          cash_max: cashMax ? parseFloat(cashMax) : 0,
           tags,
         }),
       });
       const json = await res.json();
       if (!res.ok) throw new Error(json.error || 'Failed to create post');
-      router.push('/marketplace?tab=posts');
+      router.push(`/marketplace?section=${marketplaceSection}`);
     } catch (err: any) {
       setError(err.message);
     } finally {
@@ -95,11 +113,11 @@ export default function NewPostPage() {
           Back to Marketplace
         </Link>
 
-        <h1 className="text-2xl font-bold text-[#1A1A1A] mb-1">Create a Post</h1>
+        <h1 className="text-2xl font-bold text-[#1A1A1A] mb-1">Create a Marketplace Post</h1>
         <p className="text-sm text-[#6B6B6B] mb-8">
           {user?.role === 'founder'
-            ? 'Describe what you need — find talent willing to work for equity.'
-            : 'Describe what you offer — find startups that need your skills.'}
+            ? 'Choose whether you are hiring fractional talent or offering equity work, then describe the opportunity.'
+            : 'Choose whether you are offering fractional services or looking for equity-backed startup work.'}
         </p>
 
         {error && (
@@ -109,6 +127,30 @@ export default function NewPostPage() {
         )}
 
         <form onSubmit={handleSubmit} className="space-y-6">
+          {/* Marketplace section */}
+          <div>
+            <label className="block text-sm font-semibold text-[#1A1A1A] mb-3">
+              Marketplace Section
+            </label>
+            <div className="grid sm:grid-cols-2 gap-3">
+              {MARKETPLACE_SECTIONS.map((section) => (
+                <button
+                  key={section.value}
+                  type="button"
+                  onClick={() => selectMarketplaceSection(section.value)}
+                  className={`text-left p-5 rounded-xl border-2 transition-all ${
+                    marketplaceSection === section.value
+                      ? 'border-brand-600 bg-brand-50 text-brand-700'
+                      : 'border-[#E8E8E6] bg-white text-[#6B6B6B] hover:border-[#D1D5DB]'
+                  }`}
+                >
+                  <span className="block text-base font-semibold">{section.label}</span>
+                  <span className="block text-xs leading-relaxed mt-1">{section.description}</span>
+                </button>
+              ))}
+            </div>
+          </div>
+
           {/* Post type */}
           <div>
             <label className="block text-sm font-semibold text-[#1A1A1A] mb-3">
@@ -127,7 +169,9 @@ export default function NewPostPage() {
                 <Search className="h-6 w-6" />
                 <span className="text-sm font-semibold">Seeking Talent</span>
                 <span className="text-xs text-center leading-relaxed">
-                  I need someone to help with my startup
+                  {marketplaceSection === 'fractional-hires'
+                    ? 'I need to hire a fractional operator, CFO, SDR, or advisor'
+                    : 'I need someone to do equity-compensated startup work'}
                 </span>
               </button>
               <button
@@ -142,7 +186,9 @@ export default function NewPostPage() {
                 <Megaphone className="h-6 w-6" />
                 <span className="text-sm font-semibold">Offering Services</span>
                 <span className="text-xs text-center leading-relaxed">
-                  I want to work with startups for equity
+                  {marketplaceSection === 'fractional-hires'
+                    ? 'I offer fractional services to startups'
+                    : 'I want startup work compensated with equity'}
                 </span>
               </button>
             </div>
@@ -160,12 +206,40 @@ export default function NewPostPage() {
               onChange={(e) => setTitle(e.target.value)}
               placeholder={
                 type === 'seeking'
-                  ? 'e.g. Looking for a part-time CFO'
-                  : 'e.g. Full-stack developer available for equity'
+                  ? marketplaceSection === 'fractional-hires'
+                    ? 'e.g. Fractional CFO for seed-stage fundraising'
+                    : 'e.g. Equity-backed growth project for a B2B startup'
+                  : marketplaceSection === 'fractional-hires'
+                    ? 'e.g. Fractional SDR available for startup growth'
+                    : 'e.g. Product designer available for equity-backed work'
               }
               className="input-field"
               maxLength={200}
             />
+          </div>
+
+          {/* Work Type */}
+          <div>
+            <label className="block text-sm font-semibold text-[#1A1A1A] mb-3">
+              Work Type
+            </label>
+            <div className="grid sm:grid-cols-2 gap-3">
+              {WORK_TYPES.map((item) => (
+                <button
+                  key={item.value}
+                  type="button"
+                  onClick={() => setWorkType(item.value)}
+                  className={`text-left p-4 rounded-xl border-2 transition-all ${
+                    workType === item.value
+                      ? 'border-brand-600 bg-brand-50 text-brand-700'
+                      : 'border-[#E8E8E6] bg-white text-[#6B6B6B] hover:border-[#D1D5DB]'
+                  }`}
+                >
+                  <span className="block text-sm font-semibold">{item.label}</span>
+                  <span className="block text-xs leading-relaxed mt-1">{item.description}</span>
+                </button>
+              ))}
+            </div>
           </div>
 
           {/* Description */}
@@ -177,7 +251,11 @@ export default function NewPostPage() {
               id="desc"
               value={description}
               onChange={(e) => setDescription(e.target.value)}
-              placeholder="Describe what you're looking for or what you can offer. Include details about the work, timeline, and expectations."
+              placeholder={
+                marketplaceSection === 'fractional-hires'
+                  ? 'Describe the recurring scope, weekly time commitment, outcomes, and cash/equity mix.'
+                  : 'Describe the equity-backed project, milestones, expected impact, and SAFE or stock terms.'
+              }
               rows={5}
               className="input-field resize-none"
               maxLength={5000}
@@ -197,27 +275,83 @@ export default function NewPostPage() {
               className="input-field appearance-none"
             >
               <option value="">Select a category</option>
-              {CATEGORIES.map((c) => (
-                <option key={c} value={c.toLowerCase()}>{c}</option>
+              {MARKETPLACE_CATEGORIES.map((c) => (
+                <option key={c.value} value={c.value}>{c.label}</option>
               ))}
             </select>
           </div>
 
-          {/* SAFE Compensation */}
+          {/* Compensation */}
           <div>
-            <label className="block text-sm font-semibold text-[#1A1A1A] mb-1.5">
-              SAFE Compensation ($)
+            <label className="block text-sm font-semibold text-[#1A1A1A] mb-3">
+              Compensation Structure
             </label>
-            <input
-              type="number"
-              min="0"
-              value={equityAmount}
-              onChange={(e) => setEquityAmount(e.target.value)}
-              placeholder="e.g. 25000"
-              className="input-field"
-            />
-            <p className="text-xs text-[#9CA3AF] mt-1">Optional — the dollar value of the SAFE note offered as compensation</p>
+            <div className="grid sm:grid-cols-3 gap-3">
+              {COMPENSATION_TYPES.map((item) => (
+                <button
+                  key={item.value}
+                  type="button"
+                  onClick={() => setCompensationType(item.value)}
+                  className={`text-left p-4 rounded-xl border-2 transition-all ${
+                    compensationType === item.value
+                      ? 'border-brand-600 bg-brand-50 text-brand-700'
+                      : 'border-[#E8E8E6] bg-white text-[#6B6B6B] hover:border-[#D1D5DB]'
+                  }`}
+                >
+                  <span className="block text-sm font-semibold">{item.label}</span>
+                  <span className="block text-xs leading-relaxed mt-1">{item.description}</span>
+                </button>
+              ))}
+            </div>
           </div>
+
+          {(compensationType === 'equity' || compensationType === 'blended') && (
+            <div>
+              <label className="block text-sm font-semibold text-[#1A1A1A] mb-1.5">
+                SAFE / Stock Compensation Value ($)
+              </label>
+              <input
+                type="number"
+                min="0"
+                value={equityAmount}
+                onChange={(e) => setEquityAmount(e.target.value)}
+                placeholder="e.g. 25000"
+                className="input-field"
+              />
+              <p className="text-xs text-[#9CA3AF] mt-1">Optional — the dollar value of the SAFE or stock-based compensation.</p>
+            </div>
+          )}
+
+          {marketplaceSection === 'fractional-hires' && (compensationType === 'cash' || compensationType === 'blended') && (
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <label className="block text-sm font-semibold text-[#1A1A1A] mb-1.5">
+                  Cash Min ($)
+                </label>
+                <input
+                  type="number"
+                  min="0"
+                  value={cashMin}
+                  onChange={(e) => setCashMin(e.target.value)}
+                  placeholder="e.g. 3000"
+                  className="input-field"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-semibold text-[#1A1A1A] mb-1.5">
+                  Cash Max ($)
+                </label>
+                <input
+                  type="number"
+                  min="0"
+                  value={cashMax}
+                  onChange={(e) => setCashMax(e.target.value)}
+                  placeholder="e.g. 8000"
+                  className="input-field"
+                />
+              </div>
+            </div>
+          )}
 
           {/* Tags */}
           <div>

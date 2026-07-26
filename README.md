@@ -21,7 +21,10 @@ cp .env.example .env.local
 # Edit .env.local with your Supabase project URL and keys
 ```
 
-Then run `MIGRATION.sql` in the Supabase SQL editor.
+Then run `MIGRATION.sql` in the Supabase SQL editor, followed by the incremental
+`MIGRATION_*.sql` files. `MIGRATION_LEADS.sql` creates the `leads` table that backs
+the landing page "Book intro" and "Get the deck" forms; submissions are viewable at
+`/admin/leads`.
 
 ## Stack
 

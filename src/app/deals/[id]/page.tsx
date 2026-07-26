@@ -38,6 +38,7 @@ import {
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useEffect, useRef, useState, useCallback } from 'react';
+import { getCompensationTypeLabel, getMarketplaceSectionLabel, getWorkTypeLabel } from '@/lib/fractional';
 
 type MobileTab = 'chat' | 'terms' | 'milestones';
 
@@ -417,6 +418,7 @@ export default function DealNegotiationPage({
           vesting_months: parseInt(vestingMonths),
           cliff_months: parseInt(cliffMonths),
           safe_terms: {
+            ...(deal?.safe_terms ?? {}),
             type: safeType,
             valuation_cap: parseInt(valuationCap),
             discount: parseInt(discount),
@@ -548,6 +550,7 @@ export default function DealNegotiationPage({
 
   const startupName = deal.startup?.name || 'Startup';
   const talentName = deal.talent?.user?.full_name || 'Talent';
+  const safeTerms = deal.safe_terms as any;
 
   const ChatColumn = (
     <motion.div
@@ -746,6 +749,39 @@ export default function DealNegotiationPage({
             />
           </div>
         </div>
+
+        {(safeTerms?.marketplace_section || safeTerms?.work_type || safeTerms?.compensation_type || safeTerms?.cash_amount) && (
+          <div className="rounded-xl border border-brand-100 bg-brand-50/60 p-4 space-y-2">
+            <p className="text-xs font-semibold uppercase tracking-wide text-brand-700">
+              Marketplace Terms
+            </p>
+            <div className="flex flex-wrap gap-2">
+              {safeTerms.marketplace_section && (
+                <span className="badge bg-white text-brand-700 text-xs">
+                  {getMarketplaceSectionLabel(safeTerms.marketplace_section)}
+                </span>
+              )}
+              {safeTerms.work_type && (
+                <span className="badge bg-white text-brand-700 text-xs">
+                  {getWorkTypeLabel(safeTerms.work_type)}
+                </span>
+              )}
+              {safeTerms.compensation_type && (
+                <span className="badge bg-white text-brand-700 text-xs">
+                  {getCompensationTypeLabel(safeTerms.compensation_type)}
+                </span>
+              )}
+              {safeTerms.cash_amount && (
+                <span className="badge bg-white text-emerald-700 text-xs">
+                  {formatCurrency(safeTerms.cash_amount)} cash
+                </span>
+              )}
+            </div>
+            <p className="text-xs text-brand-700/80">
+              Cash terms are tracked alongside the SAFE so both sides can negotiate the full compensation mix.
+            </p>
+          </div>
+        )}
 
         <div>
           <label className="block text-xs font-medium text-gray-600 mb-2">
@@ -1068,8 +1104,8 @@ export default function DealNegotiationPage({
                     <Pen className="h-5 w-5 text-emerald-600" />
                   </div>
                   <div>
-                    <h3 className="text-base font-bold text-gray-900">Confirm E-Signature</h3>
-                    <p className="text-xs text-gray-500">This action is legally binding</p>
+                    <h3 className="text-base font-bold text-gray-900">Confirm Electronic Signature</h3>
+                    <p className="text-xs text-gray-500">Legally binding under E-SIGN Act & UETA</p>
                   </div>
                 </div>
 
@@ -1078,6 +1114,15 @@ export default function DealNegotiationPage({
                     By signing, you agree to the terms of this YC Standard Post-Money SAFE agreement between <strong>{deal.startup?.name}</strong> and <strong>{deal.talent?.user?.full_name}</strong> for <strong>{formatCurrency(investmentAmount)}</strong>.
                   </p>
                 </div>
+
+                {signerName.trim() && (
+                  <div className="p-3 rounded-xl bg-gray-50 border border-gray-200">
+                    <p className="text-[10px] text-gray-500 mb-1">Your Electronic Signature</p>
+                    <p className="text-lg text-blue-900 italic border-b border-gray-300 pb-1" style={{ fontFamily: '"Times New Roman", Georgia, serif' }}>
+                      /s/ {signerName}
+                    </p>
+                  </div>
+                )}
 
                 <div className="space-y-1.5">
                   <div className="flex justify-between text-xs">
@@ -1092,7 +1137,19 @@ export default function DealNegotiationPage({
                     <span className="text-gray-500">Signing as:</span>
                     <span className="font-medium text-gray-900 capitalize">{showSignConfirm}</span>
                   </div>
+                  <div className="flex justify-between text-xs">
+                    <span className="text-gray-500">Date:</span>
+                    <span className="font-medium text-gray-900">{new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}</span>
+                  </div>
                 </div>
+
+                <p className="text-[10px] text-gray-500 leading-relaxed">
+                  By clicking &ldquo;Apply Electronic Signature&rdquo; below, I agree that my
+                  electronic signature is the legal equivalent of my manual signature
+                  on this document, pursuant to the U.S. Electronic Signatures in
+                  Global and National Commerce Act (E-SIGN Act) and the Uniform
+                  Electronic Transactions Act (UETA).
+                </p>
 
                 <div className="flex gap-3 pt-2">
                   <button
@@ -1109,9 +1166,9 @@ export default function DealNegotiationPage({
                     {signingSafe ? (
                       <Loader2 className="h-3.5 w-3.5 animate-spin" />
                     ) : (
-                      <CheckCircle2 className="h-3.5 w-3.5" />
+                      <Shield className="h-3.5 w-3.5" />
                     )}
-                    Confirm & Sign
+                    Apply Electronic Signature
                   </button>
                 </div>
               </motion.div>

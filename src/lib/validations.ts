@@ -1,4 +1,10 @@
 import { z } from 'zod';
+import {
+  COMPENSATION_TYPE_VALUES,
+  MARKETPLACE_CATEGORY_VALUES,
+  MARKETPLACE_SECTION_VALUES,
+  WORK_TYPE_VALUES,
+} from '@/lib/fractional';
 
 // ─── Auth Schemas ──────────────────────────────────────────────────────────────
 
@@ -78,16 +84,7 @@ export const talentProfileSchema = z.object({
     .array(z.string())
     .min(1, 'Please add at least one skill'),
   category: z.enum(
-    [
-      'engineering',
-      'design',
-      'legal',
-      'finance',
-      'marketing',
-      'consulting',
-      'media',
-      'operations',
-    ],
+    MARKETPLACE_CATEGORY_VALUES,
     { required_error: 'Please select a category' }
   ),
   experience_years: z.coerce
@@ -97,7 +94,7 @@ export const talentProfileSchema = z.object({
   hourly_rate: z.string().optional().or(z.literal('')),
   location: z.string().max(200).optional().or(z.literal('')),
   availability: z
-    .enum(['full-time', 'part-time', 'contract'])
+    .enum(['full-time', 'fractional', 'part-time', 'contract'])
     .default('full-time'),
   preferred_industries: z.array(z.string()).default([]),
   min_equity: z.coerce
@@ -111,23 +108,19 @@ export const talentProfileSchema = z.object({
 export const openRoleSchema = z.object({
   title: z.string().min(1, 'Role title is required').max(100),
   category: z
-    .enum([
-      'engineering',
-      'design',
-      'legal',
-      'finance',
-      'marketing',
-      'consulting',
-      'media',
-      'operations',
-    ])
+    .enum(MARKETPLACE_CATEGORY_VALUES)
     .optional(),
+  marketplace_section: z.enum(MARKETPLACE_SECTION_VALUES).default('fractional-hires'),
+  work_type: z.enum(WORK_TYPE_VALUES).default('fractional'),
+  compensation_type: z.enum(COMPENSATION_TYPE_VALUES).default('equity'),
   equity_min: z.coerce
     .number()
     .min(0, 'Minimum amount cannot be negative'),
   equity_max: z.coerce
     .number()
     .min(0, 'Maximum amount cannot be negative'),
+  cash_min: z.coerce.number().min(0, 'Minimum cash cannot be negative').default(0),
+  cash_max: z.coerce.number().min(0, 'Maximum cash cannot be negative').default(0),
   cash_equivalent: z.string().optional().or(z.literal('')),
   description: z
     .string()
@@ -209,16 +202,7 @@ export const matchingRequestSchema = z.object({
   role_id: z.string().optional(),
   skills: z.array(z.string()).optional(),
   category: z
-    .enum([
-      'engineering',
-      'design',
-      'legal',
-      'finance',
-      'marketing',
-      'consulting',
-      'media',
-      'operations',
-    ])
+    .enum(MARKETPLACE_CATEGORY_VALUES)
     .optional(),
   min_experience: z.coerce.number().min(0).optional(),
   max_equity: z.coerce.number().min(0).optional(),
@@ -238,8 +222,13 @@ export const postSchema = z.object({
     .max(5000, 'Description must be 5000 characters or less')
     .default(''),
   category: z.string().max(100).default(''),
+  marketplace_section: z.enum(MARKETPLACE_SECTION_VALUES).default('fractional-hires'),
+  work_type: z.enum(WORK_TYPE_VALUES).default('fractional'),
+  compensation_type: z.enum(COMPENSATION_TYPE_VALUES).default('equity'),
   equity_min: z.coerce.number().min(0).default(0),
   equity_max: z.coerce.number().min(0).default(0),
+  cash_min: z.coerce.number().min(0).default(0),
+  cash_max: z.coerce.number().min(0).default(0),
   tags: z.array(z.string()).default([]),
 });
 
@@ -254,8 +243,12 @@ export const proposalSchema = z.object({
   pricing_type: z.enum(['hourly', 'project'], {
     required_error: 'Please select a pricing type',
   }),
+  marketplace_section: z.enum(MARKETPLACE_SECTION_VALUES).default('fractional-hires'),
+  compensation_type: z.enum(COMPENSATION_TYPE_VALUES).default('equity'),
   hourly_rate: z.coerce.number().min(0).nullable().default(null),
   project_amount: z.coerce.number().min(0).nullable().default(null),
+  proposed_equity_amount: z.coerce.number().min(0).nullable().default(null),
+  proposed_cash_amount: z.coerce.number().min(0).nullable().default(null),
 }).refine(
   (data) => {
     if (data.pricing_type === 'hourly') return data.hourly_rate !== null && data.hourly_rate > 0;
@@ -264,6 +257,29 @@ export const proposalSchema = z.object({
   },
   { message: 'Please enter a rate or project amount', path: ['hourly_rate'] }
 );
+
+// ─── Lead Schema ────────────────────────────────────────────────────────────
+
+export const LEAD_SOURCE_VALUES = ['book-intro', 'get-deck'] as const;
+export const LEAD_STATUS_VALUES = ['new', 'contacted', 'archived'] as const;
+
+// Pasted values often carry stray whitespace or casing, so normalize before validating.
+export const leadSchema = z.object({
+  source: z.enum(LEAD_SOURCE_VALUES).default('book-intro'),
+  name: z.string().trim().max(100, 'Name must be 100 characters or less').default(''),
+  email: z
+    .string()
+    .trim()
+    .toLowerCase()
+    .email('Please enter a valid email address')
+    .max(255),
+  firm: z.string().trim().max(200, 'Firm must be 200 characters or less').default(''),
+  context: z
+    .string()
+    .trim()
+    .max(5000, 'Message must be 5000 characters or less')
+    .default(''),
+});
 
 // ─── Inferred Types ────────────────────────────────────────────────────────────
 
@@ -278,3 +294,4 @@ export type MessageInput = z.infer<typeof messageSchema>;
 export type MatchingRequestInput = z.infer<typeof matchingRequestSchema>;
 export type PostInput = z.infer<typeof postSchema>;
 export type ProposalInput = z.infer<typeof proposalSchema>;
+export type LeadInput = z.infer<typeof leadSchema>;

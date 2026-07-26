@@ -18,6 +18,9 @@ export async function GET(request: NextRequest) {
     const search = searchParams.get('search')?.toLowerCase();
     const type = searchParams.get('type');
     const category = searchParams.get('category');
+    const marketplaceSection = searchParams.get('marketplace_section');
+    const workType = searchParams.get('work_type');
+    const compensationType = searchParams.get('compensation_type');
     const status = searchParams.get('status') || 'active';
     let authorId = searchParams.get('author_id');
     const authorParam = searchParams.get('author');
@@ -36,6 +39,9 @@ export async function GET(request: NextRequest) {
       if (status) query = query.eq('status', status);
       if (type) query = query.eq('type', type);
       if (category) query = query.eq('category', category);
+      if (marketplaceSection) query = query.eq('marketplace_section', marketplaceSection);
+      if (workType) query = query.eq('work_type', workType);
+      if (compensationType) query = query.eq('compensation_type', compensationType);
       if (authorId) query = query.eq('author_id', authorId);
       if (search) {
         query = query.or(

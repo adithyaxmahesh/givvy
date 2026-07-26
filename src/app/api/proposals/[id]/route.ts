@@ -45,7 +45,7 @@ export async function PUT(
 
     const { data: proposal } = await supabase
       .from('proposals')
-      .select('*, post:posts!post_id(id, title, author_id, type, category, equity_min, equity_max), pricing_type, hourly_rate, project_amount')
+      .select('*, post:posts!post_id(id, title, author_id, type, category, marketplace_section, work_type, compensation_type, equity_min, equity_max, cash_min, cash_max), pricing_type, marketplace_section, compensation_type, hourly_rate, project_amount, proposed_equity_amount, proposed_cash_amount')
       .eq('id', params.id)
       .single();
 
@@ -106,7 +106,22 @@ export async function PUT(
 
         const startupId = authorStartup?.id || senderStartup?.id;
         const talentId = senderTalent?.id || authorTalent?.id;
-        const equityAmount = proposal.post.equity_max || proposal.post.equity_min || 10000;
+        const equityAmount =
+          proposal.proposed_equity_amount ||
+          proposal.post.equity_max ||
+          proposal.post.equity_min ||
+          10000;
+        const cashAmount =
+          proposal.proposed_cash_amount ||
+          proposal.project_amount ||
+          proposal.post.cash_max ||
+          proposal.post.cash_min ||
+          null;
+        const compensationType = proposal.compensation_type || proposal.post.compensation_type || 'equity';
+        const marketplaceSection =
+          proposal.marketplace_section ||
+          proposal.post.marketplace_section ||
+          'fractional-hires';
 
         if (startupId && talentId) {
           const { data: newDeal } = await supabase
@@ -118,7 +133,7 @@ export async function PUT(
               investment_amount: equityAmount,
               vesting_months: 48,
               cliff_months: 12,
-              status: 'proposed',
+              status: 'pending',
               match_score: 85,
               safe_terms: {
                 type: 'post-money',
@@ -131,6 +146,15 @@ export async function PUT(
                 mfn_clause: false,
                 board_seat: false,
                 template: 'yc-standard',
+                marketplace_section: marketplaceSection,
+                work_type: proposal.post.work_type || 'fractional',
+                compensation_type: compensationType,
+                cash_amount: cashAmount,
+                pricing_type: proposal.pricing_type,
+                hourly_rate: proposal.hourly_rate,
+                project_amount: proposal.project_amount,
+                source_post_id: proposal.post.id,
+                source_proposal_id: proposal.id,
               },
             })
             .select('id')
@@ -177,6 +201,15 @@ export async function PUT(
                   mfn_clause: false,
                   board_seat: false,
                   template: 'yc-standard',
+                  marketplace_section: marketplaceSection,
+                  work_type: proposal.post.work_type || 'fractional',
+                  compensation_type: compensationType,
+                  cash_amount: cashAmount,
+                  pricing_type: proposal.pricing_type,
+                  hourly_rate: proposal.hourly_rate,
+                  project_amount: proposal.project_amount,
+                  source_post_id: proposal.post.id,
+                  source_proposal_id: proposal.id,
                 },
                 document_url: null,
                 version_history: [{ version: 1, date: now, description: 'Auto-generated from accepted proposal', author: 'system' }],

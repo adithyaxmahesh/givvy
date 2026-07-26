@@ -16,12 +16,19 @@ export type SkillCategory =
   | 'design'
   | 'legal'
   | 'finance'
+  | 'sales'
   | 'marketing'
+  | 'product'
   | 'consulting'
   | 'media'
   | 'operations';
 
+export type WorkType = 'fractional' | 'project' | 'advisor' | 'contract' | 'full-time';
+export type CompensationType = 'equity' | 'cash' | 'blended';
+export type MarketplaceSection = 'fractional-hires' | 'equity-work';
+
 export type DealStatus =
+  | 'pending'
   | 'proposed'
   | 'negotiating'
   | 'terms-agreed'
@@ -29,7 +36,9 @@ export type DealStatus =
   | 'signed'
   | 'active'
   | 'completed'
-  | 'cancelled';
+  | 'cancelled'
+  | 'disputed'
+  | 'expired';
 
 export type MilestoneStatus =
   | 'pending'
@@ -40,7 +49,7 @@ export type MilestoneStatus =
 
 export type HoldingStatus = 'active' | 'vesting' | 'vested' | 'exited';
 
-export type Availability = 'full-time' | 'part-time' | 'contract';
+export type Availability = 'full-time' | 'fractional' | 'part-time' | 'contract';
 
 export type SAFETemplate = 'yc-standard' | 'yc-mfn' | 'yc-valuation-cap' | 'yc-discount' | 'custom';
 
@@ -120,8 +129,13 @@ export interface OpenRole {
   startup_id: string;
   title: string;
   category: SkillCategory | null;
+  marketplace_section: MarketplaceSection;
+  work_type: WorkType;
+  compensation_type: CompensationType;
   equity_min: number;
   equity_max: number;
+  cash_min: number;
+  cash_max: number;
   cash_equivalent: string | null;
   description: string | null;
   requirements: string[];
@@ -266,8 +280,13 @@ export interface Post {
   title: string;
   description: string;
   category: string;
+  marketplace_section: MarketplaceSection;
+  work_type: WorkType;
+  compensation_type: CompensationType;
   equity_min: number;
   equity_max: number;
+  cash_min: number;
+  cash_max: number;
   tags: string[];
   status: PostStatus;
   created_at: string;
@@ -284,8 +303,12 @@ export interface Proposal {
   sender_id: string;
   message: string;
   pricing_type: PricingType;
+  marketplace_section: MarketplaceSection;
+  compensation_type: CompensationType;
   hourly_rate: number | null;
   project_amount: number | null;
+  proposed_equity_amount: number | null;
+  proposed_cash_amount: number | null;
   status: ProposalStatus;
   created_at: string;
   updated_at: string;

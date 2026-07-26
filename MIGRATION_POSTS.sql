@@ -8,8 +8,13 @@ create table if not exists posts (
   title text not null,
   description text not null default '',
   category text not null default '',
+  marketplace_section text not null default 'fractional-hires' check (marketplace_section in ('fractional-hires', 'equity-work')),
+  work_type text not null default 'fractional' check (work_type in ('fractional', 'project', 'advisor', 'contract', 'full-time')),
+  compensation_type text not null default 'equity' check (compensation_type in ('equity', 'cash', 'blended')),
   equity_min numeric not null default 0,
   equity_max numeric not null default 0,
+  cash_min numeric not null default 0,
+  cash_max numeric not null default 0,
   tags text[] not null default '{}',
   status text not null default 'active' check (status in ('active', 'closed')),
   created_at timestamptz not null default now(),
@@ -21,6 +26,9 @@ create index if not exists idx_posts_author on posts(author_id);
 create index if not exists idx_posts_status on posts(status);
 create index if not exists idx_posts_type on posts(type);
 create index if not exists idx_posts_category on posts(category);
+create index if not exists idx_posts_marketplace_section on posts(marketplace_section);
+create index if not exists idx_posts_work_type on posts(work_type);
+create index if not exists idx_posts_compensation_type on posts(compensation_type);
 create index if not exists idx_posts_created on posts(created_at desc);
 
 -- RLS

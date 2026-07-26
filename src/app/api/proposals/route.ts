@@ -126,8 +126,18 @@ export async function POST(request: NextRequest) {
         sender_id: user.id,
         message: parsed.data.message,
         pricing_type: parsed.data.pricing_type,
+        marketplace_section: parsed.data.marketplace_section,
+        compensation_type: parsed.data.compensation_type,
         hourly_rate: parsed.data.pricing_type === 'hourly' ? parsed.data.hourly_rate : null,
         project_amount: parsed.data.pricing_type === 'project' ? parsed.data.project_amount : null,
+        proposed_equity_amount:
+          parsed.data.compensation_type === 'equity' || parsed.data.compensation_type === 'blended'
+            ? parsed.data.proposed_equity_amount
+            : null,
+        proposed_cash_amount:
+          parsed.data.compensation_type === 'cash' || parsed.data.compensation_type === 'blended'
+            ? parsed.data.proposed_cash_amount
+            : null,
       })
       .select('*, sender:profiles!sender_id(id, full_name, email, role, avatar_url)')
       .single();

@@ -3,6 +3,16 @@ import { getAuthUser } from '@/lib/auth';
 import { createAdminClient } from '@/lib/supabase/admin';
 import { buildSAFEDocData, generateSAFEPDF } from '@/lib/safe/generator';
 
+function getClientIP(request: NextRequest): string {
+  const forwarded = request.headers.get('x-forwarded-for');
+  if (forwarded) {
+    return forwarded.split(',')[0].trim();
+  }
+  const realIp = request.headers.get('x-real-ip');
+  if (realIp) return realIp;
+  return request.headers.get('cf-connecting-ip') ?? '0.0.0.0';
+}
+
 export async function POST(
   request: NextRequest,
   { params }: { params: { id: string } }
@@ -13,6 +23,7 @@ export async function POST(
 
     const dealId = params.id;
     const body = await request.json();
+    const clientIP = getClientIP(request);
 
     const { signer_name, signer_title, party } = body as {
       signer_name?: string;
@@ -64,6 +75,7 @@ export async function POST(
         signer_name,
         signer_title: signer_title || '',
         signed_at: now,
+        ip_address: clientIP,
       },
     };
 
@@ -73,7 +85,7 @@ export async function POST(
     const updatedAuditTrail = [
       ...(safeDoc.audit_trail || []),
       {
-        action: `Document signed by ${party} (${signer_name})`,
+        action: `Document electronically signed by ${party} (${signer_name}) from IP ${clientIP}`,
         timestamp: now,
         actor: user.id,
       },
@@ -110,7 +122,6 @@ export async function POST(
         .update({ status: 'signed', updated_at: now })
         .eq('id', dealId);
 
-      // Generate and persist the final signed PDF, create portfolio, notify
       try {
         const { data: deal } = await supabase
           .from('deals')
@@ -121,9 +132,12 @@ export async function POST(
           .single();
 
         if (deal) {
-          // Persist final signed PDF to Supabase Storage
           try {
-            const pdfData = buildSAFEDocData(deal, deal.startup, deal.talent);
+            const pdfData = buildSAFEDocData(deal, deal.startup, deal.talent, {
+              signatures: updatedSignatures,
+              audit_trail: updatedAuditTrail,
+              id: safeDoc.id,
+            });
             const pdfBuffer = await generateSAFEPDF(pdfData);
 
             const signedFileName = `safe-${dealId}-signed.pdf`;
