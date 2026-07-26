@@ -33,7 +33,7 @@ function ErrorNote({ message }: { message: string }) {
       <IconAlertCircle className="mt-[1px] h-[17px] w-[17px] shrink-0 text-au-step-gold" />
       <p className="text-[12.5px] leading-[1.6] text-au-ink">
         {message}{' '}
-        <a href="mailto:intro@aurelian.com" className="font-medium text-au-navy underline decoration-au-navy/30">
+        <a href="mailto:intro@givvy.com" className="font-medium text-au-navy underline decoration-au-navy/30">
           Email us instead
         </a>
         .
@@ -109,7 +109,7 @@ export function BookIntroModal({ open, onClose }: DialogProps) {
         <div className="space-y-5">
           <SuccessNote
             title="Request received"
-            body="An Aurelian principal will reach out shortly with a few times to meet."
+            body="A Givvy principal will reach out shortly with a few times to meet."
           />
           <PrimaryButton size="md" withArrow={false} className="w-full" onClick={onClose}>
             Close
@@ -150,11 +150,11 @@ export function GetDeckModal({ open, onClose }: DialogProps) {
       open={open}
       onClose={onClose}
       title="Get the deck"
-      description="An 18-page overview of the Aurelian execution layer, services, and coverage."
+      description="An 18-page overview of the Givvy execution layer, services, and coverage."
     >
       {submitted ? (
         <div className="space-y-5">
-          <SuccessNote title="On its way" body="Check your inbox — the Aurelian overview deck is sending now." />
+          <SuccessNote title="On its way" body="Check your inbox — the Givvy overview deck is sending now." />
           <PrimaryButton size="md" withArrow={false} className="w-full" onClick={onClose}>
             Close
           </PrimaryButton>

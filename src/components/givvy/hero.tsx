@@ -125,7 +125,7 @@ export function Hero({ onBookIntro }: { onBookIntro: () => void }) {
               transition={{ duration: 0.7, delay: 0.14, ease: [0.22, 1, 0.36, 1] }}
               className="mt-[14px] max-w-[478px] text-[17.5px] leading-[27px] text-au-ink"
             >
-              From acquisitions and carveouts to SPVs, continuation vehicles, and fund operations, Aurelian executes the
+              From acquisitions and carveouts to SPVs, continuation vehicles, and fund operations, Givvy executes the
               workflows traditional firms do manually.
             </motion.p>
 

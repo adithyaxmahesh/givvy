@@ -42,7 +42,7 @@ export function BottomCta({ onBookIntro, onGetDeck }: { onBookIntro: () => void;
                 Buy companies. Launch vehicles. Manage ownership.
               </h2>
               <p className="mx-auto mt-[3px] max-w-[560px] text-[13px] leading-[1.6] text-au-ink">
-                Aurelian gives modern firms the execution layer traditional finance never built.
+                Givvy gives modern firms the execution layer traditional finance never built.
               </p>
               <div className="mt-[21px] flex flex-wrap items-center justify-center gap-x-7 gap-y-4">
                 <PrimaryButton size="cta" onClick={onBookIntro}>

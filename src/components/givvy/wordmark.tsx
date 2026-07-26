@@ -12,7 +12,7 @@ export function Wordmark({ size = 'md', className = '' }: { size?: 'md' | 'lg'; 
       <span
         className={`font-editorial ${large ? 'text-[27px] lg:text-[36px]' : 'text-[25px]'} font-normal leading-none tracking-[-0.012em] text-au-navy`}
       >
-        Aurelian
+        Givvy
       </span>
     </span>
   );

@@ -1,4 +1,4 @@
--- Migration: Add leads table for Aurelian landing page intro requests and deck downloads
+-- Migration: Add leads table for Givvy landing page intro requests and deck downloads
 -- Run this in the Supabase SQL Editor
 
 create table if not exists leads (

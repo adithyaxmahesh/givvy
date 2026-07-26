@@ -45,7 +45,7 @@ const SOCIALS = [
   { label: 'LinkedIn', icon: IconLinkedIn, href: 'https://www.linkedin.com' },
   { label: 'X', icon: IconX, href: 'https://x.com' },
   { label: 'YouTube', icon: IconYouTube, href: 'https://www.youtube.com' },
-  { label: 'Email', icon: IconMail, href: 'mailto:hello@aurelian.com' },
+  { label: 'Email', icon: IconMail, href: 'mailto:hello@givvy.com' },
 ];
 
 const LEGAL = ['Privacy', 'Terms', 'Cookie Settings'];
@@ -93,7 +93,7 @@ export function SiteFooter() {
 
         <div className="flex flex-col items-start justify-between gap-3 border-t border-au-line/80 py-3 sm:flex-row sm:items-center">
           <p className="text-[10.5px] leading-[16px] text-au-ink-soft">
-            © 2024 Aurelian Technologies, Inc. All rights reserved.
+            © 2024 Givvy Technologies, Inc. All rights reserved.
           </p>
           <ul className="flex items-center gap-6">
             {LEGAL.map((item) => (

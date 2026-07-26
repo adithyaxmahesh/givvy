@@ -51,7 +51,7 @@ function Screen() {
       <div style={{ position: 'absolute', inset: 0, padding: '1.7em 1.9em' }}>
         <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between' }}>
           <span style={{ fontFamily: MONO, fontSize: '1.02em', letterSpacing: '0.1em', color: '#CBDDF0' }}>
-            AURELIAN OS v1.0
+            GIVVY OS v1.0
           </span>
           <span aria-hidden style={{ position: 'relative', color: '#8FB6DC', lineHeight: 0 }}>
             <StarFour style={{ width: '1.4em', height: '1.4em', opacity: 0.85 }} />
@@ -260,7 +260,7 @@ function Mug() {
         <ellipse cx="60" cy="32" rx="42" ry="10.5" fill="#EFE9DD" />
         <ellipse cx="60" cy="33" rx="33" ry="7" fill="url(#au-mug-inner)" />
         <text x="53" y="92" textAnchor="middle" fontFamily="var(--font-newsreader), Georgia, serif" fontSize="44" fill="#2E2C27">
-          A
+          G
         </text>
         <text x="81" y="68" textAnchor="middle" fontFamily="var(--font-newsreader), Georgia, serif" fontSize="23" fill="#2E2C27">
           +

@@ -1,8 +1,8 @@
-// Captures the Aurelian landing page at three widths for visual comparison.
+// Captures the Givvy landing page at three widths for visual comparison.
 import { chromium } from 'playwright';
 import { mkdirSync } from 'node:fs';
 
-const OUT = '/tmp/aurelian-shots';
+const OUT = '/tmp/givvy-shots';
 const URL = process.env.SHOT_URL ?? 'http://localhost:3000/';
 
 const VIEWPORTS = [

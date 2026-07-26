@@ -23,7 +23,7 @@ const config: Config = {
         'lime-light': '#e4fa7a',
         charcoal: '#2D2D2D',
         'charcoal-light': '#3A3A3A',
-        // Aurelian landing page palette
+        // Givvy landing page palette
         au: {
           cream: '#FCFAF7',
           wash: '#F8F3EC',

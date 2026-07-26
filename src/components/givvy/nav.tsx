@@ -29,7 +29,7 @@ export function Nav({ onBookIntro }: { onBookIntro: () => void }) {
     <header className="sticky top-0 z-50 border-b border-au-line/90 bg-au-cream/85 backdrop-blur-xl">
       <div className="au-container">
         <div className="grid h-[68px] grid-cols-[auto_1fr] items-center gap-4 lg:h-[94px] lg:pt-4 lg:grid-cols-[1fr_auto_1fr]">
-          <Link href="#top" className="justify-self-start rounded-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-au-blue focus-visible:ring-offset-4 focus-visible:ring-offset-au-cream" aria-label="Aurelian home">
+          <Link href="#top" className="justify-self-start rounded-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-au-blue focus-visible:ring-offset-4 focus-visible:ring-offset-au-cream" aria-label="Givvy home">
             <Wordmark size="lg" />
           </Link>
 

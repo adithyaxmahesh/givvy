@@ -38,7 +38,7 @@ const STEPS: Step[] = [
   {
     number: 1,
     title: 'Intake the transaction',
-    description: 'Capture goals, documents, and data. Aurelian structures the intake and creates a deal workspace.',
+    description: 'Capture goals, documents, and data. Givvy structures the intake and creates a deal workspace.',
     dot: 'bg-au-step-blue',
     card: (
       <MicroCard>

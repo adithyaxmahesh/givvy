@@ -250,7 +250,7 @@ export function InAction() {
     <section id="platform" className="scroll-mt-[84px] bg-au-cream">
       <div className="au-container pb-[51px]">
         <Reveal>
-          <SectionHeading title="Aurelian in action" />
+          <SectionHeading title="Givvy in action" />
         </Reveal>
 
         <div className="mt-1 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-5 lg:gap-[18px]">

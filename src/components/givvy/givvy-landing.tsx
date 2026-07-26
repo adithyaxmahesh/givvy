@@ -14,7 +14,7 @@ import { WhoItsFor } from './who-its-for';
 
 type Dialog = 'intro' | 'deck' | null;
 
-export function AurelianLanding() {
+export function GivvyLanding() {
   const [dialog, setDialog] = useState<Dialog>(null);
 
   const openIntro = () => setDialog('intro');
