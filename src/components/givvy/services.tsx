@@ -10,7 +10,12 @@ export function Services() {
           <SectionHeading title="Services across the ownership lifecycle" sparkle />
         </Reveal>
 
-        <div className="mt-[22px] grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-4 lg:gap-[18px]">
+        {/*
+          Five columns only from xl. At lg the container is narrow enough that a
+          fifth track would leave ~171px per column, which breaks the longer
+          service titles onto three lines.
+        */}
+        <div className="mt-[22px] grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3 lg:gap-[18px] xl:grid-cols-5">
           {SERVICE_GROUPS.map((group, groupIndex) => (
             <Reveal key={group.label} delay={groupIndex * 0.06} className="h-full">
               <div data-panel className={`h-full rounded-[13px] border ${group.edge} ${group.tint} p-[5px]`}>

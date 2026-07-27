@@ -63,4 +63,20 @@ export const SERVICE_GROUPS: ServiceGroup[] = [
       { title: 'AI Fund Restructuring Firm', description: 'Handle extensions, GP replacements, and asset transfers.' },
     ],
   },
+  {
+    label: 'E. Startups',
+    tint: 'bg-au-tint-rose',
+    edge: 'border-au-edge-rose',
+    labelColor: 'text-[#A2635E]',
+    services: [
+      { title: 'Share issuance', description: 'Issue common, preferred, and restricted stock.' },
+      { title: 'Cap tables', description: 'Keep an audit-ready record of every share and option.' },
+      { title: 'Transfers', description: 'Paper, approve, and settle secondary share transfers.' },
+      { title: 'SAFEs', description: 'Issue, track, and convert SAFEs through priced rounds.' },
+      { title: 'Warrants', description: 'Issue and administer warrants through exercise and expiry.' },
+      { title: 'Option exercises', description: 'Run employee exercises, early exercises, and 83(b) filings.' },
+      { title: 'Buybacks', description: 'Repurchase shares from employees and early holders.' },
+      { title: 'Corporate development', description: 'Source, evaluate, and close acquisitions and partnerships.' },
+    ],
+  },
 ];
