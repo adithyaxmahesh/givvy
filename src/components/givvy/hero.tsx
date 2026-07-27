@@ -93,26 +93,14 @@ export function Hero({ onBookIntro }: { onBookIntro: () => void }) {
 
       <div className="au-container relative">
         <div className="grid grid-cols-1 items-start gap-10 pb-14 pt-14 sm:pb-16 sm:pt-20 lg:grid-cols-[460px_minmax(0,1fr)] lg:gap-x-4 lg:gap-y-0 lg:pb-[35px] lg:pt-[23px] xl:grid-cols-[486px_minmax(0,1fr)]">
-          <div className="lg:pt-[46px]">
-            <motion.div
-              initial={reduce ? undefined : { opacity: 0, y: 10 }}
-              animate={reduce ? undefined : { opacity: 1, y: 0 }}
-              transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
-              className="inline-flex items-center gap-2 rounded-full border border-au-line bg-white/70 py-[11px] pl-4 pr-5"
-            >
-              <StarFour className="h-[11px] w-[11px] text-[#C9A961]" />
-              <span className="text-[12.5px] font-medium tracking-[-0.005em] text-au-ink">
-                Built for founders, funds, and holding companies.
-              </span>
-            </motion.div>
-
+          <div className="lg:self-center lg:pb-[30px]">
             <motion.h1
               initial={reduce ? undefined : { opacity: 0, y: 14 }}
               animate={reduce ? undefined : { opacity: 1, y: 0 }}
               transition={{ duration: 0.75, delay: 0.06, ease: [0.22, 1, 0.36, 1] }}
-              className="mt-[27px] font-editorial text-[42px] font-normal leading-[1.06] tracking-[-0.022em] text-au-navy sm:text-[54px] lg:text-[65px] xl:text-[69px]"
+              className="font-editorial text-[42px] font-normal leading-[1.06] tracking-[-0.022em] text-au-navy sm:text-[54px] lg:text-[65px] xl:text-[69px]"
             >
-              The AI-native
+              The AI native
               <br />
               investment bank
               <br />
@@ -141,16 +129,6 @@ export function Hero({ onBookIntro }: { onBookIntro: () => void }) {
                 See services
               </SecondaryButton>
             </motion.div>
-
-            <motion.p
-              initial={reduce ? undefined : { opacity: 0 }}
-              animate={reduce ? undefined : { opacity: 1 }}
-              transition={{ duration: 0.8, delay: 0.32 }}
-              className="mt-[51px] flex items-center gap-2 text-[12.5px] text-au-ink-soft"
-            >
-              <StarFour className="h-[10px] w-[10px] text-[#C9A961]" />
-              Trusted by modern owners and operators
-            </motion.p>
           </div>
 
           {/* Desk scene */}
