@@ -263,6 +263,20 @@ export const proposalSchema = z.object({
 export const LEAD_SOURCE_VALUES = ['book-intro', 'get-deck'] as const;
 export const LEAD_STATUS_VALUES = ['new', 'contacted', 'archived'] as const;
 
+// Digits, spacing and punctuation only, optionally followed by an extension.
+const PHONE_SHAPE = /^[+\d\s().\-/]+(?:\s*(?:ext|x)\.?\s*\d+)?$/i;
+
+/**
+ * Deliberately permissive. International formats vary too much to pattern-match
+ * strictly without rejecting real numbers, so this only rules out values that
+ * cannot be a phone number at all.
+ */
+function isPhoneLike(value: string): boolean {
+  if (value === '') return true;
+  const digitCount = value.replace(/\D/g, '').length;
+  return PHONE_SHAPE.test(value) && digitCount >= 7 && digitCount <= 20;
+}
+
 // Pasted values often carry stray whitespace or casing, so normalize before validating.
 export const leadSchema = z.object({
   source: z.enum(LEAD_SOURCE_VALUES).default('book-intro'),
@@ -273,7 +287,14 @@ export const leadSchema = z.object({
     .toLowerCase()
     .email('Please enter a valid email address')
     .max(255),
-  firm: z.string().trim().max(200, 'Firm must be 200 characters or less').default(''),
+  phone: z
+    .string()
+    .trim()
+    .max(40, 'Phone number must be 40 characters or less')
+    .refine(isPhoneLike, { message: 'Please enter a valid phone number' })
+    .default(''),
+  firm: z.string().trim().max(200, 'Company must be 200 characters or less').default(''),
+  // Holds the answer to "What services are you looking to receive?".
   context: z
     .string()
     .trim()

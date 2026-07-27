@@ -124,9 +124,19 @@ interface FieldProps {
   required?: boolean;
   textarea?: boolean;
   disabled?: boolean;
+  autoComplete?: string;
 }
 
-export function Field({ label, name, type = 'text', placeholder, required, textarea, disabled }: FieldProps) {
+export function Field({
+  label,
+  name,
+  type = 'text',
+  placeholder,
+  required,
+  textarea,
+  disabled,
+  autoComplete,
+}: FieldProps) {
   const shared =
     'w-full rounded-[9px] border border-au-line bg-white px-3.5 py-2.5 text-[13px] text-au-navy placeholder:text-au-ink-soft/70 transition-shadow focus:border-au-blue/50 focus:outline-none focus:ring-2 focus:ring-au-blue/15 disabled:opacity-60';
 
@@ -149,6 +159,7 @@ export function Field({ label, name, type = 'text', placeholder, required, texta
           placeholder={placeholder}
           required={required}
           disabled={disabled}
+          autoComplete={autoComplete}
           className={shared}
         />
       )}

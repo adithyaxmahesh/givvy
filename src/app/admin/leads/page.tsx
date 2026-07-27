@@ -11,7 +11,9 @@ interface Lead {
   source: LeadSource;
   name: string;
   email: string;
+  phone: string;
   firm: string;
+  /** Answer to "What services are you looking to receive?" on the intro form. */
   context: string;
   status: LeadStatus;
   created_at: string;
@@ -74,6 +76,7 @@ export default function AdminLeadsPage() {
     const matchesSearch =
       l.name.toLowerCase().includes(q) ||
       l.email.toLowerCase().includes(q) ||
+      (l.phone ?? '').toLowerCase().includes(q) ||
       l.firm.toLowerCase().includes(q) ||
       l.context.toLowerCase().includes(q);
     const matchesSource = sourceFilter === 'all' || l.source === sourceFilter;
@@ -105,7 +108,7 @@ export default function AdminLeadsPage() {
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
           <input
             type="text"
-            placeholder="Search name, email, firm..."
+            placeholder="Search name, email, phone, company, services..."
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             className="w-full pl-10 pr-4 py-2.5 rounded-lg border border-gray-200 text-sm focus:outline-none focus:ring-2 focus:ring-gray-900/10 focus:border-gray-300"
@@ -153,25 +156,64 @@ export default function AdminLeadsPage() {
               <div className="flex-1 min-w-0">
                 <div className="flex flex-wrap items-center gap-2">
                   <p className="text-sm font-medium text-gray-900">{lead.name || 'No name given'}</p>
-                  <a href={`mailto:${lead.email}`} className="text-sm text-blue-600 hover:underline">
-                    {lead.email}
-                  </a>
                   <span
                     className={`text-[11px] px-1.5 py-0.5 rounded border capitalize ${STATUS_STYLES[lead.status]}`}
                   >
                     {lead.status}
                   </span>
-                </div>
-                {lead.context && (
-                  <p className="text-xs text-gray-600 mt-1.5 whitespace-pre-wrap">{lead.context}</p>
-                )}
-                <div className="flex flex-wrap items-center gap-3 mt-1.5 text-xs text-gray-400">
-                  {lead.firm && <span>{lead.firm}</span>}
-                  <span>{new Date(lead.created_at).toLocaleString()}</span>
-                  <span className="px-1.5 py-0.5 rounded bg-gray-100 text-gray-500">
+                  <span className="px-1.5 py-0.5 rounded bg-gray-100 text-[11px] text-gray-500">
                     {SOURCE_LABELS[lead.source]}
                   </span>
                 </div>
+
+                <dl className="mt-2 grid grid-cols-1 gap-x-6 gap-y-1.5 sm:grid-cols-3">
+                  {[
+                    {
+                      label: 'Email',
+                      value: (
+                        <a href={`mailto:${lead.email}`} className="text-blue-600 hover:underline">
+                          {lead.email}
+                        </a>
+                      ),
+                    },
+                    {
+                      label: 'Phone',
+                      value: lead.phone ? (
+                        <a href={`tel:${lead.phone.replace(/[^+\d]/g, '')}`} className="text-blue-600 hover:underline">
+                          {lead.phone}
+                        </a>
+                      ) : (
+                        <span className="text-gray-400">Not provided</span>
+                      ),
+                    },
+                    {
+                      label: 'Company / Firm',
+                      value: lead.firm || <span className="text-gray-400">Not provided</span>,
+                    },
+                  ].map((row) => (
+                    <div key={row.label} className="min-w-0">
+                      <dt className="text-[10.5px] font-medium uppercase tracking-wide text-gray-400">
+                        {row.label}
+                      </dt>
+                      <dd className="truncate text-xs text-gray-700">{row.value}</dd>
+                    </div>
+                  ))}
+                </dl>
+
+                {lead.source === 'book-intro' && (
+                  <div className="mt-2.5">
+                    <p className="text-[10.5px] font-medium uppercase tracking-wide text-gray-400">
+                      Services requested
+                    </p>
+                    <p className="mt-0.5 whitespace-pre-wrap text-xs text-gray-700">
+                      {lead.context || <span className="text-gray-400">Not provided</span>}
+                    </p>
+                  </div>
+                )}
+
+                <p className="mt-2 text-xs text-gray-400">
+                  Submitted {new Date(lead.created_at).toLocaleString()}
+                </p>
               </div>
               <div className="flex items-center gap-1 shrink-0">
                 {updating === lead.id ? (

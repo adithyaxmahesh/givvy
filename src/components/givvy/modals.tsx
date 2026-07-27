@@ -72,6 +72,7 @@ function useLeadSubmit(source: LeadSource, open: boolean) {
             source,
             name: String(form.get('name') ?? ''),
             email: String(form.get('email') ?? ''),
+            phone: String(form.get('phone') ?? ''),
             firm: String(form.get('firm') ?? ''),
             context: String(form.get('context') ?? ''),
           }),
@@ -103,7 +104,7 @@ export function BookIntroModal({ open, onClose }: DialogProps) {
       open={open}
       onClose={onClose}
       title="Book an intro"
-      description="Tell us what you're working on and we'll follow up within one business day."
+      description="Tell us which services you need and we'll follow up within one business day."
     >
       {submitted ? (
         <div className="space-y-5">
@@ -118,14 +119,17 @@ export function BookIntroModal({ open, onClose }: DialogProps) {
       ) : (
         <form className="space-y-4" onSubmit={submit}>
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-            <Field label="Name" name="name" placeholder="Jane Whitmore" required disabled={pending} />
-            <Field label="Work email" name="email" type="email" placeholder="jane@holdco.com" required disabled={pending} />
+            <Field label="Name" name="name" placeholder="Jane Whitmore" required disabled={pending} autoComplete="name" />
+            <Field label="Work email" name="email" type="email" placeholder="jane@holdco.com" required disabled={pending} autoComplete="email" />
           </div>
-          <Field label="Firm" name="firm" placeholder="Whitmore Capital" disabled={pending} />
+          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+            <Field label="Phone number" name="phone" type="tel" placeholder="+1 415 555 0142" disabled={pending} autoComplete="tel" />
+            <Field label="Company / Firm" name="firm" placeholder="Whitmore Capital" disabled={pending} autoComplete="organization" />
+          </div>
           <Field
-            label="What are you working on?"
+            label="What services are you looking to receive?"
             name="context"
-            placeholder="Acquiring a $40M industrial services business…"
+            placeholder="Buy-side M&A and SPV setup for a $40M industrial services acquisition…"
             textarea
             disabled={pending}
           />
@@ -161,8 +165,8 @@ export function GetDeckModal({ open, onClose }: DialogProps) {
         </div>
       ) : (
         <form className="space-y-4" onSubmit={submit}>
-          <Field label="Work email" name="email" type="email" placeholder="jane@holdco.com" required disabled={pending} />
-          <Field label="Firm" name="firm" placeholder="Whitmore Capital" disabled={pending} />
+          <Field label="Work email" name="email" type="email" placeholder="jane@holdco.com" required disabled={pending} autoComplete="email" />
+          <Field label="Company / Firm" name="firm" placeholder="Whitmore Capital" disabled={pending} autoComplete="organization" />
           {error && <ErrorNote message={error} />}
           <PrimaryButton size="md" className="mt-1 w-full" type="submit" disabled={pending}>
             {pending ? 'Sending…' : 'Send me the deck'}
