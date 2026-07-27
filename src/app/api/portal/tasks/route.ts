@@ -21,11 +21,13 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
     }
 
+    // Ordered by position, not section name, so the list groups sections in
+    // workflow order (Intake before Close) rather than alphabetically.
     let query = sb
       .from('portal_tasks')
       .select(TASK_SELECT)
-      .order('section', { ascending: true })
-      .order('position', { ascending: true });
+      .order('position', { ascending: true })
+      .order('created_at', { ascending: true });
 
     if (projectId) query = query.eq('project_id', projectId);
     else if (allowed !== 'all') query = query.in('project_id', allowed);

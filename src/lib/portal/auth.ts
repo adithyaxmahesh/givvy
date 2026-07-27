@@ -13,9 +13,14 @@ const SESSION_MAX_AGE_SECONDS = 60 * 60 * 12;
 
 // scrypt parameters. N must be a power of two; 2^15 keeps a verify at roughly
 // 100ms on a laptop, which is slow enough to make offline guessing expensive.
-const SCRYPT_N = 32768;
-const SCRYPT_r = 8;
-const SCRYPT_p = 1;
+// These settings need 128 * N * r ≈ 33MB, above Node's 32MB default, so maxmem
+// has to be raised explicitly or scrypt throws "memory limit exceeded".
+const SCRYPT_PARAMS = {
+  N: 32768,
+  r: 8,
+  p: 1,
+  maxmem: 64 * 1024 * 1024,
+};
 const KEY_LENGTH = 64;
 const HASH_VERSION = '1';
 
@@ -44,11 +49,7 @@ function getPortalSessionSecret(): string {
 /** Returns `scrypt$1$<salt-hex>$<key-hex>`. */
 export function hashPortalPassword(password: string): string {
   const salt = crypto.randomBytes(16);
-  const derived = crypto.scryptSync(password.normalize('NFKC'), salt, KEY_LENGTH, {
-    N: SCRYPT_N,
-    r: SCRYPT_r,
-    p: SCRYPT_p,
-  });
+  const derived = crypto.scryptSync(password.normalize('NFKC'), salt, KEY_LENGTH, SCRYPT_PARAMS);
   return `scrypt$${HASH_VERSION}$${salt.toString('hex')}$${derived.toString('hex')}`;
 }
 
@@ -58,11 +59,12 @@ export function verifyPortalPassword(password: string, stored: string): boolean 
     if (scheme !== 'scrypt' || !saltHex || !keyHex) return false;
 
     const expected = Buffer.from(keyHex, 'hex');
-    const derived = crypto.scryptSync(password.normalize('NFKC'), Buffer.from(saltHex, 'hex'), expected.length, {
-      N: SCRYPT_N,
-      r: SCRYPT_r,
-      p: SCRYPT_p,
-    });
+    const derived = crypto.scryptSync(
+      password.normalize('NFKC'),
+      Buffer.from(saltHex, 'hex'),
+      expected.length,
+      SCRYPT_PARAMS
+    );
     return crypto.timingSafeEqual(derived, expected);
   } catch {
     return false;

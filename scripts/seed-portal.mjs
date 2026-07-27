@@ -11,7 +11,8 @@
 import crypto from 'node:crypto';
 import { readFileSync } from 'node:fs';
 
-const SCRYPT = { N: 32768, r: 8, p: 1 };
+// Must match SCRYPT_PARAMS in src/lib/portal/auth.ts or the hash will not verify.
+const SCRYPT = { N: 32768, r: 8, p: 1, maxmem: 64 * 1024 * 1024 };
 const KEY_LENGTH = 64;
 
 function loadEnvLocal() {
