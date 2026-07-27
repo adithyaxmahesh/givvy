@@ -27,6 +27,11 @@ import { useState, useEffect, useRef, type ReactNode } from 'react';
 const authPages = ['/login', '/signup', '/callback'];
 const landingPages = ['/', '/about', '/pricing', '/contact'];
 
+/** The client portal ships its own shell, nav and session, so this chrome stays off it. */
+function isPortalRoute(pathname: string): boolean {
+  return pathname === '/portal' || pathname.startsWith('/portal/');
+}
+
 const navLinks = [
   { label: 'Marketplace', href: '/marketplace', icon: Search },
   { label: 'Dashboard', href: '/dashboard', icon: LayoutDashboard },
@@ -85,7 +90,7 @@ function Navbar() {
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
 
-  if (isAuthPage || isHomePage) return null;
+  if (isAuthPage || isHomePage || isPortalRoute(pathname)) return null;
 
   const handleSignOut = async () => {
     setProfileMenuOpen(false);
@@ -353,7 +358,7 @@ function LayoutInner({ children }: { children: ReactNode }) {
   const pathname = usePathname();
   const isAuthPage = authPages.includes(pathname);
   const isHomePage = pathname === '/';
-  const showNavbar = !isAuthPage && !isHomePage;
+  const showNavbar = !isAuthPage && !isHomePage && !isPortalRoute(pathname);
 
   return (
     <>
