@@ -5,15 +5,19 @@ export const TASK_PRIORITY_VALUES = ['low', 'medium', 'high'] as const;
 export const PROJECT_STATUS_VALUES = ['active', 'on_hold', 'closed'] as const;
 export const PORTAL_ROLE_VALUES = ['admin', 'client'] as const;
 
+// Passwords are trimmed everywhere they are set or checked, so a credential can
+// never contain leading or trailing whitespace. Without this, pasting a password
+// that picked up a stray space fails as "invalid password" with no way to tell.
 export const portalLoginSchema = z.object({
   email: z.string().trim().toLowerCase().email('Please enter a valid email address'),
-  password: z.string().min(1, 'Password is required'),
+  password: z.string().trim().min(1, 'Password is required'),
 });
 
 export const portalChangePasswordSchema = z.object({
-  current_password: z.string().min(1, 'Current password is required'),
+  current_password: z.string().trim().min(1, 'Current password is required'),
   new_password: z
     .string()
+    .trim()
     .min(10, 'New password must be at least 10 characters')
     .max(128, 'New password must be 128 characters or less'),
 });
@@ -25,6 +29,7 @@ export const portalUserCreateSchema = z.object({
   role: z.enum(PORTAL_ROLE_VALUES).default('client'),
   password: z
     .string()
+    .trim()
     .min(10, 'Password must be at least 10 characters')
     .max(128, 'Password must be 128 characters or less'),
   project_ids: z.array(z.string().uuid()).default([]),
