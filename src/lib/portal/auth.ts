@@ -26,12 +26,24 @@ const HASH_VERSION = '1';
 
 export type PortalRole = 'admin' | 'client';
 
+/**
+ * Set while an admin previews the portal as one of their client accounts. The
+ * session then carries the client's identity and role, so every scoping rule
+ * applies unchanged, and this records who is really behind it.
+ */
+export interface PortalActor {
+  id: string;
+  email: string;
+  full_name: string;
+}
+
 export interface PortalSessionUser {
   id: string;
   email: string;
   full_name: string;
   role: PortalRole;
   company: string;
+  actor?: PortalActor | null;
 }
 
 function getPortalSessionSecret(): string {
@@ -81,6 +93,7 @@ export function createPortalSessionToken(user: PortalSessionUser): string {
       full_name: user.full_name,
       role: user.role,
       company: user.company,
+      actor: user.actor ?? null,
       exp: Date.now() + SESSION_MAX_AGE_SECONDS * 1000,
     }),
     'utf-8'
@@ -118,6 +131,7 @@ export function verifyPortalSessionToken(token: string): PortalSessionUser | nul
       full_name: claims.full_name,
       role: claims.role === 'admin' ? 'admin' : 'client',
       company: claims.company ?? '',
+      actor: claims.actor ?? null,
     };
   } catch {
     return null;

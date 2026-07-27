@@ -10,6 +10,8 @@ export interface PortalUser {
   full_name: string;
   role: 'admin' | 'client';
   company: string;
+  /** Set only while an admin is previewing the portal as this account. */
+  actor?: { id: string; email: string; full_name: string } | null;
 }
 
 export interface PortalAdminUser {

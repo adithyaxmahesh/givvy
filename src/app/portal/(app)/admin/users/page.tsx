@@ -1,11 +1,12 @@
 'use client';
 
 import { useEffect, useState, type FormEvent } from 'react';
-import { Ban, Check, Plus, RotateCcw } from 'lucide-react';
+import { Ban, Check, Eye, Plus, RotateCcw } from 'lucide-react';
 import {
   portalFetch,
   type PortalAdminUser,
   type PortalProject,
+  type PortalUser,
 } from '@/lib/portal/client';
 import {
   Avatar,
@@ -25,6 +26,7 @@ const labelClass =
 export default function PortalAdminUsersPage() {
   const [users, setUsers] = useState<PortalAdminUser[]>([]);
   const [projects, setProjects] = useState<PortalProject[]>([]);
+  const [me, setMe] = useState<PortalUser | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [notice, setNotice] = useState<string | null>(null);
@@ -36,14 +38,18 @@ export default function PortalAdminUsersPage() {
     Promise.all([
       portalFetch<{ data: PortalAdminUser[] }>('/api/portal/admin/users'),
       portalFetch<{ data: PortalProject[] }>('/api/portal/projects'),
+      portalFetch<{ user: PortalUser }>('/api/portal/me'),
     ])
-      .then(([userData, projectData]) => {
+      .then(([userData, projectData, meData]) => {
         setUsers(userData.data);
         setProjects(projectData.data);
+        setMe(meData.user);
       })
       .catch((err: Error) => setError(err.message))
       .finally(() => setLoading(false));
   }, []);
+
+  const isSelf = (user: PortalAdminUser) => me?.id === user.id;
 
   async function handleCreate(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -78,6 +84,23 @@ export default function PortalAdminUsersPage() {
       setError((err as Error).message);
     } finally {
       setPending(false);
+    }
+  }
+
+  async function viewAs(user: PortalAdminUser) {
+    setUpdatingId(user.id);
+    setError(null);
+
+    try {
+      await portalFetch('/api/portal/admin/view-as', {
+        method: 'POST',
+        body: JSON.stringify({ user_id: user.id }),
+      });
+      // Full navigation so the shell reloads under the previewed identity.
+      window.location.assign('/portal');
+    } catch (err) {
+      setError((err as Error).message);
+      setUpdatingId(null);
     }
   }
 
@@ -255,31 +278,59 @@ export default function PortalAdminUsersPage() {
                   <span className="truncate">{user.email}</span>
                   {user.company && <span className="truncate">{user.company}</span>}
                   <span>
-                    {user.project_ids.length} engagement{user.project_ids.length === 1 ? '' : 's'}
-                  </span>
-                  <span>
                     {user.last_login_at
                       ? `Last seen ${new Date(user.last_login_at).toLocaleDateString()}`
                       : 'Never signed in'}
                   </span>
+                </div>
+
+                <div className="mt-1.5 flex flex-wrap items-center gap-1.5">
+                  {user.role === 'admin' ? (
+                    <span className="text-[11px] text-au-ink-soft">Sees every engagement</span>
+                  ) : user.project_ids.length === 0 ? (
+                    <span className="text-[11px] text-au-step-gold">
+                      No engagements assigned — this account sees an empty portal
+                    </span>
+                  ) : (
+                    user.project_ids.map((id) => (
+                      <span
+                        key={id}
+                        className="rounded-full border border-au-line bg-au-cream px-2 py-[2px] text-[10.5px] text-au-ink"
+                      >
+                        {projects.find((project) => project.id === id)?.name ?? 'Unknown engagement'}
+                      </span>
+                    ))
+                  )}
                 </div>
               </div>
 
               {updatingId === user.id ? (
                 <Spinner className="h-4 w-4" />
               ) : (
-                <button
-                  type="button"
-                  onClick={() => toggleStatus(user)}
-                  title={user.status === 'active' ? 'Disable account' : 'Re-enable account'}
-                  className="flex h-8 w-8 shrink-0 items-center justify-center rounded-[9px] text-au-ink-soft transition-colors hover:bg-au-wash hover:text-au-navy"
-                >
-                  {user.status === 'active' ? (
-                    <Ban className="h-[15px] w-[15px]" />
-                  ) : (
-                    <RotateCcw className="h-[15px] w-[15px]" />
+                <div className="flex shrink-0 items-center gap-1">
+                  {!isSelf(user) && (
+                    <button
+                      type="button"
+                      onClick={() => viewAs(user)}
+                      className="inline-flex items-center gap-1.5 rounded-[9px] border border-au-line px-2.5 py-1.5 text-[11.5px] font-medium text-au-ink transition-colors hover:border-au-ink-soft hover:text-au-navy"
+                    >
+                      <Eye className="h-[13px] w-[13px]" />
+                      View as
+                    </button>
                   )}
-                </button>
+                  <button
+                    type="button"
+                    onClick={() => toggleStatus(user)}
+                    title={user.status === 'active' ? 'Disable account' : 'Re-enable account'}
+                    className="flex h-8 w-8 items-center justify-center rounded-[9px] text-au-ink-soft transition-colors hover:bg-au-wash hover:text-au-navy"
+                  >
+                    {user.status === 'active' ? (
+                      <Ban className="h-[15px] w-[15px]" />
+                    ) : (
+                      <RotateCcw className="h-[15px] w-[15px]" />
+                    )}
+                  </button>
+                </div>
               )}
             </div>
           ))}

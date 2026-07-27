@@ -9,13 +9,15 @@ export async function GET(request: NextRequest) {
   try {
     const sb = createAdminClient();
     const allowed = await visibleProjectIds(sb, user);
-    if (allowed !== 'all' && allowed.length === 0) {
-      return NextResponse.json({ data: [] });
-    }
-
     const projectId = new URL(request.url).searchParams.get('project_id');
+
+    // Authorize the requested engagement before any early return, so naming one
+    // you cannot see always answers 403 rather than an empty list.
     if (projectId && allowed !== 'all' && !allowed.includes(projectId)) {
       return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
+    }
+    if (allowed !== 'all' && allowed.length === 0) {
+      return NextResponse.json({ data: [] });
     }
 
     let query = sb

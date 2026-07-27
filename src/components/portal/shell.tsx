@@ -5,6 +5,7 @@ import { usePathname, useRouter } from 'next/navigation';
 import { useEffect, useRef, useState, type ReactNode } from 'react';
 import {
   ChevronDown,
+  Eye,
   FileText,
   LayoutDashboard,
   ListChecks,
@@ -27,6 +28,40 @@ const NAV = [
 
 function isActive(pathname: string, href: string): boolean {
   return href === '/portal' ? pathname === '/portal' : pathname.startsWith(href);
+}
+
+const BANNER_HEIGHT = 'top-[42px]';
+
+function PreviewBanner({ user }: { user: PortalUser }) {
+  const [exiting, setExiting] = useState(false);
+
+  async function exitPreview() {
+    setExiting(true);
+    try {
+      await fetch('/api/portal/admin/view-as', { method: 'DELETE', credentials: 'include' });
+    } finally {
+      // Full navigation so every cached client component refetches as the admin.
+      window.location.assign('/portal/admin/users');
+    }
+  }
+
+  return (
+    <div className="fixed inset-x-0 top-0 z-[60] flex h-[42px] items-center justify-center gap-3 bg-au-navy-deep px-4 text-white">
+      <Eye className="h-[14px] w-[14px] shrink-0 text-au-note" />
+      <p className="truncate text-[12.5px]">
+        Viewing as <span className="font-medium">{user.full_name || user.email}</span>
+        <span className="hidden text-white/60 sm:inline"> · {user.email}</span>
+      </p>
+      <button
+        type="button"
+        onClick={exitPreview}
+        disabled={exiting}
+        className="shrink-0 rounded-full border border-white/25 px-3 py-[3px] text-[11.5px] font-medium transition-colors hover:bg-white/10 disabled:opacity-60"
+      >
+        {exiting ? 'Exiting…' : 'Exit preview'}
+      </button>
+    </div>
+  );
 }
 
 export function PortalShell({ children }: { children: ReactNode }) {
@@ -75,13 +110,15 @@ export function PortalShell({ children }: { children: ReactNode }) {
   if (!user) return null;
 
   const links = NAV.filter((item) => !item.adminOnly || user.role === 'admin');
+  const previewing = Boolean(user.actor);
 
   return (
-    <div className="min-h-screen bg-au-cream font-sans antialiased">
+    <div className={`min-h-screen bg-au-cream font-sans antialiased ${previewing ? 'pt-[42px]' : ''}`}>
+      {user.actor && <PreviewBanner user={user} />}
       <aside
-        className={`fixed inset-y-0 left-0 z-50 flex w-[248px] flex-col border-r border-au-line bg-white transition-transform duration-200 lg:translate-x-0 ${
-          navOpen ? 'translate-x-0' : '-translate-x-full'
-        }`}
+        className={`fixed bottom-0 left-0 z-50 flex w-[248px] flex-col border-r border-au-line bg-white transition-transform duration-200 lg:translate-x-0 ${
+          previewing ? BANNER_HEIGHT : 'top-0'
+        } ${navOpen ? 'translate-x-0' : '-translate-x-full'}`}
       >
         <div className="flex h-[68px] shrink-0 items-center justify-between border-b border-au-line-soft px-5">
           <Link href="/portal" aria-label="Givvy client portal">
@@ -146,7 +183,11 @@ export function PortalShell({ children }: { children: ReactNode }) {
       )}
 
       <div className="lg:pl-[248px]">
-        <header className="sticky top-0 z-30 border-b border-au-line bg-au-cream/85 backdrop-blur-xl">
+        <header
+          className={`sticky z-30 border-b border-au-line bg-au-cream/85 backdrop-blur-xl ${
+            previewing ? BANNER_HEIGHT : 'top-0'
+          }`}
+        >
           <div className="flex h-[68px] items-center justify-between gap-4 px-5 lg:px-8">
             <button
               type="button"
