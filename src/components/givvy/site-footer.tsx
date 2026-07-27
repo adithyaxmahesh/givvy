@@ -60,7 +60,7 @@ export function SiteFooter() {
           <div className="col-span-2 sm:col-span-4 lg:col-span-1">
             <Wordmark />
             <p className="mt-[6px] max-w-[205px] text-[11.5px] leading-[21px] text-au-ink-soft">
-              The AI-native investment bank for ownership.
+              The AI native investment bank for ownership.
             </p>
             <ul className="mt-3 flex items-center gap-2">
               {SOCIALS.map(({ label, icon: Icon, href }) => (
