@@ -50,11 +50,11 @@ export function Nav({ onBookIntro }: { onBookIntro: () => void }) {
 
           <div className="flex items-center justify-end gap-5 justify-self-end">
             <Link
-              href="/marketplace"
+              href="/portal/login"
               className="group hidden items-center gap-1.5 text-[12.5px] font-medium text-au-ink-soft transition-colors hover:text-au-navy md:inline-flex"
             >
-              Equity Marketplace
-              <ArrowRight className="h-3 w-3 -rotate-45 transition-transform duration-200 group-hover:translate-x-[2px]" />
+              Client portal
+              <ArrowRight className="h-3 w-3 transition-transform duration-200 group-hover:translate-x-[2px]" />
             </Link>
             <PrimaryButton size="nav" onClick={onBookIntro} className="hidden sm:inline-flex">
               Book intro
@@ -96,11 +96,11 @@ export function Nav({ onBookIntro }: { onBookIntro: () => void }) {
                 ))}
                 <li>
                   <Link
-                    href="/marketplace"
+                    href="/portal/login"
                     className="flex items-center gap-2 rounded-[9px] px-2 py-2.5 text-[14px] font-medium text-au-ink transition-colors hover:bg-au-wash"
                   >
-                    Equity Marketplace
-                    <ArrowRight className="h-3 w-3 -rotate-45" />
+                    Client portal
+                    <ArrowRight className="h-3 w-3" />
                   </Link>
                 </li>
               </ul>

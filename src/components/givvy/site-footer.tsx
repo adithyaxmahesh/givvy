@@ -7,6 +7,8 @@ const COLUMNS = [
     title: 'Platform',
     links: [
       { label: 'Overview', href: '#platform' },
+      { label: 'Equity Marketplace', href: '/marketplace' },
+      { label: 'Client Portal', href: '/portal/login' },
       { label: 'Security', href: '#platform' },
       { label: 'Integrations', href: '#platform' },
       { label: 'API', href: '#platform' },
@@ -81,9 +83,15 @@ export function SiteFooter() {
               <ul className="mt-3 space-y-[6px]">
                 {column.links.map((link) => (
                   <li key={link.label} className="leading-[16px]">
-                    <a href={link.href} className="text-[11.5px] text-au-ink-soft transition-colors hover:text-au-navy">
-                      {link.label}
-                    </a>
+                    {link.href.startsWith('/') ? (
+                      <Link href={link.href} className="text-[11.5px] text-au-ink-soft transition-colors hover:text-au-navy">
+                        {link.label}
+                      </Link>
+                    ) : (
+                      <a href={link.href} className="text-[11.5px] text-au-ink-soft transition-colors hover:text-au-navy">
+                        {link.label}
+                      </a>
+                    )}
                   </li>
                 ))}
               </ul>
