@@ -24,60 +24,53 @@ function html({ accent = 'ownership.', accentCss = '', lead = lines }) {
   return `${lead[0]}<br>${lead[1]}<br>${lead[2]}<em style="${accentCss}">${accent}</em>`;
 }
 
+/*
+ * Inter and Sora are both loaded upright only, so an italic accent in either
+ * would be a browser-synthesized oblique. The accent stays upright blue in the
+ * sans options for that reason.
+ */
 const variants = [
   {
-    name: '1-current',
-    note: 'Newsreader 400 · 69px',
-    h1: { fontFamily: SERIF, fontWeight: '400', fontSize: '69px', lineHeight: '1.06', letterSpacing: '-0.022em' },
-    accentCss: `font-style:italic;color:${BLUE}`,
-  },
-  {
-    name: '2-light',
-    note: 'Newsreader 300 · 71px · airier',
+    name: '0-current',
+    note: 'Newsreader 300 / 71px (current serif)',
     h1: { fontFamily: SERIF, fontWeight: '300', fontSize: '71px', lineHeight: '1.04', letterSpacing: '-0.018em' },
     accentCss: `font-style:italic;color:${BLUE}`,
   },
   {
-    name: '3-medium',
-    note: 'Newsreader 500 · 65px · heavier',
-    h1: { fontFamily: SERIF, fontWeight: '500', fontSize: '65px', lineHeight: '1.06', letterSpacing: '-0.025em' },
-    accentCss: `font-style:italic;color:${BLUE}`,
-  },
-  {
-    name: '4-large',
-    note: 'Newsreader 400 · 80px · tight leading',
-    h1: { fontFamily: SERIF, fontWeight: '400', fontSize: '80px', lineHeight: '0.98', letterSpacing: '-0.032em' },
-    accentCss: `font-style:italic;color:${BLUE}`,
-  },
-  {
-    name: '5-sora',
-    note: 'Sora 500 · 56px · geometric sans',
-    h1: { fontFamily: SORA, fontWeight: '500', fontSize: '56px', lineHeight: '1.1', letterSpacing: '-0.035em' },
-    accentCss: `font-style:normal;color:${BLUE}`,
-  },
-  {
-    name: '6-inter',
-    note: 'Inter 600 · 58px · tight sans',
+    name: '1-inter-600',
+    note: 'Inter 600 / 58px',
     h1: { fontFamily: INTER, fontWeight: '600', fontSize: '58px', lineHeight: '1.06', letterSpacing: '-0.038em' },
     accentCss: `font-style:normal;color:${BLUE}`,
   },
   {
-    name: '7-mixed',
-    note: 'Inter 600 sans + Newsreader italic accent',
-    h1: { fontFamily: INTER, fontWeight: '600', fontSize: '56px', lineHeight: '1.08', letterSpacing: '-0.038em' },
-    accentCss: `font-family:${SERIF};font-style:italic;font-weight:400;font-size:1.14em;letter-spacing:-0.02em;color:${BLUE}`,
+    name: '2-inter-700',
+    note: 'Inter 700 / 56px',
+    h1: { fontFamily: INTER, fontWeight: '700', fontSize: '56px', lineHeight: '1.05', letterSpacing: '-0.042em' },
+    accentCss: `font-style:normal;color:${BLUE}`,
   },
   {
-    name: '8-accent-first',
-    note: 'Serif · accent moved to "AI native"',
-    h1: { fontFamily: SERIF, fontWeight: '400', fontSize: '69px', lineHeight: '1.06', letterSpacing: '-0.022em' },
-    markup: `The <em style="font-style:italic;color:${BLUE}">AI native</em><br>investment bank<br>for ownership.`,
+    name: '3-inter-700-big',
+    note: 'Inter 700 / 62px / tight leading',
+    h1: { fontFamily: INTER, fontWeight: '700', fontSize: '62px', lineHeight: '1.0', letterSpacing: '-0.046em' },
+    accentCss: `font-style:normal;color:${BLUE}`,
   },
   {
-    name: '9-allblue-italic',
-    note: 'Serif · whole last line italic blue',
-    h1: { fontFamily: SERIF, fontWeight: '400', fontSize: '69px', lineHeight: '1.06', letterSpacing: '-0.022em' },
-    markup: `The AI native<br>investment bank<br><em style="font-style:italic;color:${BLUE}">for ownership.</em>`,
+    name: '4-sora-600',
+    note: 'Sora 600 / 53px / geometric',
+    h1: { fontFamily: SORA, fontWeight: '600', fontSize: '53px', lineHeight: '1.1', letterSpacing: '-0.04em' },
+    accentCss: `font-style:normal;color:${BLUE}`,
+  },
+  {
+    name: '5-sora-700',
+    note: 'Sora 700 / 51px / heaviest',
+    h1: { fontFamily: SORA, fontWeight: '700', fontSize: '51px', lineHeight: '1.1', letterSpacing: '-0.042em' },
+    accentCss: `font-style:normal;color:${BLUE}`,
+  },
+  {
+    name: '6-serif-600',
+    note: 'Newsreader 600 / 65px (bold serif, for reference)',
+    h1: { fontFamily: SERIF, fontWeight: '600', fontSize: '65px', lineHeight: '1.05', letterSpacing: '-0.028em' },
+    accentCss: `font-style:italic;color:${BLUE}`,
   },
 ];
 
@@ -102,9 +95,18 @@ for (const v of variants) {
   await page.waitForTimeout(320);
 
   const box = await page.locator('h1').boundingBox();
+  // Widest rendered line, so a variant that only just fits is visible as such.
+  const ink = await page.locator('h1').evaluate((el) => {
+    const range = document.createRange();
+    range.selectNodeContents(el);
+    return Math.round(Math.max(...[...range.getClientRects()].map((r) => r.width)));
+  });
   const lineCount = Math.round(box.height / (parseFloat(v.h1.fontSize) * parseFloat(v.h1.lineHeight)));
-  const overflow = box.width > 500 ? '  <-- OVERFLOWS COLUMN' : '';
-  console.log(`${v.name.padEnd(18)} ${String(lineCount).padStart(2)} lines  h=${Math.round(box.height)}px  ${v.note}${overflow}`);
+  const slack = Math.round(box.width) - ink;
+  const flag = lineCount > 3 ? '  <-- EXTRA LINE' : slack < 12 ? '  <-- TIGHT' : '';
+  console.log(
+    `${v.name.padEnd(16)} ${lineCount} lines  widest ${ink}px / col ${Math.round(box.width)}px  slack ${slack}px  ${v.note}${flag}`
+  );
 
   await page.screenshot({
     path: `${OUT}/${v.name}.png`,

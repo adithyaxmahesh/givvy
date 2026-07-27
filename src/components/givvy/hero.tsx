@@ -98,13 +98,14 @@ export function Hero({ onBookIntro }: { onBookIntro: () => void }) {
               initial={reduce ? undefined : { opacity: 0, y: 14 }}
               animate={reduce ? undefined : { opacity: 1, y: 0 }}
               transition={{ duration: 0.75, delay: 0.06, ease: [0.22, 1, 0.36, 1] }}
-              className="font-editorial text-[43px] font-light leading-[1.04] tracking-[-0.018em] text-au-navy sm:text-[56px] lg:text-[67px] xl:text-[71px]"
+              className="font-sans text-[38px] font-bold leading-[1] tracking-[-0.046em] text-au-navy sm:text-[49px] lg:text-[58px] xl:text-[62px]"
             >
               The AI native
               <br />
               investment bank
               <br />
-              for <em className="italic text-au-blue">ownership.</em>
+              {/* Inter is loaded upright only, so an italic here would be a synthetic oblique. */}
+              for <em className="not-italic text-au-blue">ownership.</em>
             </motion.h1>
 
             <motion.p
