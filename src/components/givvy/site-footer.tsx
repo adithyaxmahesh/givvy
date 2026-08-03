@@ -6,39 +6,40 @@ const COLUMNS = [
   {
     title: 'Platform',
     links: [
-      { label: 'Overview', href: '#platform' },
+      { label: 'Overview', href: '/#platform' },
       { label: 'Equity Marketplace', href: '/marketplace' },
       { label: 'Client Portal', href: '/portal/login' },
-      { label: 'Security', href: '#platform' },
-      { label: 'Integrations', href: '#platform' },
-      { label: 'API', href: '#platform' },
+      { label: 'Security', href: '/#platform' },
+      { label: 'Integrations', href: '/#platform' },
+      { label: 'API', href: '/#platform' },
     ],
   },
   {
     title: 'Services',
     links: [
-      { label: 'M&A', href: '#services' },
-      { label: 'Asset Management', href: '#services' },
-      { label: 'Holding Companies', href: '#services' },
-      { label: 'Private Markets', href: '#services' },
+      { label: 'M&A', href: '/services/ma' },
+      { label: 'Asset Management', href: '/services/asset-management' },
+      { label: 'Holding Companies', href: '/services/holding-companies' },
+      { label: 'Private Markets', href: '/services/private-markets' },
+      { label: 'Startups', href: '/services/startups' },
     ],
   },
   {
     title: 'Resources',
     links: [
-      { label: 'Use Cases', href: '#use-cases' },
-      { label: 'Insights', href: '#about' },
-      { label: 'Guides', href: '#about' },
-      { label: 'Customer Stories', href: '#use-cases' },
+      { label: 'Use Cases', href: '/#use-cases' },
+      { label: 'Insights', href: '/#about' },
+      { label: 'Guides', href: '/#about' },
+      { label: 'Customer Stories', href: '/#use-cases' },
     ],
   },
   {
     title: 'Company',
     links: [
-      { label: 'About', href: '#about' },
-      { label: 'Careers', href: '#contact' },
-      { label: 'Press', href: '#contact' },
-      { label: 'Contact', href: '#contact' },
+      { label: 'About', href: '/#about' },
+      { label: 'Careers', href: '/#contact' },
+      { label: 'Press', href: '/#contact' },
+      { label: 'Contact', href: '/#contact' },
     ],
   },
 ];
@@ -60,7 +61,7 @@ export function SiteFooter() {
           <div className="col-span-2 sm:col-span-4 lg:col-span-1">
             <Wordmark />
             <p className="mt-[6px] max-w-[205px] text-[11.5px] leading-[21px] text-au-ink-soft">
-              The AI native investment bank for ownership.
+              The digital financial institution for ownership.
             </p>
             <ul className="mt-3 flex items-center gap-2">
               {SOCIALS.map(({ label, icon: Icon, href }) => (
@@ -106,7 +107,7 @@ export function SiteFooter() {
           <ul className="flex items-center gap-6">
             {LEGAL.map((item) => (
               <li key={item} className="leading-[16px]">
-                <Link href="#top" className="text-[10.5px] text-au-ink-soft transition-colors hover:text-au-navy">
+                <Link href="/#top" className="text-[10.5px] text-au-ink-soft transition-colors hover:text-au-navy">
                   {item}
                 </Link>
               </li>

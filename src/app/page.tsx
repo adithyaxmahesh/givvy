@@ -2,9 +2,9 @@ import { GivvyLanding } from '@/components/givvy/givvy-landing';
 import type { Metadata } from 'next';
 
 export const metadata: Metadata = {
-  title: 'Givvy — The AI-native investment bank for ownership.',
+  title: 'Givvy — The digital financial institution for ownership.',
   description:
-    'From acquisitions and carveouts to SPVs, continuation vehicles, and fund operations, Givvy executes the workflows traditional firms do manually.',
+    'The execution layer for ownership—from company equity and private markets to acquisitions, funds, and holding companies.',
 };
 
 export default function LandingPage() {

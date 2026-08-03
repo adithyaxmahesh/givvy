@@ -32,6 +32,11 @@ function isPortalRoute(pathname: string): boolean {
   return pathname === '/portal' || pathname.startsWith('/portal/');
 }
 
+/** Givvy marketing pages provide their own cream navigation and footer. */
+function isGivvyMarketingRoute(pathname: string): boolean {
+  return pathname === '/' || pathname.startsWith('/services/');
+}
+
 const navLinks = [
   { label: 'Marketplace', href: '/marketplace', icon: Search },
   { label: 'Dashboard', href: '/dashboard', icon: LayoutDashboard },
@@ -90,7 +95,7 @@ function Navbar() {
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
 
-  if (isAuthPage || isHomePage || isPortalRoute(pathname)) return null;
+  if (isAuthPage || isGivvyMarketingRoute(pathname) || isPortalRoute(pathname)) return null;
 
   const handleSignOut = async () => {
     setProfileMenuOpen(false);
@@ -357,8 +362,7 @@ function Footer() {
 function LayoutInner({ children }: { children: ReactNode }) {
   const pathname = usePathname();
   const isAuthPage = authPages.includes(pathname);
-  const isHomePage = pathname === '/';
-  const showNavbar = !isAuthPage && !isHomePage && !isPortalRoute(pathname);
+  const showNavbar = !isAuthPage && !isGivvyMarketingRoute(pathname) && !isPortalRoute(pathname);
 
   return (
     <>

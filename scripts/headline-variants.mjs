@@ -18,7 +18,7 @@ const INTER = 'var(--font-inter)';
 const BLUE = '#2F6FB5';
 
 /** Roman part of the line, then the accented word, so emphasis can vary per variant. */
-const lines = ['The AI native', 'investment bank', 'for '];
+const lines = ['The digital', 'financial institution', 'for '];
 
 function html({ accent = 'ownership.', accentCss = '', lead = lines }) {
   return `${lead[0]}<br>${lead[1]}<br>${lead[2]}<em style="${accentCss}">${accent}</em>`;
@@ -32,9 +32,9 @@ function html({ accent = 'ownership.', accentCss = '', lead = lines }) {
 const variants = [
   {
     name: '0-current',
-    note: 'Newsreader 300 / 71px (current serif)',
-    h1: { fontFamily: SERIF, fontWeight: '300', fontSize: '71px', lineHeight: '1.04', letterSpacing: '-0.018em' },
-    accentCss: `font-style:italic;color:${BLUE}`,
+    note: 'Inter 700 / 62px (current)',
+    h1: { fontFamily: INTER, fontWeight: '700', fontSize: '62px', lineHeight: '1', letterSpacing: '-0.046em' },
+    accentCss: `font-style:normal;color:${BLUE}`,
   },
   {
     name: '1-inter-600',

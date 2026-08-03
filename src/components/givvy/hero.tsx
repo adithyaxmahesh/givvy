@@ -100,11 +100,10 @@ export function Hero({ onBookIntro }: { onBookIntro: () => void }) {
               transition={{ duration: 0.75, delay: 0.06, ease: [0.22, 1, 0.36, 1] }}
               className="font-sans text-[38px] font-bold leading-[1] tracking-[-0.046em] text-au-navy sm:text-[49px] lg:text-[58px] xl:text-[62px]"
             >
-              The AI native
+              The digital
               <br />
-              investment bank
+              financial institution
               <br />
-              {/* Inter is loaded upright only, so an italic here would be a synthetic oblique. */}
               for <em className="not-italic text-au-blue">ownership.</em>
             </motion.h1>
 
@@ -114,7 +113,8 @@ export function Hero({ onBookIntro }: { onBookIntro: () => void }) {
               transition={{ duration: 0.7, delay: 0.14, ease: [0.22, 1, 0.36, 1] }}
               className="mt-[14px] max-w-[478px] text-[17.5px] leading-[27px] text-au-ink"
             >
-              The financial institution that closes the deals Wall Street won&rsquo;t touch.
+              The execution layer for ownership—from company equity and private markets to acquisitions, funds, and
+              holding companies.
             </motion.p>
 
             <motion.div

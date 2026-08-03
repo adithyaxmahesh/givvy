@@ -1,5 +1,10 @@
 export interface ServiceGroup {
+  slug: string;
   label: string;
+  name: string;
+  summary: string;
+  pageDescription: string;
+  outcome: string;
   tint: string;
   edge: string;
   labelColor: string;
@@ -8,7 +13,13 @@ export interface ServiceGroup {
 
 export const SERVICE_GROUPS: ServiceGroup[] = [
   {
+    slug: 'ma',
     label: 'A. M&A',
+    name: 'M&A',
+    summary: 'Acquire, finance, integrate, and exit businesses through one coordinated execution layer.',
+    pageDescription:
+      'Givvy coordinates the financial, operational, and administrative work behind acquisitions, carveouts, rollups, and divestitures.',
+    outcome: 'Move from opportunity to close with fewer handoffs and a single source of truth.',
     tint: 'bg-au-tint-blue',
     edge: 'border-au-edge-blue',
     labelColor: 'text-[#4A6FA8]',
@@ -23,7 +34,13 @@ export const SERVICE_GROUPS: ServiceGroup[] = [
     ],
   },
   {
+    slug: 'asset-management',
     label: 'B. Asset Management',
+    name: 'Asset Management',
+    summary: 'Launch and operate funds, portfolios, and secondary positions with institutional discipline.',
+    pageDescription:
+      'Givvy gives emerging managers and small institutions the infrastructure to construct portfolios, operate funds, report performance, and manage liquidity.',
+    outcome: 'Run institutional-quality investment operations without building a large internal team.',
     tint: 'bg-au-tint-green',
     edge: 'border-au-edge-green',
     labelColor: 'text-[#4E8064]',
@@ -36,7 +53,13 @@ export const SERVICE_GROUPS: ServiceGroup[] = [
     ],
   },
   {
+    slug: 'holding-companies',
     label: 'C. Holding Companies',
+    name: 'Holding Companies',
+    summary: 'Build durable ownership structures with consolidated finance, governance, and operations.',
+    pageDescription:
+      'Givvy helps entrepreneurs and permanent-capital firms create and operate holding companies across entities, subsidiaries, reporting, and shared services.',
+    outcome: 'Turn a collection of companies into one coherent ownership platform.',
     tint: 'bg-au-tint-gold',
     edge: 'border-au-edge-gold',
     labelColor: 'text-[#A5854A]',
@@ -49,7 +72,13 @@ export const SERVICE_GROUPS: ServiceGroup[] = [
     ],
   },
   {
+    slug: 'private-markets',
     label: 'D. Private Markets',
+    name: 'Private Markets',
+    summary: 'Create vehicles, administer liquidity, and restructure private assets and fund interests.',
+    pageDescription:
+      'Givvy coordinates SPVs, tender offers, continuation vehicles, transfers, cap-table cleanup, and other private-market transactions.',
+    outcome: 'Make complex private ownership transactions easier to structure, execute, and administer.',
     tint: 'bg-au-tint-lilac',
     edge: 'border-au-edge-lilac',
     labelColor: 'text-[#6F70AE]',
@@ -64,7 +93,13 @@ export const SERVICE_GROUPS: ServiceGroup[] = [
     ],
   },
   {
+    slug: 'startups',
     label: 'E. Startups',
+    name: 'Startups',
+    summary: 'Manage company equity from the first issuance through employee liquidity and acquisitions.',
+    pageDescription:
+      'Givvy provides the operating layer for startup ownership: cap tables, securities, exercises, transfers, buybacks, and corporate development.',
+    outcome: 'Keep ownership accurate and transaction-ready as the company grows.',
     tint: 'bg-au-tint-rose',
     edge: 'border-au-edge-rose',
     labelColor: 'text-[#A2635E]',
