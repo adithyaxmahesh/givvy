@@ -3,9 +3,8 @@
 import Link from 'next/link';
 import { useState } from 'react';
 import { motion, useReducedMotion } from 'framer-motion';
-import { BottomCta } from './bottom-cta';
 import { PrimaryButton } from './buttons';
-import { ArrowRight, StarFour } from './icons';
+import { ArrowRight } from './icons';
 import { BookIntroModal, GetDeckModal } from './modals';
 import { Nav } from './nav';
 import { SERVICE_GROUPS, type ServiceGroup } from './services-data';
@@ -40,83 +39,204 @@ const PROCESS = [
   },
 ];
 
-const WORKFLOW_STATES = ['In review', 'Active', 'Ready', 'Queued'];
+interface DiagramNode {
+  id: string;
+  label: string;
+  x: number;
+  y: number;
+  core?: boolean;
+}
 
-function WorkspacePanel({ group }: { group: ServiceGroup }) {
+interface PracticeDiagram {
+  caption: string;
+  nodes: DiagramNode[];
+  links: [string, string][];
+}
+
+const PRACTICE_DIAGRAMS: Record<string, PracticeDiagram> = {
+  ma: {
+    caption: 'One continuous transaction record',
+    nodes: [
+      { id: 'target', label: 'Target', x: 82, y: 142 },
+      { id: 'case', label: 'Investment case', x: 230, y: 82 },
+      { id: 'mandate', label: 'Mandate', x: 284, y: 252, core: true },
+      { id: 'diligence', label: 'Diligence', x: 462, y: 132 },
+      { id: 'capital', label: 'Capital', x: 474, y: 344 },
+      { id: 'close', label: 'Close', x: 280, y: 442 },
+      { id: 'operate', label: 'Operate', x: 88, y: 356 },
+    ],
+    links: [
+      ['target', 'case'],
+      ['case', 'mandate'],
+      ['mandate', 'diligence'],
+      ['mandate', 'capital'],
+      ['capital', 'close'],
+      ['close', 'operate'],
+      ['operate', 'mandate'],
+    ],
+  },
+  'asset-management': {
+    caption: 'Mandate, portfolio, and reporting connected',
+    nodes: [
+      { id: 'mandate', label: 'Mandate', x: 280, y: 248, core: true },
+      { id: 'allocation', label: 'Allocation', x: 104, y: 110 },
+      { id: 'portfolio', label: 'Portfolio', x: 446, y: 104 },
+      { id: 'risk', label: 'Risk', x: 486, y: 292 },
+      { id: 'reporting', label: 'Reporting', x: 366, y: 438 },
+      { id: 'liquidity', label: 'Liquidity', x: 114, y: 410 },
+      { id: 'investors', label: 'Investors', x: 62, y: 246 },
+    ],
+    links: [
+      ['mandate', 'allocation'],
+      ['mandate', 'portfolio'],
+      ['mandate', 'risk'],
+      ['mandate', 'reporting'],
+      ['mandate', 'liquidity'],
+      ['mandate', 'investors'],
+      ['portfolio', 'risk'],
+      ['reporting', 'investors'],
+    ],
+  },
+  'holding-companies': {
+    caption: 'A living map of control and shared advantage',
+    nodes: [
+      { id: 'holdco', label: 'HoldCo', x: 280, y: 96, core: true },
+      { id: 'sub-a', label: 'Company 01', x: 104, y: 258 },
+      { id: 'sub-b', label: 'Company 02', x: 280, y: 304 },
+      { id: 'sub-c', label: 'Company 03', x: 458, y: 258 },
+      { id: 'shared', label: 'Shared services', x: 280, y: 446 },
+      { id: 'capital', label: 'Capital', x: 64, y: 426 },
+      { id: 'governance', label: 'Governance', x: 494, y: 426 },
+    ],
+    links: [
+      ['holdco', 'sub-a'],
+      ['holdco', 'sub-b'],
+      ['holdco', 'sub-c'],
+      ['sub-a', 'shared'],
+      ['sub-b', 'shared'],
+      ['sub-c', 'shared'],
+      ['capital', 'shared'],
+      ['governance', 'shared'],
+    ],
+  },
+  'private-markets': {
+    caption: 'Structure the market around the asset',
+    nodes: [
+      { id: 'asset', label: 'Asset', x: 280, y: 250, core: true },
+      { id: 'owner', label: 'Owner', x: 70, y: 128 },
+      { id: 'vehicle', label: 'Vehicle', x: 276, y: 70 },
+      { id: 'buyer-a', label: 'Buyer 01', x: 482, y: 138 },
+      { id: 'buyer-b', label: 'Buyer 02', x: 488, y: 354 },
+      { id: 'settlement', label: 'Settlement', x: 284, y: 450 },
+      { id: 'admin', label: 'Administration', x: 76, y: 362 },
+    ],
+    links: [
+      ['owner', 'asset'],
+      ['vehicle', 'asset'],
+      ['asset', 'buyer-a'],
+      ['asset', 'buyer-b'],
+      ['buyer-b', 'settlement'],
+      ['settlement', 'admin'],
+      ['admin', 'owner'],
+    ],
+  },
+  startups: {
+    caption: 'Every security tied back to one company record',
+    nodes: [
+      { id: 'company', label: 'Company', x: 280, y: 248, core: true },
+      { id: 'shares', label: 'Shares', x: 104, y: 104 },
+      { id: 'options', label: 'Options', x: 454, y: 98 },
+      { id: 'safes', label: 'SAFEs', x: 490, y: 276 },
+      { id: 'warrants', label: 'Warrants', x: 382, y: 440 },
+      { id: 'liquidity', label: 'Liquidity', x: 142, y: 424 },
+      { id: 'board', label: 'Approvals', x: 64, y: 266 },
+    ],
+    links: [
+      ['company', 'shares'],
+      ['company', 'options'],
+      ['company', 'safes'],
+      ['company', 'warrants'],
+      ['company', 'liquidity'],
+      ['company', 'board'],
+      ['board', 'shares'],
+      ['options', 'liquidity'],
+    ],
+  },
+};
+
+function PracticeGraphic({ group, reduceMotion }: { group: ServiceGroup; reduceMotion: boolean | null }) {
+  const diagram = PRACTICE_DIAGRAMS[group.slug];
+  const nodes = new Map(diagram.nodes.map((node) => [node.id, node]));
+
   return (
-    <div className="relative overflow-hidden rounded-[20px] border border-white/10 bg-au-navy-deep p-3 shadow-[0_28px_70px_-34px_rgba(9,24,45,0.72)] sm:p-4">
+    <figure className="relative mx-auto w-full max-w-[610px]">
       <div
         aria-hidden
-        className="absolute -right-24 -top-24 h-72 w-72 rounded-full bg-[radial-gradient(circle,rgba(62,110,174,0.35),rgba(62,110,174,0))]"
+        className="absolute inset-[14%] rounded-full bg-[radial-gradient(circle,rgba(62,110,174,0.12),rgba(62,110,174,0)_68%)] blur-xl"
       />
-      <div className="relative overflow-hidden rounded-[14px] border border-white/10 bg-[#102744]">
-        <div className="flex h-11 items-center justify-between border-b border-white/10 px-4">
-          <div className="flex items-center gap-1.5" aria-hidden>
-            <span className="h-1.5 w-1.5 rounded-full bg-white/20" />
-            <span className="h-1.5 w-1.5 rounded-full bg-white/20" />
-            <span className="h-1.5 w-1.5 rounded-full bg-white/20" />
-          </div>
-          <span className="text-[9px] font-semibold uppercase tracking-[0.16em] text-white/45">Givvy workspace</span>
-        </div>
+      <svg viewBox="0 0 560 520" className="relative w-full overflow-visible" role="img" aria-label={`${group.name} relationship map`}>
+        <ellipse cx="280" cy="255" rx="218" ry="190" fill="none" stroke="#DCD5C9" strokeWidth="0.8" strokeDasharray="2 7" />
+        <ellipse cx="280" cy="255" rx="144" ry="124" fill="none" stroke="#E7E1D8" strokeWidth="0.7" />
 
-        <div className="grid min-h-[360px] sm:grid-cols-[132px_minmax(0,1fr)]">
-          <div className="hidden border-r border-white/10 p-4 sm:block">
-            <p className="text-[9px] font-semibold uppercase tracking-[0.12em] text-white/35">Mandate</p>
-            <p className="mt-2 text-[12px] font-semibold leading-[18px] text-white">{group.name}</p>
-            <div className="mt-8 space-y-3">
-              {['Overview', 'Workstreams', 'Documents', 'Decisions'].map((item, index) => (
-                <div
-                  key={item}
-                  className={`rounded-md px-2 py-1.5 text-[9.5px] ${index === 1 ? 'bg-white/10 text-white' : 'text-white/40'}`}
+        {diagram.links.map(([fromId, toId], index) => {
+          const from = nodes.get(fromId);
+          const to = nodes.get(toId);
+          if (!from || !to) return null;
+          const midX = (from.x + to.x) / 2;
+          const midY = (from.y + to.y) / 2 - 18;
+          return (
+            <motion.path
+              key={`${fromId}-${toId}`}
+              d={`M ${from.x} ${from.y} Q ${midX} ${midY} ${to.x} ${to.y}`}
+              fill="none"
+              stroke="#BFC8D4"
+              strokeWidth="1"
+              initial={reduceMotion ? undefined : { pathLength: 0, opacity: 0 }}
+              animate={reduceMotion ? undefined : { pathLength: 1, opacity: 0.8 }}
+              transition={{ duration: 0.9, delay: 0.15 + index * 0.08, ease: [0.22, 1, 0.36, 1] }}
+            />
+          );
+        })}
+
+        {diagram.nodes.map((node, index) => (
+          <motion.g
+            key={node.id}
+            initial={reduceMotion ? undefined : { opacity: 0, scale: 0.7 }}
+            animate={reduceMotion ? undefined : { opacity: 1, scale: 1 }}
+            transition={{ duration: 0.45, delay: 0.25 + index * 0.07, ease: [0.22, 1, 0.36, 1] }}
+            style={{ transformOrigin: `${node.x}px ${node.y}px` }}
+          >
+            {node.core ? (
+              <>
+                <circle cx={node.x} cy={node.y} r="48" fill="#14243D" />
+                <circle cx={node.x} cy={node.y} r="57" fill="none" stroke="#3E6EAE" strokeWidth="0.9" strokeDasharray="3 5" />
+                <text x={node.x} y={node.y + 4} textAnchor="middle" fill="#FFFFFF" fontSize="11" fontWeight="600">
+                  {node.label}
+                </text>
+              </>
+            ) : (
+              <>
+                <circle cx={node.x} cy={node.y} r="5" fill="#3E6EAE" />
+                <circle cx={node.x} cy={node.y} r="11" fill="none" stroke="#C9D3DF" strokeWidth="0.8" />
+                <text
+                  x={node.x}
+                  y={node.y < 250 ? node.y - 19 : node.y + 27}
+                  textAnchor="middle"
+                  fill="#415067"
+                  fontSize="10"
+                  fontWeight="500"
                 >
-                  {item}
-                </div>
-              ))}
-            </div>
-          </div>
-
-          <div className="p-5 sm:p-6">
-            <div className="flex items-start justify-between gap-4">
-              <div>
-                <p className="text-[9px] font-semibold uppercase tracking-[0.13em] text-[#8EB5E8]">Live mandate</p>
-                <h2 className="mt-2 text-[18px] font-semibold tracking-[-0.025em] text-white">Execution overview</h2>
-              </div>
-              <span className="rounded-full border border-emerald-300/20 bg-emerald-300/10 px-2.5 py-1 text-[8.5px] font-semibold uppercase tracking-[0.08em] text-emerald-200">
-                On track
-              </span>
-            </div>
-
-            <div className="mt-8 space-y-3">
-              {group.services.slice(0, 4).map((service, index) => (
-                <div
-                  key={service.title}
-                  className="flex items-center justify-between gap-4 rounded-[10px] border border-white/10 bg-white/[0.035] px-3.5 py-3.5"
-                >
-                  <span className="flex min-w-0 items-center gap-2.5">
-                    <span className={`h-1.5 w-1.5 shrink-0 rounded-full ${index === 1 ? 'bg-emerald-300' : 'bg-[#6E9FDE]'}`} />
-                    <span className="truncate text-[10.5px] font-medium text-white/85">{service.title}</span>
-                  </span>
-                  <span className="shrink-0 text-[8.5px] font-semibold uppercase tracking-[0.07em] text-white/35">
-                    {WORKFLOW_STATES[index]}
-                  </span>
-                </div>
-              ))}
-            </div>
-
-            <div className="mt-5 grid grid-cols-2 gap-3">
-              <div className="rounded-[10px] border border-white/10 p-3">
-                <p className="text-[8.5px] uppercase tracking-[0.1em] text-white/35">Next decision</p>
-                <p className="mt-2 text-[10.5px] font-medium text-white/80">Mandate review</p>
-              </div>
-              <div className="rounded-[10px] border border-white/10 p-3">
-                <p className="text-[8.5px] uppercase tracking-[0.1em] text-white/35">Record</p>
-                <p className="mt-2 text-[10.5px] font-medium text-white/80">Always current</p>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
+                  {node.label}
+                </text>
+              </>
+            )}
+          </motion.g>
+        ))}
+      </svg>
+      <figcaption className="absolute bottom-4 left-1/2 -translate-x-1/2 whitespace-nowrap text-[9.5px] font-semibold uppercase tracking-[0.14em] text-au-ink-soft">
+        {diagram.caption}
+      </figcaption>
+    </figure>
   );
 }
 
@@ -149,7 +269,7 @@ export function ServicePage({ group }: ServicePageProps) {
               </p>
             </div>
 
-            <div className="mt-14 grid items-center gap-14 lg:grid-cols-[minmax(0,0.88fr)_minmax(520px,1.12fr)] lg:gap-16">
+            <div className="mt-12 grid items-center gap-10 lg:grid-cols-[minmax(0,0.92fr)_minmax(500px,1.08fr)] lg:gap-14">
               <motion.div
                 initial={reduceMotion ? undefined : { opacity: 0, y: 18 }}
                 animate={reduceMotion ? undefined : { opacity: 1, y: 0 }}
@@ -158,23 +278,16 @@ export function ServicePage({ group }: ServicePageProps) {
                 <p className={`text-[11px] font-semibold uppercase tracking-[0.12em] ${group.labelColor}`}>
                   {group.name}
                 </p>
-                <h1 className="mt-5 max-w-[650px] text-[42px] font-semibold leading-[1.01] tracking-[-0.05em] text-au-navy sm:text-[56px] lg:text-[64px]">
+                <h1 className="mt-5 max-w-[680px] font-editorial text-[48px] font-normal leading-[0.98] tracking-[-0.035em] text-au-navy sm:text-[64px] lg:text-[76px]">
                   {group.heroTitle}
                 </h1>
                 <p className="mt-6 max-w-[590px] text-[16px] leading-[27px] text-au-ink sm:text-[17px]">
                   {group.pageDescription}
                 </p>
 
-                <div className="mt-7 flex flex-wrap gap-2">
-                  {group.audiences.map((audience) => (
-                    <span
-                      key={audience}
-                      className="rounded-full border border-au-line bg-white/65 px-3 py-1.5 text-[10.5px] font-medium text-au-ink-soft"
-                    >
-                      {audience}
-                    </span>
-                  ))}
-                </div>
+                <p className="mt-7 max-w-[540px] text-[10.5px] font-semibold uppercase leading-[20px] tracking-[0.09em] text-au-ink-soft">
+                  For {group.audiences.join(' · ')}
+                </p>
 
                 <div className="mt-9 flex flex-wrap items-center gap-6">
                   <PrimaryButton size="md" onClick={() => setDialog('intro')}>
@@ -195,38 +308,46 @@ export function ServicePage({ group }: ServicePageProps) {
                 animate={reduceMotion ? undefined : { opacity: 1, x: 0 }}
                 transition={{ duration: 0.75, delay: 0.08, ease: [0.22, 1, 0.36, 1] }}
               >
-                <WorkspacePanel group={group} />
+                <PracticeGraphic group={group} reduceMotion={reduceMotion} />
               </motion.div>
             </div>
           </div>
         </section>
 
-        <section className="border-b border-au-line/80 bg-white/45">
-          <div className="au-container py-16 sm:py-20">
-            <div className="grid gap-10 lg:grid-cols-[300px_minmax(0,1fr)] lg:gap-16">
-              <div>
-                <p className={`text-[10.5px] font-semibold uppercase tracking-[0.11em] ${group.labelColor}`}>
-                  The operating thesis
-                </p>
-                <h2 className="mt-4 text-[30px] font-semibold leading-[1.08] tracking-[-0.04em] text-au-navy sm:text-[38px]">
-                  Built around the work, not the software.
-                </h2>
-              </div>
+        <section className="relative overflow-hidden bg-au-navy-deep text-white">
+          <motion.p
+            aria-hidden
+            initial={reduceMotion ? undefined : { x: 80, opacity: 0 }}
+            whileInView={reduceMotion ? undefined : { x: 0, opacity: 1 }}
+            viewport={{ once: true, amount: 0.2 }}
+            transition={{ duration: 1.1, ease: [0.22, 1, 0.36, 1] }}
+            className="pointer-events-none absolute -right-4 top-0 whitespace-nowrap font-editorial text-[120px] font-normal uppercase leading-none tracking-[-0.05em] text-white/[0.035] sm:text-[190px] lg:text-[260px]"
+          >
+            {group.name}
+          </motion.p>
+          <div className="au-container relative py-20 sm:py-28">
+            <p className="text-[10.5px] font-semibold uppercase tracking-[0.12em] text-[#8EB5E8]">The operating thesis</p>
+            <h2 className="mt-6 max-w-[900px] font-editorial text-[38px] font-normal leading-[1.04] tracking-[-0.025em] text-white sm:text-[54px] lg:text-[66px]">
+              Built around the work, not the software.
+            </h2>
 
-              <div className="grid gap-px overflow-hidden rounded-[18px] border border-au-line bg-au-line md:grid-cols-3">
-                {group.pillars.map((pillar, index) => (
-                  <div key={pillar.title} className="relative min-h-[260px] bg-au-cream p-6 sm:p-7">
-                    <span className={`text-[10px] font-semibold tabular-nums ${group.labelColor}`}>
-                      0{index + 1}
-                    </span>
-                    <StarFour className={`absolute right-6 top-6 h-3.5 w-3.5 opacity-70 ${group.labelColor}`} />
-                    <h3 className="mt-16 text-[18px] font-semibold leading-[1.2] tracking-[-0.025em] text-au-navy">
-                      {pillar.title}
-                    </h3>
-                    <p className="mt-3 text-[12.5px] leading-[21px] text-au-ink-soft">{pillar.description}</p>
-                  </div>
-                ))}
-              </div>
+            <div className="mt-20 grid gap-12 md:grid-cols-3 md:gap-10">
+              {group.pillars.map((pillar, index) => (
+                <motion.div
+                  key={pillar.title}
+                  initial={reduceMotion ? undefined : { opacity: 0, y: 24 }}
+                  whileInView={reduceMotion ? undefined : { opacity: 1, y: 0 }}
+                  viewport={{ once: true, amount: 0.45 }}
+                  transition={{ duration: 0.55, delay: index * 0.1, ease: [0.22, 1, 0.36, 1] }}
+                  className="md:border-l md:border-white/15 md:pl-7"
+                >
+                  <span className="text-[10px] font-semibold tabular-nums text-[#8EB5E8]">0{index + 1}</span>
+                  <h3 className="mt-10 text-[20px] font-semibold leading-[1.2] tracking-[-0.025em] text-white">
+                    {pillar.title}
+                  </h3>
+                  <p className="mt-4 max-w-[310px] text-[13px] leading-[22px] text-white/55">{pillar.description}</p>
+                </motion.div>
+              ))}
             </div>
           </div>
         </section>
@@ -238,16 +359,16 @@ export function ServicePage({ group }: ServicePageProps) {
                 <p className={`text-[10.5px] font-semibold uppercase tracking-[0.11em] ${group.labelColor}`}>
                   Full capability set
                 </p>
-                <h2 className="mt-4 text-[31px] font-semibold leading-[1.08] tracking-[-0.04em] text-au-navy sm:text-[40px]">
+                <h2 className="mt-4 font-editorial text-[36px] font-normal leading-[1.04] tracking-[-0.025em] text-au-navy sm:text-[48px]">
                   One mandate or the full lifecycle.
                 </h2>
                 <p className="mt-5 max-w-[285px] text-[13px] leading-[22px] text-au-ink-soft">
                   Start with a single transaction or use Givvy as the connective operating layer across the entire
                   ownership system.
                 </p>
-                <div className={`mt-8 rounded-[14px] border p-5 ${group.edge} ${group.tint}`}>
+                <div className="mt-10 border-l border-au-blue pl-5">
                   <p className="text-[9.5px] font-semibold uppercase tracking-[0.1em] text-au-ink-soft">Designed outcome</p>
-                  <p className="mt-3 text-[14px] font-semibold leading-[21px] text-au-navy">{group.outcome}</p>
+                  <p className="mt-3 font-editorial text-[18px] font-normal leading-[1.45] text-au-navy">{group.outcome}</p>
                 </div>
               </div>
 
@@ -255,15 +376,16 @@ export function ServicePage({ group }: ServicePageProps) {
                 {group.services.map((service, index) => (
                   <li
                     key={service.title}
-                    className="group grid gap-3 border-b border-au-line py-6 transition-colors hover:bg-white/45 sm:grid-cols-[48px_minmax(180px,0.8fr)_minmax(0,1.2fr)] sm:items-start sm:gap-6 sm:px-3"
+                    className="group grid gap-3 border-b border-au-line py-8 transition-transform duration-200 hover:translate-x-1 sm:grid-cols-[48px_minmax(190px,0.8fr)_minmax(0,1.2fr)_20px] sm:items-start sm:gap-6"
                   >
                     <span className={`text-[10.5px] font-semibold tabular-nums ${group.labelColor}`}>
                       {String(index + 1).padStart(2, '0')}
                     </span>
-                    <h3 className="text-[15px] font-semibold leading-[21px] tracking-[-0.015em] text-au-navy">
+                    <h3 className="text-[17px] font-semibold leading-[22px] tracking-[-0.02em] text-au-navy">
                       {service.title}
                     </h3>
                     <p className="text-[13px] leading-[22px] text-au-ink-soft">{service.description}</p>
+                    <ArrowRight className="hidden h-4 w-4 text-au-ink-soft transition-transform group-hover:translate-x-1 sm:block" />
                   </li>
                 ))}
               </ol>
@@ -271,12 +393,18 @@ export function ServicePage({ group }: ServicePageProps) {
           </div>
         </section>
 
-        <section className="overflow-hidden border-y border-au-line/80 bg-[#F1ECE4]">
-          <div className="au-container py-12 sm:py-16">
+        <section className="relative overflow-hidden border-y border-au-line/80 bg-[radial-gradient(circle_at_78%_25%,rgba(151,177,211,0.24),transparent_34%),radial-gradient(circle_at_20%_90%,rgba(221,190,133,0.2),transparent_38%),#F2EEE8]">
+          <div
+            aria-hidden
+            className="absolute -bottom-12 -right-6 font-editorial text-[150px] font-normal uppercase leading-none tracking-[-0.05em] text-au-navy/[0.035] sm:text-[230px]"
+          >
+            Record
+          </div>
+          <div className="au-container relative py-16 sm:py-24">
             <div className="flex flex-col gap-8 lg:flex-row lg:items-end lg:justify-between">
               <div>
                 <p className="text-[10.5px] font-semibold uppercase tracking-[0.11em] text-au-blue">The working record</p>
-                <h2 className="mt-4 max-w-[600px] text-[30px] font-semibold leading-[1.08] tracking-[-0.04em] text-au-navy sm:text-[38px]">
+                <h2 className="mt-4 max-w-[700px] font-editorial text-[36px] font-normal leading-[1.04] tracking-[-0.025em] text-au-navy sm:text-[50px]">
                   Useful artifacts, not another layer of meetings.
                 </h2>
               </div>
@@ -284,16 +412,16 @@ export function ServicePage({ group }: ServicePageProps) {
                 Every mandate leaves behind a current, decision-ready operating record your team can keep using.
               </p>
             </div>
-            <ul className="mt-10 grid gap-3 sm:grid-cols-2 lg:grid-cols-5">
+            <ul className="mt-14 grid border-y border-au-navy/15 sm:grid-cols-2 lg:grid-cols-5">
               {group.deliverables.map((deliverable, index) => (
                 <li
                   key={deliverable}
-                  className="flex min-h-[112px] flex-col justify-between rounded-[12px] border border-[#DDD4C7] bg-[#FAF7F2] p-4"
+                  className="flex min-h-[150px] flex-col justify-between border-b border-au-navy/15 px-1 py-5 last:border-b-0 sm:border-r sm:px-5 lg:border-b-0 lg:first:pl-0 lg:last:border-r-0 lg:last:pr-0"
                 >
                   <span className="text-[9px] font-semibold tabular-nums text-au-ink-soft/70">
                     {String(index + 1).padStart(2, '0')}
                   </span>
-                  <span className="text-[12.5px] font-semibold leading-[18px] text-au-navy">{deliverable}</span>
+                  <span className="font-editorial text-[19px] font-normal leading-[1.2] text-au-navy">{deliverable}</span>
                 </li>
               ))}
             </ul>
@@ -305,7 +433,7 @@ export function ServicePage({ group }: ServicePageProps) {
             <div className="flex flex-col gap-5 sm:flex-row sm:items-end sm:justify-between">
               <div>
                 <p className="text-[10.5px] font-semibold uppercase tracking-[0.11em] text-au-blue">Engagement model</p>
-                <h2 className="mt-4 text-[30px] font-semibold leading-[1.08] tracking-[-0.04em] text-au-navy sm:text-[38px]">
+                <h2 className="mt-4 font-editorial text-[36px] font-normal leading-[1.04] tracking-[-0.025em] text-au-navy sm:text-[50px]">
                   From mandate to operating rhythm.
                 </h2>
               </div>
@@ -336,12 +464,12 @@ export function ServicePage({ group }: ServicePageProps) {
                 <p className="text-[10px] font-semibold uppercase tracking-[0.11em] text-au-ink-soft">Explore another practice</p>
                 <p className="mt-2 text-[17px] font-semibold text-au-navy">The ownership lifecycle is connected.</p>
               </div>
-              <div className="flex flex-wrap gap-2">
+              <div className="flex flex-wrap items-center gap-x-5 gap-y-3">
                 {relatedGroups.map((item) => (
                   <Link
                     key={item.slug}
                     href={`/services/${item.slug}`}
-                    className="group inline-flex items-center gap-2 rounded-full border border-au-line bg-au-cream px-4 py-2.5 text-[11.5px] font-semibold text-au-navy transition-all hover:-translate-y-px hover:bg-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-au-blue"
+                    className="group inline-flex items-center gap-2 border-b border-au-navy/25 pb-1 text-[12px] font-semibold text-au-navy transition-colors hover:border-au-blue hover:text-au-blue focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-au-blue"
                   >
                     {item.name}
                     <ArrowRight className="h-3 w-3 text-au-ink-soft transition-transform group-hover:translate-x-0.5" />
@@ -352,14 +480,36 @@ export function ServicePage({ group }: ServicePageProps) {
           </div>
         </section>
 
-        <div className="bg-au-cream pt-8">
-          <BottomCta
-            onBookIntro={() => setDialog('intro')}
-            onGetDeck={() => setDialog('deck')}
-            title={group.ctaTitle}
-            description={group.ctaDescription}
+        <section className="relative overflow-hidden bg-au-navy-deep text-white">
+          <div
+            aria-hidden
+            className="absolute left-1/2 top-1/2 h-[540px] w-[900px] -translate-x-1/2 -translate-y-1/2 rounded-full bg-[radial-gradient(circle,rgba(62,110,174,0.28),rgba(62,110,174,0)_66%)]"
           />
-        </div>
+          <div className="au-container relative py-20 text-center sm:py-28">
+            <p className="text-[10px] font-semibold uppercase tracking-[0.14em] text-[#8EB5E8]">{group.name}</p>
+            <h2 className="mx-auto mt-6 max-w-[980px] font-editorial text-[38px] font-normal leading-[1.03] tracking-[-0.025em] text-white sm:text-[56px] lg:text-[68px]">
+              {group.ctaTitle}
+            </h2>
+            <p className="mx-auto mt-6 max-w-[560px] text-[13px] leading-[22px] text-white/55">{group.ctaDescription}</p>
+            <div className="mt-9 flex flex-wrap items-center justify-center gap-7">
+              <button
+                type="button"
+                onClick={() => setDialog('intro')}
+                className="group inline-flex h-12 items-center gap-3 rounded-[9px] bg-white px-6 text-[13px] font-semibold text-au-navy transition-transform hover:-translate-y-0.5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#8EB5E8] focus-visible:ring-offset-4 focus-visible:ring-offset-au-navy-deep"
+              >
+                Discuss a mandate
+                <ArrowRight className="h-3.5 w-3.5 transition-transform group-hover:translate-x-1" />
+              </button>
+              <button
+                type="button"
+                onClick={() => setDialog('deck')}
+                className="border-b border-white/30 pb-1 text-[12.5px] font-semibold text-white transition-colors hover:border-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#8EB5E8]"
+              >
+                Get the deck
+              </button>
+            </div>
+          </div>
+        </section>
       </main>
 
       <SiteFooter />
