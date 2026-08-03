@@ -27,7 +27,19 @@ function OrbitArt() {
   );
 }
 
-export function BottomCta({ onBookIntro, onGetDeck }: { onBookIntro: () => void; onGetDeck: () => void }) {
+interface BottomCtaProps {
+  onBookIntro: () => void;
+  onGetDeck: () => void;
+  title?: string;
+  description?: string;
+}
+
+export function BottomCta({
+  onBookIntro,
+  onGetDeck,
+  title = 'Buy companies. Launch vehicles. Manage ownership.',
+  description = 'Givvy gives modern firms the execution layer traditional finance never built.',
+}: BottomCtaProps) {
   return (
     <section id="contact" className="scroll-mt-[84px] bg-au-cream">
       <div className="au-container pb-[31px]">
@@ -39,10 +51,10 @@ export function BottomCta({ onBookIntro, onGetDeck }: { onBookIntro: () => void;
 
             <div className="relative mx-auto max-w-[860px] text-center">
               <h2 className="font-editorial text-[26px] font-normal leading-[1.14] tracking-[-0.018em] text-au-navy sm:text-[33px] lg:text-[40px]">
-                Buy companies. Launch vehicles. Manage ownership.
+                {title}
               </h2>
               <p className="mx-auto mt-[3px] max-w-[560px] text-[13px] leading-[1.6] text-au-ink">
-                Givvy gives modern firms the execution layer traditional finance never built.
+                {description}
               </p>
               <div className="mt-[21px] flex flex-wrap items-center justify-center gap-x-7 gap-y-4">
                 <PrimaryButton size="cta" onClick={onBookIntro}>
