@@ -2,9 +2,9 @@ import { GivvyLanding } from '@/components/givvy/givvy-landing';
 import type { Metadata } from 'next';
 
 export const metadata: Metadata = {
-  title: 'Givvy — The digital financial institution for ownership.',
+  title: 'Givvy — Ownership infrastructure for private markets.',
   description:
-    'The execution layer for ownership—from company equity and private markets to acquisitions, funds, and holding companies.',
+    'Givvy manages equity, transactions, funds, and acquisitions through one digital financial institution.',
 };
 
 export default function LandingPage() {

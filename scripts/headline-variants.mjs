@@ -32,9 +32,10 @@ function html({ accent = 'ownership.', accentCss = '', lead = lines }) {
 const variants = [
   {
     name: '0-current',
-    note: 'Inter 700 / 62px (current)',
-    h1: { fontFamily: INTER, fontWeight: '700', fontSize: '62px', lineHeight: '1', letterSpacing: '-0.046em' },
-    accentCss: `font-style:normal;color:${BLUE}`,
+    note: 'Inter 600 / 55px (current)',
+    h1: { fontFamily: INTER, fontWeight: '600', fontSize: '55px', lineHeight: '1.02', letterSpacing: '-0.04em' },
+    accentCss: 'font-style:normal;color:inherit',
+    markup: 'Ownership infrastructure for private markets.',
   },
   {
     name: '1-inter-600',

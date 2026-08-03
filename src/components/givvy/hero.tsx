@@ -1,7 +1,7 @@
 'use client';
 
 import { motion, useReducedMotion } from 'framer-motion';
-import { PrimaryButton, SecondaryButton } from './buttons';
+import { LinkButton, PrimaryButton } from './buttons';
 import {
   IconCapTable,
   IconChecklist,
@@ -94,41 +94,45 @@ export function Hero({ onBookIntro }: { onBookIntro: () => void }) {
       <div className="au-container relative">
         <div className="grid grid-cols-1 items-start gap-10 pb-14 pt-14 sm:pb-16 sm:pt-20 lg:grid-cols-[460px_minmax(0,1fr)] lg:gap-x-4 lg:gap-y-0 lg:pb-[35px] lg:pt-[23px] xl:grid-cols-[486px_minmax(0,1fr)]">
           <div className="lg:self-center lg:pb-[30px]">
+            <motion.p
+              initial={reduce ? undefined : { opacity: 0, y: 8 }}
+              animate={reduce ? undefined : { opacity: 1, y: 0 }}
+              transition={{ duration: 0.55, ease: [0.22, 1, 0.36, 1] }}
+              className="mb-5 text-[11px] font-semibold uppercase tracking-[0.12em] text-au-blue"
+            >
+              Digital financial institution
+            </motion.p>
+
             <motion.h1
               initial={reduce ? undefined : { opacity: 0, y: 14 }}
               animate={reduce ? undefined : { opacity: 1, y: 0 }}
               transition={{ duration: 0.75, delay: 0.06, ease: [0.22, 1, 0.36, 1] }}
-              className="font-sans text-[38px] font-bold leading-[1] tracking-[-0.046em] text-au-navy sm:text-[49px] lg:text-[58px] xl:text-[62px]"
+              className="max-w-[470px] font-sans text-[36px] font-semibold leading-[1.02] tracking-[-0.04em] text-au-navy sm:text-[46px] lg:text-[52px] xl:text-[55px]"
             >
-              The digital
-              <br />
-              financial institution
-              <br />
-              for <em className="not-italic text-au-blue">ownership.</em>
+              Ownership infrastructure for private markets.
             </motion.h1>
 
             <motion.p
               initial={reduce ? undefined : { opacity: 0, y: 12 }}
               animate={reduce ? undefined : { opacity: 1, y: 0 }}
               transition={{ duration: 0.7, delay: 0.14, ease: [0.22, 1, 0.36, 1] }}
-              className="mt-[14px] max-w-[478px] text-[17.5px] leading-[27px] text-au-ink"
+              className="mt-5 max-w-[440px] text-[16px] leading-[26px] text-au-ink"
             >
-              The execution layer for ownership—from company equity and private markets to acquisitions, funds, and
-              holding companies.
+              Givvy manages equity, transactions, funds, and acquisitions through one digital financial institution.
             </motion.p>
 
             <motion.div
               initial={reduce ? undefined : { opacity: 0, y: 12 }}
               animate={reduce ? undefined : { opacity: 1, y: 0 }}
               transition={{ duration: 0.7, delay: 0.2, ease: [0.22, 1, 0.36, 1] }}
-              className="mt-10 flex flex-wrap items-center gap-3"
+              className="mt-8 flex flex-wrap items-center gap-7"
             >
               <PrimaryButton size="md" onClick={onBookIntro}>
                 Book intro
               </PrimaryButton>
-              <SecondaryButton size="md" onClick={() => document.getElementById('services')?.scrollIntoView({ behavior: 'smooth' })}>
-                See services
-              </SecondaryButton>
+              <LinkButton onClick={() => document.getElementById('services')?.scrollIntoView({ behavior: 'smooth' })}>
+                Explore services
+              </LinkButton>
             </motion.div>
           </div>
 
