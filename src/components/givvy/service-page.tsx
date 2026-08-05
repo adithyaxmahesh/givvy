@@ -75,6 +75,48 @@ const PRACTICE_DIAGRAMS: Record<string, PracticeDiagram> = {
       ['handover', 'engagement'],
     ],
   },
+  'exit-readiness': {
+    caption: 'What a buyer discounts for, fixed while there is time',
+    nodes: [
+      { id: 'business', label: 'The business', x: 280, y: 248, core: true },
+      { id: 'financials', label: 'Financials', x: 104, y: 104 },
+      { id: 'customers', label: 'Customers', x: 454, y: 98 },
+      { id: 'contracts', label: 'Contracts', x: 490, y: 276 },
+      { id: 'team', label: 'Team', x: 382, y: 440 },
+      { id: 'owner', label: 'Owner', x: 142, y: 424 },
+      { id: 'price', label: 'Price', x: 64, y: 266 },
+    ],
+    links: [
+      ['financials', 'business'],
+      ['customers', 'business'],
+      ['contracts', 'business'],
+      ['team', 'business'],
+      ['owner', 'business'],
+      ['business', 'price'],
+      ['owner', 'team'],
+    ],
+  },
+  tender: {
+    caption: 'Every election accounted for',
+    nodes: [
+      { id: 'company', label: 'Company', x: 280, y: 248, core: true },
+      { id: 'window', label: 'Election window', x: 104, y: 104 },
+      { id: 'disclosure', label: 'Disclosure', x: 454, y: 98 },
+      { id: 'waivers', label: 'Waivers', x: 490, y: 276 },
+      { id: 'valuation', label: '409A', x: 382, y: 440 },
+      { id: 'withholding', label: 'Withholding', x: 142, y: 424 },
+      { id: 'record', label: 'Record', x: 64, y: 266 },
+    ],
+    links: [
+      ['company', 'window'],
+      ['company', 'disclosure'],
+      ['window', 'waivers'],
+      ['company', 'valuation'],
+      ['waivers', 'withholding'],
+      ['withholding', 'record'],
+      ['record', 'company'],
+    ],
+  },
   startups: {
     caption: 'One company, one sale process',
     nodes: [

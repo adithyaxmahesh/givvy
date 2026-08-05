@@ -33,6 +33,8 @@ const PUBLIC_ROUTES = [
   '/opportunities',
   '/buyers',
   '/services/ma',
+  '/services/exit-readiness',
+  '/services/tender',
   '/services/startups',
   '/login',
   '/signup',

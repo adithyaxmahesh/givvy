@@ -12,7 +12,7 @@ export function Services() {
           <SectionHeading title="What we do" sparkle />
         </Reveal>
 
-        <div className="mt-7 grid grid-cols-1 gap-4 sm:grid-cols-2">
+        <div className="mt-7 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
           {SERVICE_GROUPS.map((group, groupIndex) => (
             <Reveal key={group.label} delay={groupIndex * 0.06} className="h-full">
               <Link

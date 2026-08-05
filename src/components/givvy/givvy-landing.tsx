@@ -5,15 +5,16 @@ import { BottomCta } from './bottom-cta';
 import { Hero } from './hero';
 import {
   RightForWrongFor,
-  StartupsNote,
-  TheBuyers,
-  WhatOwnersWorryAbout,
   WhatYouGet,
-  WhyNoVertical,
 } from './home-sections';
+import { HowItWorks } from './how-it-works';
+import { InAction } from './in-action';
 import { BookIntroModal, GetDeckModal } from './modals';
 import { Nav } from './nav';
+import { Services } from './services';
 import { SiteFooter } from './site-footer';
+import { TrustStrip } from './trust-strip';
+import { WhoItsFor } from './who-its-for';
 
 type Dialog = 'intro' | 'deck' | null;
 
@@ -29,12 +30,13 @@ export function GivvyLanding() {
       <Nav onBookIntro={openIntro} />
       <main>
         <Hero onBookIntro={openIntro} />
+        <TrustStrip />
+        <Services />
         <WhatYouGet />
+        <HowItWorks />
         <RightForWrongFor />
-        <WhatOwnersWorryAbout />
-        <WhyNoVertical />
-        <TheBuyers />
-        <StartupsNote />
+        <WhoItsFor />
+        <InAction />
         <BottomCta onBookIntro={openIntro} onGetDeck={openDeck} />
       </main>
       <SiteFooter />

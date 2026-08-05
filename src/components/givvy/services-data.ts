@@ -80,8 +80,109 @@ export const SERVICE_GROUPS: ServiceGroup[] = [
     ],
   },
   {
+    slug: 'exit-readiness',
+    label: 'B. Exit Readiness',
+    name: 'Exit readiness',
+    summary:
+      'Work done 12 to 24 months ahead of a sale, so the business is worth more when it goes to market.',
+    heroTitle: 'The work that decides the price happens before the sale.',
+    pageDescription:
+      'Preparation for owners who intend to sell in the next year or two: cleaning up the financials, reducing dependence on the owner, and fixing what buyers discount for.',
+    outcome:
+      'A business that survives diligence without surprises, and an owner who knows what it is worth before anyone makes an offer.',
+    audiences: ['Owners planning ahead', 'Family businesses', 'Second-generation owners', 'Boards'],
+    pillars: [
+      {
+        title: 'Find the discounts early',
+        description:
+          'Customer concentration, missing contracts, and owner dependence all reduce the price. Each is fixable given a year.',
+      },
+      {
+        title: 'Clean the financials',
+        description:
+          'Three years a buyer can rely on, with the add-backs documented while the records are still fresh.',
+      },
+      {
+        title: 'Take the owner out of the middle',
+        description:
+          'A business that only runs because you are in it every day is worth less to everyone who might buy it.',
+      },
+    ],
+    deliverables: [
+      'Readiness assessment',
+      'Value gap analysis',
+      'Financial clean-up plan',
+      'Owner dependence plan',
+      'Timeline to market',
+    ],
+    ctaTitle: 'Start before you need to.',
+    ctaDescription: 'The owners who get the best outcomes started talking to us a year early.',
+    tint: 'bg-au-tint-green',
+    edge: 'border-au-edge-green',
+    labelColor: 'text-[#4E8064]',
+    services: [
+      { title: 'Readiness assessment', description: 'An honest read on what the business would fetch today, and why.' },
+      { title: 'Value gap analysis', description: 'The specific things a buyer will discount for, ranked by what they cost you.' },
+      { title: 'Financial clean-up', description: 'Records, add-backs, and reporting put in order while there is still time.' },
+      { title: 'Customer concentration', description: 'Reducing dependence on the handful of accounts that scare buyers.' },
+      { title: 'Owner dependence', description: 'Moving the relationships and decisions out of your head and into the business.' },
+      { title: 'Timing the market', description: 'When to go, and when waiting a year is worth more than going now.' },
+    ],
+  },
+  {
+    slug: 'tender',
+    label: 'C. Tender Administration',
+    name: 'Tender administration',
+    summary:
+      'Running the mechanics of a company-run tender: elections, disclosure, waivers, and reconciliation.',
+    heroTitle: 'The mechanics, run properly.',
+    pageDescription:
+      'Administration of company-run tender offers. We run the process. We do not set the price, solicit participation, or hold anything.',
+    outcome:
+      'A tender that closes on time, with a clean record of who elected what and every consent accounted for.',
+    audiences: ['Founders', 'Boards', 'General counsel', 'Finance leads'],
+    pillars: [
+      {
+        title: 'Scope in',
+        description:
+          'Election windows, disclosure assembly, waiver tracking, valuation coordination, withholding, and reconciliation after close.',
+      },
+      {
+        title: 'Scope out',
+        description:
+          'We do not set the price. We do not advise anyone on whether to participate. We do not solicit. Nothing is ever held by us.',
+      },
+      {
+        title: 'Fixed, never a percentage',
+        description:
+          'The fee is a fixed amount. Pricing this as a percentage of the amount transacted would change what the engagement is.',
+      },
+    ],
+    deliverables: [
+      'Election window administration',
+      'Disclosure package assembly',
+      'ROFR and co-sale waiver tracking',
+      '409A coordination',
+      'Withholding and payroll coordination',
+      'Post-close reconciliation',
+    ],
+    ctaTitle: 'Bring us the tender you need administered.',
+    ctaDescription: 'Tell us the timetable and the constraints, and we will tell you what it takes.',
+    tint: 'bg-au-tint-gold',
+    edge: 'border-au-edge-gold',
+    labelColor: 'text-[#A5854A]',
+    services: [
+      { title: 'Election windows', description: 'Opening, running, and closing the window with a clean audit trail.' },
+      { title: 'Disclosure assembly', description: 'Putting the package together so participants decide on real information.' },
+      { title: 'Waiver tracking', description: 'ROFR and co-sale consents chased and recorded before the deadline.' },
+      { title: '409A coordination', description: 'Working alongside the company\u2019s own valuation provider.' },
+      { title: 'Withholding coordination', description: 'Payroll and withholding handled with the company\u2019s providers.' },
+      { title: 'Post-close reconciliation', description: 'The record reconciled and handed back in a state you can rely on.' },
+    ],
+  },
+  {
     slug: 'startups',
-    label: 'B. Venture-backed companies',
+    label: 'D. Venture-backed companies',
     name: 'Venture-backed companies',
     summary:
       'Sell-side representation for venture-backed companies, plus tender offer administration.',

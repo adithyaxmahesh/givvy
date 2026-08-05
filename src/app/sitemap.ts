@@ -14,6 +14,8 @@ const ROUTES = [
   '/opportunities',
   '/buyers',
   '/services/ma',
+  '/services/exit-readiness',
+  '/services/tender',
   '/services/startups',
   '/legal/disclosures',
   '/legal/privacy',
