@@ -19,6 +19,16 @@ const COLUMNS = [
     links: [{ label: 'Opportunities', href: '/opportunities' }],
   },
   {
+    // The listings product and the client portal both live behind these. The
+    // links are labelled by what you do there rather than by the old product
+    // name, which described a venue for trading private securities.
+    title: 'Sign in',
+    links: [
+      { label: 'Your account', href: '/login' },
+      { label: 'Client portal', href: '/portal/login' },
+    ],
+  },
+  {
     title: 'Legal',
     links: [
       { label: 'Disclosures', href: '/legal/disclosures' },
@@ -34,7 +44,7 @@ export function SiteFooter() {
   return (
     <footer className="bg-au-cream">
       <div className="au-container">
-        <div className="grid grid-cols-2 gap-x-8 gap-y-8 border-t border-au-line/80 pb-3 pt-1 sm:grid-cols-3 lg:grid-cols-[420px_repeat(3,minmax(0,1fr))] lg:gap-x-6">
+        <div className="grid grid-cols-2 gap-x-8 gap-y-8 border-t border-au-line/80 pb-3 pt-1 sm:grid-cols-4 lg:grid-cols-[380px_repeat(4,minmax(0,1fr))] lg:gap-x-6">
           <div className="col-span-2 sm:col-span-4 lg:col-span-1">
             <Wordmark />
             <p className="mt-[6px] max-w-[230px] text-[11.5px] leading-[21px] text-au-ink-soft">
