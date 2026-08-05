@@ -106,7 +106,7 @@ export function Hero({ onBookIntro }: { onBookIntro: () => void }) {
               transition={{ duration: 0.55, ease: [0.22, 1, 0.36, 1] }}
               className="mb-5 text-[11px] font-semibold uppercase tracking-[0.12em] text-au-blue"
             >
-              Sell-side M&amp;A
+              Digital M&amp;A for SMBs
             </motion.p>
 
             <motion.h1

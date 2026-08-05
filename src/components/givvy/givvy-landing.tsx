@@ -3,10 +3,6 @@
 import { useState } from 'react';
 import { BottomCta } from './bottom-cta';
 import { Hero } from './hero';
-import {
-  RightForWrongFor,
-  WhatYouGet,
-} from './home-sections';
 import { HowItWorks } from './how-it-works';
 import { InAction } from './in-action';
 import { BookIntroModal, GetDeckModal } from './modals';
@@ -32,9 +28,7 @@ export function GivvyLanding() {
         <Hero onBookIntro={openIntro} />
         <TrustStrip />
         <Services />
-        <WhatYouGet />
         <HowItWorks />
-        <RightForWrongFor />
         <WhoItsFor />
         <InAction />
         <BottomCta onBookIntro={openIntro} onGetDeck={openDeck} />
