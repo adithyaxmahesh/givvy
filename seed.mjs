@@ -495,13 +495,13 @@ async function main() {
   // Step 9: Create notifications
   console.log('\n9. Creating notifications...');
   const notifications = [
-    { user_id: founderId, title: 'New Match Found', description: 'Sarah Chen (ML Engineer) is a 95% match for your Senior ML Engineer role at NeuralFlow AI', type: 'match', link: '/marketplace', read: false },
+    { user_id: founderId, title: 'New Match Found', description: 'Sarah Chen (ML Engineer) is a 95% match for your Senior ML Engineer role at NeuralFlow AI', type: 'match', link: '/dashboard/browse', read: false },
     { user_id: founderId, title: 'Deal Update: Negotiating', description: 'Jordan Rivera responded to your terms proposal for the NeuralFlow deal', type: 'deal', link: createdDeals[0] ? `/deals/${createdDeals[0].id}` : '/deals', read: false },
     { user_id: founderId, title: 'Milestone Approved', description: 'ML Pipeline Architecture milestone has been approved and equity unlocked', type: 'milestone', link: createdDeals[0] ? `/deals/${createdDeals[0].id}` : '/deals', read: true },
     { user_id: talentId, title: 'New Deal Proposed', description: 'Alex Chen from NeuralFlow AI wants to discuss a Senior ML Engineer role', type: 'deal', link: createdDeals[0] ? `/deals/${createdDeals[0].id}` : '/deals', read: false },
     { user_id: talentId, title: 'Profile Views', description: 'Your profile was viewed 12 times this week by founders on the platform', type: 'system', link: '/dashboard', read: true },
     { user_id: founderId, title: 'SAFE Ready for Signature', description: 'The SAFE agreement for the HealthPulse-Elena deal is ready for your review', type: 'deal', link: '/deals', read: false },
-    { user_id: founderId, title: 'Platform Update', description: 'New AI matching algorithm deployed - your matches have been refreshed', type: 'system', link: '/marketplace', read: true },
+    { user_id: founderId, title: 'Platform Update', description: 'New AI matching algorithm deployed - your matches have been refreshed', type: 'system', link: '/dashboard/browse', read: true },
   ];
   for (const n of notifications) {
     await api('POST', '/rest/v1/notifications', n);

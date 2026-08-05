@@ -37,8 +37,8 @@ function Sparkline() {
 const STEPS: Step[] = [
   {
     number: 1,
-    title: 'Intake the transaction',
-    description: 'Capture goals, documents, and data. Givvy structures the intake and creates a deal workspace.',
+    title: 'Qualify the business',
+    description: 'We look at the financials, the customer mix, and the owner\u2019s plans, then tell you plainly whether we can sell it.',
     dot: 'bg-au-step-blue',
     card: (
       <MicroCard>
@@ -46,8 +46,8 @@ const STEPS: Step[] = [
           <StarFour className="h-[11px] w-[11px] text-au-blue" />
         </span>
         <div className="min-w-0 flex-1">
-          <p className="text-[11.5px] font-semibold leading-tight text-au-navy">New transaction</p>
-          <p className="mt-[3px] text-[10px] text-au-ink-soft">Intake complete</p>
+          <p className="text-[11.5px] font-semibold leading-tight text-au-navy">Fit assessed</p>
+          <p className="mt-[3px] text-[10px] text-au-ink-soft">Answer either way</p>
         </div>
         <IconCheckCircle className="h-[15px] w-[15px] shrink-0 text-au-step-green" />
       </MicroCard>
@@ -55,14 +55,14 @@ const STEPS: Step[] = [
   },
   {
     number: 2,
-    title: 'Model and structure',
-    description: 'AI models the deal, evaluates scenarios, and designs the optimal structure and entities.',
+    title: 'Prepare the business',
+    description: 'We normalize the financials, write the materials, and agree what the business is worth before anyone sees it.',
     dot: 'bg-au-step-green',
     card: (
       <MicroCard>
         <div className="min-w-0 flex-1">
-          <p className="text-[9.5px] uppercase tracking-[0.06em] text-au-ink-soft">Base case IRR</p>
-          <p className="mt-[3px] text-[17px] font-semibold leading-none tracking-[-0.02em] text-au-navy">24.7%</p>
+          <p className="text-[9.5px] uppercase tracking-[0.06em] text-au-ink-soft">Preparation</p>
+          <p className="mt-[3px] text-[11.5px] font-semibold leading-tight text-au-navy">Materials drafted</p>
         </div>
         <Sparkline />
       </MicroCard>
@@ -70,13 +70,13 @@ const STEPS: Step[] = [
   },
   {
     number: 3,
-    title: 'Coordinate execution',
-    description: 'We run diligence, docs, approvals, financing, and all third party workstreams in parallel.',
+    title: 'Approach buyers',
+    description: 'We approach qualified buyers confidentially, run diligence, and keep the process from stalling.',
     dot: 'bg-au-step-gold',
     card: (
       <MicroCard>
         <div className="w-full">
-          <p className="text-[9.5px] uppercase tracking-[0.06em] text-au-ink-soft">Workstreams</p>
+          <p className="text-[9.5px] uppercase tracking-[0.06em] text-au-ink-soft">In parallel</p>
           <ul className="mt-2 space-y-[6px]">
             {['Diligence', 'Legal docs', 'Financing'].map((item) => (
               <li key={item} className="flex items-center gap-1.5">
@@ -92,8 +92,8 @@ const STEPS: Step[] = [
   },
   {
     number: 4,
-    title: 'Close and administer',
-    description: 'Close the transaction and handle ongoing admin, reporting, and ownership operations.',
+    title: 'Close and hand over',
+    description: 'We get the documents signed, the money moved, and the business handed to its new owner.',
     dot: 'bg-au-step-lilac',
     card: (
       <MicroCard>
@@ -101,8 +101,8 @@ const STEPS: Step[] = [
           <IconDoc className="h-[13px] w-[13px] text-au-blue" />
         </span>
         <div className="min-w-0 flex-1">
-          <p className="text-[11.5px] font-semibold leading-tight text-au-navy">Deal closed</p>
-          <p className="mt-[3px] text-[10px] text-au-ink-soft">Admin active</p>
+          <p className="text-[11.5px] font-semibold leading-tight text-au-navy">Sale closed</p>
+          <p className="mt-[3px] text-[10px] text-au-ink-soft">Handover underway</p>
         </div>
         <IconCheckCircle className="h-[15px] w-[15px] shrink-0 text-au-blue" />
       </MicroCard>

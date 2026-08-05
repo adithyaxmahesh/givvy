@@ -8,7 +8,7 @@ const cols = [
   {
     title: 'Platform',
     links: [
-      { label: 'Browse Projects', href: '/marketplace' },
+      { label: 'Browse Projects', href: '/opportunities' },
       { label: 'Post a Listing', href: '/dashboard/posts/new' },
       { label: 'How It Works', href: '/#how-it-works' },
       { label: 'SAFE Agreements', href: '/' },

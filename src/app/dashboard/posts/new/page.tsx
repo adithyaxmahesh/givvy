@@ -94,7 +94,7 @@ export default function NewPostPage() {
       });
       const json = await res.json();
       if (!res.ok) throw new Error(json.error || 'Failed to create post');
-      router.push(`/marketplace?section=${marketplaceSection}`);
+      router.push(`/dashboard/browse?section=${marketplaceSection}`);
     } catch (err: any) {
       setError(err.message);
     } finally {
@@ -106,11 +106,11 @@ export default function NewPostPage() {
     <div className="min-h-screen bg-[var(--color-bg,#FAFAF8)]">
       <div className="section-container max-w-2xl py-10">
         <Link
-          href="/marketplace"
+          href="/dashboard/browse"
           className="inline-flex items-center gap-1.5 text-sm text-[#6B6B6B] hover:text-[#1A1A1A] transition-colors mb-6"
         >
           <ArrowLeft className="h-4 w-4" />
-          Back to Marketplace
+          Back to Browse
         </Link>
 
         <h1 className="text-2xl font-bold text-[#1A1A1A] mb-1">Create a Marketplace Post</h1>
@@ -409,7 +409,7 @@ export default function NewPostPage() {
                 'Publish Post'
               )}
             </button>
-            <Link href="/marketplace" className="btn-secondary px-6 py-3 text-sm">
+            <Link href="/dashboard/browse" className="btn-secondary px-6 py-3 text-sm">
               Cancel
             </Link>
           </div>

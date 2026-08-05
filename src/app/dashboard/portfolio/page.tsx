@@ -180,8 +180,8 @@ export default function PortfolioPage() {
                 Browse the marketplace to find startups and talent, then close
                 deals to start earning equity.
               </p>
-              <Link href="/marketplace" className="btn-primary mt-6 inline-flex">
-                Browse Marketplace
+              <Link href="/dashboard/browse" className="btn-primary mt-6 inline-flex">
+                Browse
               </Link>
             </div>
           ) : (

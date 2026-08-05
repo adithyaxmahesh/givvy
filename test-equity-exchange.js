@@ -226,7 +226,7 @@ async function testGivvy() {
 
     // Step 10: Navigate to marketplace
     console.log('\nStep 10: Navigating to marketplace...');
-    await page.goto('http://localhost:3000/marketplace', { waitUntil: 'networkidle' });
+    await page.goto('http://localhost:3000/dashboard/browse', { waitUntil: 'networkidle' });
     await page.waitForTimeout(2000);
     await page.screenshot({ path: path.join(screenshotsDir, '05-marketplace.png'), fullPage: true });
     

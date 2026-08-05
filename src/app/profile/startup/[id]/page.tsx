@@ -153,9 +153,9 @@ export default function StartupProfilePage({
               <RefreshCw className="h-4 w-4" />
               Retry
             </button>
-            <Link href="/marketplace" className="btn-primary inline-flex">
+            <Link href="/dashboard/browse" className="btn-primary inline-flex">
               <ArrowLeft className="h-4 w-4 mr-2" />
-              Back to Marketplace
+              Back to Browse
             </Link>
           </div>
         </motion.div>
@@ -174,11 +174,11 @@ export default function StartupProfilePage({
 
         <div className="section-container py-12 md:py-16 relative">
           <Link
-            href="/marketplace"
+            href="/dashboard/browse"
             className="inline-flex items-center gap-1.5 text-sm text-brand-600 hover:text-brand-700 font-medium mb-8 transition-colors"
           >
             <ArrowLeft className="h-4 w-4" />
-            Back to Marketplace
+            Back to Browse
           </Link>
 
           <motion.div
@@ -403,7 +403,7 @@ export default function StartupProfilePage({
                         : `${formatCurrency(post.equity_min)} – ${formatCurrency(post.equity_max)}`
                       : null;
                     return (
-                      <Link key={post.id} href={`/marketplace/post/${post.id}`}>
+                      <Link key={post.id} href={`/dashboard/browse/post/${post.id}`}>
                         <div className="rounded-xl border border-gray-100 p-4 hover:border-brand-200 hover:bg-brand-50/30 transition-all cursor-pointer">
                           <div className="flex items-start justify-between gap-3 mb-2">
                             <h3 className="text-sm font-semibold text-gray-900">{post.title}</h3>

@@ -264,7 +264,7 @@ function PostCard({
             )}
           </button>
           <Link
-            href={`/marketplace/post/${post.id}`}
+            href={`/dashboard/browse/post/${post.id}`}
             className="p-1.5 rounded-lg text-gray-400 hover:bg-gray-50 hover:text-gray-700 transition-colors"
           >
             <ExternalLink className="h-4 w-4" />

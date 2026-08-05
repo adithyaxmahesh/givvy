@@ -37,8 +37,8 @@ interface BottomCtaProps {
 export function BottomCta({
   onBookIntro,
   onGetDeck,
-  title = 'Buy companies. Launch vehicles. Manage ownership.',
-  description = 'Givvy gives modern firms the execution layer traditional finance never built.',
+  title = 'Find out whether we can sell your business.',
+  description = 'A short conversation and an honest answer, including when the answer is no.',
 }: BottomCtaProps) {
   return (
     <section id="contact" className="scroll-mt-[84px] bg-au-cream">
@@ -58,9 +58,9 @@ export function BottomCta({
               </p>
               <div className="mt-[21px] flex flex-wrap items-center justify-center gap-x-7 gap-y-4">
                 <PrimaryButton size="cta" onClick={onBookIntro}>
-                  Book intro
+                  See if we&rsquo;re a fit
                 </PrimaryButton>
-                <LinkButton onClick={onGetDeck}>Get the deck</LinkButton>
+                <LinkButton onClick={onGetDeck}>Ask a question</LinkButton>
               </div>
             </div>
           </div>

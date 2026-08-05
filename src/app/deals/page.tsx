@@ -174,8 +174,8 @@ export default function DealsPage() {
                 : 'Start by browsing the marketplace and connecting with startups or talent.'}
             </p>
             {!search && (
-              <Link href="/marketplace" className="btn-primary mt-4 inline-flex">
-                Browse Marketplace
+              <Link href="/dashboard/browse" className="btn-primary mt-4 inline-flex">
+                Browse
               </Link>
             )}
           </div>

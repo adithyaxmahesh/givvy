@@ -181,7 +181,7 @@ export default function DashboardPage() {
                 </span>
               )}
               <Link
-                href="/marketplace"
+                href="/dashboard/browse"
                 className="btn-primary px-4 py-2.5 text-sm gap-1.5"
               >
                 <Plus className="h-4 w-4" />
@@ -501,8 +501,8 @@ export default function DashboardPage() {
                 <p className="text-sm text-[#6B6B6B] mt-1 max-w-xs mx-auto">
                   Start by exploring the marketplace to find startups or talent to work with.
                 </p>
-                <Link href="/marketplace" className="btn-primary mt-5 inline-flex text-sm px-5 py-2.5">
-                  Browse Marketplace
+                <Link href="/dashboard/browse" className="btn-primary mt-5 inline-flex text-sm px-5 py-2.5">
+                  Browse
                 </Link>
               </div>
             ) : (
@@ -606,7 +606,7 @@ export default function DashboardPage() {
 
             {/* Quick links */}
             <div className="bg-white rounded-xl border border-[#E8E8E6] divide-y divide-[#E8E8E6]">
-              <QuickLink href="/marketplace" label="Browse Marketplace" sub="Find posts, startups & talent" />
+              <QuickLink href="/dashboard/browse" label="Browse" sub="Find posts, startups & talent" />
               <QuickLink href="/dashboard/posts" label="My Posts" sub="Manage posts & proposals" />
               <QuickLink href="/dashboard/posts/new" label="Create New Post" sub="Seek talent or offer services" />
               <QuickLink href="/deals" label="All Deals" sub="Manage your pipeline" />

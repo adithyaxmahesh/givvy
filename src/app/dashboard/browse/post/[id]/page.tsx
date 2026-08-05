@@ -160,8 +160,8 @@ export default function PostDetailPage({ params }: { params: { id: string } }) {
     return (
       <div className="min-h-screen flex flex-col items-center justify-center gap-4">
         <p className="text-[#6B6B6B]">Post not found.</p>
-        <Link href="/marketplace" className="btn-secondary px-4 py-2 text-sm">
-          Back to Marketplace
+        <Link href="/dashboard/browse" className="btn-secondary px-4 py-2 text-sm">
+          Back to Browse
         </Link>
       </div>
     );
@@ -185,7 +185,7 @@ export default function PostDetailPage({ params }: { params: { id: string } }) {
     <div className="min-h-screen bg-[var(--color-bg,#FAFAF8)]">
       <div className="section-container max-w-3xl py-10">
         <Link
-          href={`/marketplace?section=${post.marketplace_section}`}
+          href={`/dashboard/browse?section=${post.marketplace_section}`}
           className="inline-flex items-center gap-1.5 text-sm text-[#6B6B6B] hover:text-[#1A1A1A] transition-colors mb-6"
         >
           <ArrowLeft className="h-4 w-4" />

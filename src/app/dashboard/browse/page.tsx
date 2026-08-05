@@ -431,7 +431,7 @@ function PostCard({ post }: { post: Post }) {
     : null;
 
   return (
-    <Link href={`/marketplace/post/${post.id}`}>
+    <Link href={`/dashboard/browse/post/${post.id}`}>
       <div className="group bg-white border border-[#E8E8E6] rounded-xl p-6 h-full flex flex-col transition-all hover:border-brand-200 hover:shadow-md hover:shadow-brand-100/50 cursor-pointer">
         <div className="flex items-start gap-3 mb-3">
           <div className={`flex h-10 w-10 items-center justify-center rounded-full text-xs font-bold shrink-0 ${getAvatarColor(authorName)}`}>

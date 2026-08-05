@@ -34,11 +34,17 @@ function isPortalRoute(pathname: string): boolean {
 
 /** Givvy marketing pages provide their own cream navigation and footer. */
 function isGivvyMarketingRoute(pathname: string): boolean {
-  return pathname === '/' || pathname.startsWith('/services/');
+  return (
+    pathname === '/' ||
+    pathname.startsWith('/services/') ||
+    pathname.startsWith('/opportunities') ||
+    pathname.startsWith('/buyers') ||
+    pathname.startsWith('/legal/')
+  );
 }
 
 const navLinks = [
-  { label: 'Marketplace', href: '/marketplace', icon: Search },
+  { label: 'Browse', href: '/dashboard/browse', icon: Search },
   { label: 'Dashboard', href: '/dashboard', icon: LayoutDashboard },
   { label: 'My Posts', href: '/dashboard/posts', icon: PenSquare },
   { label: 'Deals', href: '/deals', icon: FileText },
@@ -120,7 +126,7 @@ function Navbar() {
         {isLandingPage && !isHomePage && (
           <>
             <div className="hidden md:flex items-center gap-1">
-              <Link href="/marketplace" className="px-4 py-2 text-sm font-medium text-gray-600 hover:text-brand-600 rounded-lg hover:bg-brand-50 transition-colors">Browse Talent</Link>
+              <Link href="/opportunities" className="px-4 py-2 text-sm font-medium text-gray-600 hover:text-brand-600 rounded-lg hover:bg-brand-50 transition-colors">Browse Talent</Link>
               <Link href="/signup" className="px-4 py-2 text-sm font-medium text-gray-600 hover:text-brand-600 rounded-lg hover:bg-brand-50 transition-colors">Join as Talent</Link>
               <Link href="/dashboard/posts/new" className="px-4 py-2 text-sm font-medium text-gray-600 hover:text-brand-600 rounded-lg hover:bg-brand-50 transition-colors">Post a Listing</Link>
             </div>
@@ -235,7 +241,7 @@ function Navbar() {
                   <div className="section-container py-4 space-y-1">
                     {isLandingPage && !isHomePage && (
                       <>
-                        <Link href="/marketplace" className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-gray-700 hover:bg-gray-50">
+                        <Link href="/opportunities" className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-gray-700 hover:bg-gray-50">
                           <Search className="h-4 w-4 text-gray-400" />Browse Talent
                         </Link>
                         <Link href="/signup" className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-gray-700 hover:bg-gray-50">
@@ -306,7 +312,7 @@ function Navbar() {
 }
 
 const footerColumns = [
-  { title: 'Platform', links: [{ label: 'Browse Startups', href: '/marketplace' }, { label: 'Browse Talent', href: '/marketplace' }, { label: 'How It Works', href: '/' }, { label: 'SAFE Agreements', href: '/' }] },
+  { title: 'Platform', links: [{ label: 'Browse Startups', href: '/opportunities' }, { label: 'Browse Talent', href: '/opportunities' }, { label: 'How It Works', href: '/' }, { label: 'SAFE Agreements', href: '/' }] },
   { title: 'Resources', links: [{ label: 'Help Center', href: '/' }, { label: 'Blog', href: '/' }, { label: 'API Documentation', href: '/' }, { label: 'Status', href: '/' }] },
   { title: 'Trust & Security', links: [{ label: 'Compliance', href: '/' }, { label: 'Data Security', href: '/' }, { label: 'Verification', href: '/' }, { label: 'Contact', href: '/' }] },
   { title: 'Legal', links: [{ label: 'Terms of Service', href: '/' }, { label: 'Privacy Policy', href: '/' }, { label: 'Cookie Policy', href: '/' }, { label: 'Securities Disclaimer', href: '/' }] },

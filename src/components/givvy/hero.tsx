@@ -1,6 +1,7 @@
 'use client';
 
 import { motion, useReducedMotion } from 'framer-motion';
+import { ENGAGEMENT } from '@/lib/site-config';
 import { LinkButton, PrimaryButton } from './buttons';
 import {
   IconCapTable,
@@ -22,13 +23,18 @@ interface PositionedCard extends WorkflowCardData {
   float: number;
 }
 
+/**
+ * The six stages of a sell-side engagement. Deliberately carries no counts,
+ * percentages, or status values — anything numeric here would read as a claim
+ * about live client work.
+ */
 const CARDS: PositionedCard[] = [
-  { title: 'Acquisition Pipeline', detail: '12 opportunities', icon: IconPipeline, tone: 'green', left: 2.2, top: 3.2, width: 16.8, float: 5.6 },
-  { title: 'Diligence Checklist', detail: '84% complete', icon: IconChecklist, tone: 'blue', left: 4.2, top: 16, width: 16.8, float: 6.8 },
-  { title: 'SPV Setup', detail: 'New vehicle created', icon: IconCube, tone: 'blue', left: 5.4, top: 27.9, width: 16.8, float: 6.2 },
-  { title: 'Cap Table Cleanup', detail: '7 issues found', icon: IconCapTable, tone: 'lilac', left: 71.7, top: 5.2, width: 16.8, float: 6.4 },
-  { title: 'Fund Reporting', detail: 'Q1 report ready', icon: IconReport, tone: 'blue', left: 72.4, top: 19.4, width: 16.8, float: 5.2 },
-  { title: 'Liquidity Workflow', detail: 'Matching buyers...', icon: IconLiquidity, tone: 'lilac', left: 70.6, top: 32, width: 16.8, float: 7.2 },
+  { title: 'Engagement', detail: 'Scope and terms agreed', icon: IconChecklist, tone: 'green', left: 2.2, top: 3.2, width: 16.8, float: 5.6 },
+  { title: 'Preparation', detail: 'Financials and materials', icon: IconReport, tone: 'blue', left: 4.2, top: 16, width: 16.8, float: 6.8 },
+  { title: 'Buyer outreach', detail: 'Confidential approach', icon: IconPipeline, tone: 'blue', left: 5.4, top: 27.9, width: 16.8, float: 6.2 },
+  { title: 'Diligence', detail: 'Requests coordinated', icon: IconCube, tone: 'lilac', left: 71.7, top: 5.2, width: 16.8, float: 6.4 },
+  { title: 'Closing', detail: 'Documents and signing', icon: IconCapTable, tone: 'blue', left: 72.4, top: 19.4, width: 16.8, float: 5.2 },
+  { title: 'Transition', detail: 'Handover to the buyer', icon: IconLiquidity, tone: 'lilac', left: 70.6, top: 32, width: 16.8, float: 7.2 },
 ];
 
 function Connectors() {
@@ -100,7 +106,7 @@ export function Hero({ onBookIntro }: { onBookIntro: () => void }) {
               transition={{ duration: 0.55, ease: [0.22, 1, 0.36, 1] }}
               className="mb-5 text-[11px] font-semibold uppercase tracking-[0.12em] text-au-blue"
             >
-              Digital financial institution
+              Sell-side M&amp;A
             </motion.p>
 
             <motion.h1
@@ -109,16 +115,20 @@ export function Hero({ onBookIntro }: { onBookIntro: () => void }) {
               transition={{ duration: 0.75, delay: 0.06, ease: [0.22, 1, 0.36, 1] }}
               className="max-w-[470px] font-sans text-[36px] font-semibold leading-[1.02] tracking-[-0.04em] text-au-navy sm:text-[46px] lg:text-[52px] xl:text-[55px]"
             >
-              Ownership infrastructure for private markets.
+              We sell owner-operated businesses.
             </motion.h1>
 
             <motion.p
               initial={reduce ? undefined : { opacity: 0, y: 12 }}
               animate={reduce ? undefined : { opacity: 1, y: 0 }}
               transition={{ duration: 0.7, delay: 0.14, ease: [0.22, 1, 0.36, 1] }}
-              className="mt-5 max-w-[440px] text-[16px] leading-[26px] text-au-ink"
+              className="mt-5 max-w-[440px] font-mono text-[14px] uppercase tracking-[0.06em] text-au-ink"
             >
-              Givvy manages equity, transactions, funds, and acquisitions through one digital financial institution.
+              {ENGAGEMENT.minEnterpriseValue} to {ENGAGEMENT.maxEnterpriseValue} enterprise value
+              <span className="mx-2 text-au-ink-soft">/</span>
+              Fixed fee
+              <span className="mx-2 text-au-ink-soft">/</span>
+              {ENGAGEMENT.timelineDays} days
             </motion.p>
 
             <motion.div
@@ -128,10 +138,10 @@ export function Hero({ onBookIntro }: { onBookIntro: () => void }) {
               className="mt-8 flex flex-wrap items-center gap-7"
             >
               <PrimaryButton size="md" onClick={onBookIntro}>
-                Book intro
+                See if we&rsquo;re a fit
               </PrimaryButton>
               <LinkButton onClick={() => document.getElementById('services')?.scrollIntoView({ behavior: 'smooth' })}>
-                Explore services
+                How it works
               </LinkButton>
             </motion.div>
           </div>

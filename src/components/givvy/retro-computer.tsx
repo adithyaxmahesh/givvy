@@ -68,7 +68,7 @@ function Screen() {
         />
 
         <p style={{ margin: '1.35em 0 0', fontFamily: MONO, fontSize: '1.02em', letterSpacing: '0.02em', color: '#A9C8E6' }}>
-          &gt; Executing ownership workflows...
+          &gt; Preparing the business for sale...
           <span className="au-caret" style={{ marginLeft: '0.35em', width: '0.52em', height: '1.05em' }} />
         </p>
 
@@ -117,7 +117,9 @@ function Screen() {
               />
             ))}
           </div>
-          <span style={{ fontFamily: MONO, fontSize: '0.86em', letterSpacing: '0.06em', color: '#B7D0E8' }}>100%</span>
+          <span style={{ fontFamily: MONO, fontSize: '0.86em', letterSpacing: '0.06em', color: '#B7D0E8' }}>
+            CONFIDENTIAL
+          </span>
         </div>
       </div>
     </div>
@@ -140,11 +142,11 @@ function StickyNote() {
         color: '#5A4F35',
       }}
     >
-      Ownership
+      One business.
       <br />
-      is a system.
+      One buyer.
       <br />
-      We automate it.
+      120 days.
       <span
         aria-hidden
         style={{

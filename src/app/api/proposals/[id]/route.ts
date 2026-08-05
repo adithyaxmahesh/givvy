@@ -78,7 +78,7 @@ export async function PUT(
         'Proposal Accepted',
         `Your proposal on "${postTitle}" has been accepted!`,
         'proposal_accepted',
-        `/marketplace/post/${proposal.post.id}`
+        `/dashboard/browse/post/${proposal.post.id}`
       );
     } else {
       await createNotification(
@@ -87,7 +87,7 @@ export async function PUT(
         'Proposal Declined',
         `Your proposal on "${postTitle}" was not accepted.`,
         'proposal_rejected',
-        `/marketplace/post/${proposal.post.id}`
+        `/dashboard/browse/post/${proposal.post.id}`
       );
     }
 

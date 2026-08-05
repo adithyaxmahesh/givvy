@@ -1,0 +1,30 @@
+name: Compliance
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+jobs:
+  forbidden-copy:
+    name: Forbidden copy check
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+      - run: npm ci
+      - run: npx tsc --noEmit
+      - run: npm run build
+        env:
+          # The build only needs to render public pages; Supabase-backed routes
+          # fall back to their unconfigured paths.
+          NEXT_TELEMETRY_DISABLED: '1'
+      - name: Start the server
+        run: npm start &
+      - name: Wait for the server
+        run: npx wait-on http://localhost:3000 --timeout 90000
+      - name: Check public copy
+        run: npx tsx scripts/check-forbidden-copy.ts

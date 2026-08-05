@@ -55,111 +55,45 @@ interface PracticeDiagram {
 
 const PRACTICE_DIAGRAMS: Record<string, PracticeDiagram> = {
   ma: {
-    caption: 'One continuous transaction record',
+    caption: 'One process, one person accountable',
     nodes: [
-      { id: 'target', label: 'Target', x: 82, y: 142 },
-      { id: 'case', label: 'Investment case', x: 230, y: 82 },
-      { id: 'mandate', label: 'Mandate', x: 284, y: 252, core: true },
-      { id: 'diligence', label: 'Diligence', x: 462, y: 132 },
-      { id: 'capital', label: 'Capital', x: 474, y: 344 },
+      { id: 'owner', label: 'Owner', x: 82, y: 142 },
+      { id: 'assessment', label: 'Assessment', x: 230, y: 82 },
+      { id: 'engagement', label: 'Engagement', x: 284, y: 252, core: true },
+      { id: 'preparation', label: 'Preparation', x: 462, y: 132 },
+      { id: 'buyers', label: 'Buyers', x: 474, y: 344 },
       { id: 'close', label: 'Close', x: 280, y: 442 },
-      { id: 'operate', label: 'Operate', x: 88, y: 356 },
+      { id: 'handover', label: 'Handover', x: 88, y: 356 },
     ],
     links: [
-      ['target', 'case'],
-      ['case', 'mandate'],
-      ['mandate', 'diligence'],
-      ['mandate', 'capital'],
-      ['capital', 'close'],
-      ['close', 'operate'],
-      ['operate', 'mandate'],
-    ],
-  },
-  'asset-management': {
-    caption: 'Mandate, portfolio, and reporting connected',
-    nodes: [
-      { id: 'mandate', label: 'Mandate', x: 280, y: 248, core: true },
-      { id: 'allocation', label: 'Allocation', x: 104, y: 110 },
-      { id: 'portfolio', label: 'Portfolio', x: 446, y: 104 },
-      { id: 'risk', label: 'Risk', x: 486, y: 292 },
-      { id: 'reporting', label: 'Reporting', x: 366, y: 438 },
-      { id: 'liquidity', label: 'Liquidity', x: 114, y: 410 },
-      { id: 'investors', label: 'Investors', x: 62, y: 246 },
-    ],
-    links: [
-      ['mandate', 'allocation'],
-      ['mandate', 'portfolio'],
-      ['mandate', 'risk'],
-      ['mandate', 'reporting'],
-      ['mandate', 'liquidity'],
-      ['mandate', 'investors'],
-      ['portfolio', 'risk'],
-      ['reporting', 'investors'],
-    ],
-  },
-  'holding-companies': {
-    caption: 'A living map of control and shared advantage',
-    nodes: [
-      { id: 'holdco', label: 'HoldCo', x: 280, y: 96, core: true },
-      { id: 'sub-a', label: 'Company 01', x: 104, y: 258 },
-      { id: 'sub-b', label: 'Company 02', x: 280, y: 304 },
-      { id: 'sub-c', label: 'Company 03', x: 458, y: 258 },
-      { id: 'shared', label: 'Shared services', x: 280, y: 446 },
-      { id: 'capital', label: 'Capital', x: 64, y: 426 },
-      { id: 'governance', label: 'Governance', x: 494, y: 426 },
-    ],
-    links: [
-      ['holdco', 'sub-a'],
-      ['holdco', 'sub-b'],
-      ['holdco', 'sub-c'],
-      ['sub-a', 'shared'],
-      ['sub-b', 'shared'],
-      ['sub-c', 'shared'],
-      ['capital', 'shared'],
-      ['governance', 'shared'],
-    ],
-  },
-  'private-markets': {
-    caption: 'Structure the market around the asset',
-    nodes: [
-      { id: 'asset', label: 'Asset', x: 280, y: 250, core: true },
-      { id: 'owner', label: 'Owner', x: 70, y: 128 },
-      { id: 'vehicle', label: 'Vehicle', x: 276, y: 70 },
-      { id: 'buyer-a', label: 'Buyer 01', x: 482, y: 138 },
-      { id: 'buyer-b', label: 'Buyer 02', x: 488, y: 354 },
-      { id: 'settlement', label: 'Settlement', x: 284, y: 450 },
-      { id: 'admin', label: 'Administration', x: 76, y: 362 },
-    ],
-    links: [
-      ['owner', 'asset'],
-      ['vehicle', 'asset'],
-      ['asset', 'buyer-a'],
-      ['asset', 'buyer-b'],
-      ['buyer-b', 'settlement'],
-      ['settlement', 'admin'],
-      ['admin', 'owner'],
+      ['owner', 'assessment'],
+      ['assessment', 'engagement'],
+      ['engagement', 'preparation'],
+      ['preparation', 'buyers'],
+      ['buyers', 'close'],
+      ['close', 'handover'],
+      ['handover', 'engagement'],
     ],
   },
   startups: {
-    caption: 'Every security tied back to one company record',
+    caption: 'One company, one sale process',
     nodes: [
       { id: 'company', label: 'Company', x: 280, y: 248, core: true },
-      { id: 'shares', label: 'Shares', x: 104, y: 104 },
-      { id: 'options', label: 'Options', x: 454, y: 98 },
-      { id: 'safes', label: 'SAFEs', x: 490, y: 276 },
-      { id: 'warrants', label: 'Warrants', x: 382, y: 440 },
-      { id: 'liquidity', label: 'Liquidity', x: 142, y: 424 },
-      { id: 'board', label: 'Approvals', x: 64, y: 266 },
+      { id: 'board', label: 'Board', x: 104, y: 104 },
+      { id: 'assessment', label: 'Assessment', x: 454, y: 98 },
+      { id: 'buyers', label: 'Buyers', x: 490, y: 276 },
+      { id: 'diligence', label: 'Diligence', x: 382, y: 440 },
+      { id: 'close', label: 'Close', x: 142, y: 424 },
+      { id: 'tender', label: 'Tender', x: 64, y: 266 },
     ],
     links: [
-      ['company', 'shares'],
-      ['company', 'options'],
-      ['company', 'safes'],
-      ['company', 'warrants'],
-      ['company', 'liquidity'],
       ['company', 'board'],
-      ['board', 'shares'],
-      ['options', 'liquidity'],
+      ['company', 'assessment'],
+      ['assessment', 'buyers'],
+      ['buyers', 'diligence'],
+      ['diligence', 'close'],
+      ['company', 'tender'],
+      ['board', 'close'],
     ],
   },
 };
@@ -360,11 +294,11 @@ export function ServicePage({ group }: ServicePageProps) {
                   Full capability set
                 </p>
                 <h2 className="mt-4 font-editorial text-[36px] font-normal leading-[1.04] tracking-[-0.025em] text-au-navy sm:text-[48px]">
-                  One mandate or the full lifecycle.
+                  One process, start to finish.
                 </h2>
                 <p className="mt-5 max-w-[285px] text-[13px] leading-[22px] text-au-ink-soft">
-                  Start with a single transaction or use Givvy as the connective operating layer across the entire
-                  ownership system.
+                  The same person handles every stage, so nothing is lost in a handoff between an
+                  analyst, a broker, and whoever is left at the end.
                 </p>
                 <div className="mt-10 border-l border-au-blue pl-5">
                   <p className="text-[9.5px] font-semibold uppercase tracking-[0.1em] text-au-ink-soft">Designed outcome</p>
@@ -497,7 +431,7 @@ export function ServicePage({ group }: ServicePageProps) {
                 onClick={() => setDialog('intro')}
                 className="group inline-flex h-12 items-center gap-3 rounded-[9px] bg-white px-6 text-[13px] font-semibold text-au-navy transition-transform hover:-translate-y-0.5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#8EB5E8] focus-visible:ring-offset-4 focus-visible:ring-offset-au-navy-deep"
               >
-                Discuss a mandate
+                See if we&rsquo;re a fit
                 <ArrowRight className="h-3.5 w-3.5 transition-transform group-hover:translate-x-1" />
               </button>
               <button
@@ -505,7 +439,7 @@ export function ServicePage({ group }: ServicePageProps) {
                 onClick={() => setDialog('deck')}
                 className="border-b border-white/30 pb-1 text-[12.5px] font-semibold text-white transition-colors hover:border-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#8EB5E8]"
               >
-                Get the deck
+                Ask a question
               </button>
             </div>
           </div>

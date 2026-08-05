@@ -1,6 +1,8 @@
 import { Inter, Newsreader, Sora } from 'next/font/google';
 import './globals.css';
 import ClientLayout from './client-layout';
+import { SiteDisclosure } from '@/components/site-disclosure';
+import { ENGAGEMENT, SITE, siteTitle } from '@/lib/site-config';
 import type { Metadata } from 'next';
 
 const inter = Inter({
@@ -24,25 +26,27 @@ const newsreader = Newsreader({
   style: ['normal', 'italic'],
 });
 
+const TITLE = siteTitle();
+const DESCRIPTION = `Sell-side representation for owner-operated businesses from ${ENGAGEMENT.minEnterpriseValue} to ${ENGAGEMENT.maxEnterpriseValue} in enterprise value. Fixed fee, ${ENGAGEMENT.timelineDays} days.`;
+
 export const metadata: Metadata = {
-  title: 'Givvy - Hire Fractional Talent with Cash or Equity.',
-  description:
-    'The global marketplace where startups hire fractional CFOs, SDRs, operators, engineers, and advisors with cash, equity, or blended compensation. SAFE-powered agreements, AI matching, and milestone-based vesting.',
+  metadataBase: new URL(SITE.url),
+  title: TITLE,
+  description: DESCRIPTION,
   openGraph: {
     type: 'website',
-    title: 'Givvy - Hire Fractional Talent with Cash or Equity.',
-    description:
-      'The global talent marketplace where startups hire world-class fractional talent with cash, equity, or blended compensation.',
-    siteName: 'Givvy',
+    title: TITLE,
+    description: DESCRIPTION,
+    siteName: SITE.firmName,
+    url: SITE.url,
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'Givvy - Hire Fractional Talent with Cash or Equity.',
-    description:
-      'The global talent marketplace where startups hire world-class fractional talent with cash, equity, or blended compensation.',
+    title: TITLE,
+    description: DESCRIPTION,
   },
   other: {
-    'theme-color': '#7c3aed',
+    'theme-color': '#14243D',
   },
   icons: {
     icon: [
@@ -54,11 +58,26 @@ export const metadata: Metadata = {
   },
 };
 
+const structuredData = {
+  '@context': 'https://schema.org',
+  '@type': 'ProfessionalService',
+  name: SITE.firmName,
+  url: SITE.url,
+  email: SITE.contactEmail,
+  description: DESCRIPTION,
+  serviceType: 'Sell-side mergers and acquisitions advisory',
+};
+
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en" className={`${inter.variable} ${sora.variable} ${newsreader.variable} scroll-smooth`}>
       <body className="font-sans antialiased">
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }}
+        />
         <ClientLayout>{children}</ClientLayout>
+        <SiteDisclosure />
       </body>
     </html>
   );

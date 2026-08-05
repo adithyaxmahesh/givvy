@@ -1,10 +1,10 @@
 import { GivvyLanding } from '@/components/givvy/givvy-landing';
+import { ENGAGEMENT, siteTitle } from '@/lib/site-config';
 import type { Metadata } from 'next';
 
 export const metadata: Metadata = {
-  title: 'Givvy — Ownership infrastructure for private markets.',
-  description:
-    'Givvy manages equity, transactions, funds, and acquisitions through one digital financial institution.',
+  title: siteTitle(),
+  description: `Sell-side representation for owner-operated businesses from ${ENGAGEMENT.minEnterpriseValue} to ${ENGAGEMENT.maxEnterpriseValue} in enterprise value. Fixed fee, ${ENGAGEMENT.timelineDays} days.`,
 };
 
 export default function LandingPage() {

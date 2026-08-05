@@ -11,6 +11,19 @@ const nextConfig = {
     serverComponentsExternalPackages: ['@react-pdf/renderer'],
   },
   poweredByHeader: false,
+  // 301 rather than Next's default 308: the old URLs are indexed and linked,
+  // and 301 is what crawlers and existing links are known to handle. Next
+  // evaluates redirects before filesystem routes, so these win even if a page
+  // file for the source path still exists.
+  async redirects() {
+    return [
+      { source: '/marketplace', destination: '/opportunities', statusCode: 301 },
+      { source: '/marketplace/:path*', destination: '/opportunities', statusCode: 301 },
+      { source: '/services/asset-management', destination: '/', statusCode: 301 },
+      { source: '/services/private-markets', destination: '/', statusCode: 301 },
+      { source: '/services/holding-companies', destination: '/', statusCode: 301 },
+    ];
+  },
   async headers() {
     return [
       {

@@ -3,6 +3,7 @@
 import { useCallback, useEffect, useState, type FormEvent } from 'react';
 import { PrimaryButton } from './buttons';
 import { IconAlertCircle, IconCheckCircle } from './icons';
+import { SITE } from '@/lib/site-config';
 import { Field, Modal } from './modal';
 
 interface DialogProps {
@@ -33,7 +34,7 @@ function ErrorNote({ message }: { message: string }) {
       <IconAlertCircle className="mt-[1px] h-[17px] w-[17px] shrink-0 text-au-step-gold" />
       <p className="text-[12.5px] leading-[1.6] text-au-ink">
         {message}{' '}
-        <a href="mailto:intro@givvy.com" className="font-medium text-au-navy underline decoration-au-navy/30">
+        <a href={`mailto:${SITE.contactEmail}`} className="font-medium text-au-navy underline decoration-au-navy/30">
           Email us instead
         </a>
         .
@@ -103,14 +104,14 @@ export function BookIntroModal({ open, onClose }: DialogProps) {
     <Modal
       open={open}
       onClose={onClose}
-      title="Book an intro"
-      description="Tell us which services you need and we'll follow up within one business day."
+      title="See if we're a fit"
+      description="Tell us about the business and we'll come back within one business day, including if the answer is no."
     >
       {submitted ? (
         <div className="space-y-5">
           <SuccessNote
             title="Request received"
-            body="A Givvy principal will reach out shortly with a few times to meet."
+            body="We'll be in touch within one business day with a few times to talk."
           />
           <PrimaryButton size="md" withArrow={false} className="w-full" onClick={onClose}>
             Close
@@ -119,17 +120,17 @@ export function BookIntroModal({ open, onClose }: DialogProps) {
       ) : (
         <form className="space-y-4" onSubmit={submit}>
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-            <Field label="Name" name="name" placeholder="Jane Whitmore" required disabled={pending} autoComplete="name" />
-            <Field label="Work email" name="email" type="email" placeholder="jane@holdco.com" required disabled={pending} autoComplete="email" />
+            <Field label="Name" name="name" placeholder="Your name" required disabled={pending} autoComplete="name" />
+            <Field label="Email" name="email" type="email" placeholder="you@yourcompany.com" required disabled={pending} autoComplete="email" />
           </div>
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
             <Field label="Phone number" name="phone" type="tel" placeholder="+1 415 555 0142" disabled={pending} autoComplete="tel" />
-            <Field label="Company / Firm" name="firm" placeholder="Whitmore Capital" disabled={pending} autoComplete="organization" />
+            <Field label="Company" name="firm" placeholder="Your company" disabled={pending} autoComplete="organization" />
           </div>
           <Field
-            label="What services are you looking to receive?"
+            label="What does the business do, and what are you hoping to do next?"
             name="context"
-            placeholder="Buy-side M&A and SPV setup for a $40M industrial services acquisition…"
+            placeholder="Regional HVAC contractor, owner-operated for 18 years, looking to retire in the next year…"
             textarea
             disabled={pending}
           />
@@ -138,7 +139,7 @@ export function BookIntroModal({ open, onClose }: DialogProps) {
             {pending ? 'Sending…' : 'Request intro'}
           </PrimaryButton>
           <p className="text-center text-[11.5px] leading-[1.6] text-au-ink-soft">
-            Confidential. We never share deal information.
+            Confidential. We do not contact anyone at your business.
           </p>
         </form>
       )}
@@ -153,26 +154,26 @@ export function GetDeckModal({ open, onClose }: DialogProps) {
     <Modal
       open={open}
       onClose={onClose}
-      title="Get the deck"
-      description="An 18-page overview of the Givvy execution layer, services, and coverage."
+      title="Ask a question"
+      description="Anything about the fee, the timeline, or whether we are the wrong firm for your business."
     >
       {submitted ? (
         <div className="space-y-5">
-          <SuccessNote title="On its way" body="Check your inbox — the Givvy overview deck is sending now." />
+          <SuccessNote title="Question received" body="We'll reply to you directly, usually the same day." />
           <PrimaryButton size="md" withArrow={false} className="w-full" onClick={onClose}>
             Close
           </PrimaryButton>
         </div>
       ) : (
         <form className="space-y-4" onSubmit={submit}>
-          <Field label="Work email" name="email" type="email" placeholder="jane@holdco.com" required disabled={pending} autoComplete="email" />
-          <Field label="Company / Firm" name="firm" placeholder="Whitmore Capital" disabled={pending} autoComplete="organization" />
+          <Field label="Email" name="email" type="email" placeholder="you@yourcompany.com" required disabled={pending} autoComplete="email" />
+          <Field label="Your question" name="context" placeholder="How is the fee staged, and what happens if it doesn't sell?" textarea disabled={pending} />
           {error && <ErrorNote message={error} />}
           <PrimaryButton size="md" className="mt-1 w-full" type="submit" disabled={pending}>
-            {pending ? 'Sending…' : 'Send me the deck'}
+            {pending ? 'Sending…' : 'Send the question'}
           </PrimaryButton>
           <p className="text-center text-[11.5px] leading-[1.6] text-au-ink-soft">
-            No newsletter. One email with the deck attached.
+            No newsletter. A person reads and answers this.
           </p>
         </form>
       )}

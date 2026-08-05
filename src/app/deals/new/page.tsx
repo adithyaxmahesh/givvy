@@ -132,11 +132,11 @@ function NewDealContent() {
     <div className="min-h-screen bg-[#FAFAF8]">
       <div className="section-container max-w-2xl py-10">
         <Link
-          href={startup ? `/profile/startup/${startup.id}` : '/marketplace?tab=startups'}
+          href={startup ? `/profile/startup/${startup.id}` : '/dashboard/browse?tab=startups'}
           className="inline-flex items-center gap-1.5 text-sm text-[#6B6B6B] hover:text-[#1A1A1A] transition-colors mb-6"
         >
           <ArrowLeft className="h-4 w-4" />
-          {startup ? `Back to ${startup.name}` : 'Back to Marketplace'}
+          {startup ? `Back to ${startup.name}` : 'Back to Browse'}
         </Link>
 
         <h1 className="text-2xl font-bold text-[#1A1A1A] mb-1">Propose a Deal</h1>
@@ -176,7 +176,7 @@ function NewDealContent() {
               <div>
                 <p className="text-sm font-semibold text-amber-800">No startup selected</p>
                 <p className="text-xs text-amber-700 mt-0.5">
-                  Go to the <Link href="/marketplace?tab=startups" className="underline">marketplace</Link> and
+                  Go to the <Link href="/dashboard/browse?tab=startups" className="underline">browse page</Link> and
                   click "Propose a Deal" on a startup profile.
                 </p>
               </div>
@@ -369,7 +369,7 @@ function NewDealContent() {
                 )}
               </button>
               <Link
-                href={startup ? `/profile/startup/${startup.id}` : '/marketplace'}
+                href={startup ? `/profile/startup/${startup.id}` : '/dashboard/browse'}
                 className="btn-secondary px-6 py-3 text-sm"
               >
                 Cancel

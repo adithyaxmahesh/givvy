@@ -164,7 +164,7 @@ export default function MyPostsPage() {
                       key={post.id}
                       className="bg-white border border-[#E8E8E6] rounded-xl p-5 flex items-start justify-between gap-4"
                     >
-                      <Link href={`/marketplace/post/${post.id}`} className="flex-1 min-w-0">
+                      <Link href={`/dashboard/browse/post/${post.id}`} className="flex-1 min-w-0">
                         <h3 className="text-sm font-semibold text-[#1A1A1A] hover:text-brand-600 transition-colors">
                           {post.title}
                         </h3>
@@ -198,7 +198,7 @@ export default function MyPostsPage() {
 
                       <div className="flex items-center gap-2 shrink-0">
                         <Link
-                          href={`/marketplace/post/${post.id}`}
+                          href={`/dashboard/browse/post/${post.id}`}
                           className="p-2 rounded-lg text-[#6B6B6B] hover:text-brand-600 hover:bg-brand-50 transition-colors"
                           title="View post"
                         >

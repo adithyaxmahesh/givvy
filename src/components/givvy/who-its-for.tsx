@@ -102,29 +102,30 @@ function IllustrationTemple() {
   );
 }
 
+// Sellers, not buyers. The buyer-side version of this grid moves to /buyers.
 const AUDIENCES = [
   {
-    title: 'Founders acquiring companies',
-    description: 'Find and close the right acquisitions faster, with less friction.',
+    title: 'Owners ready to step back',
+    description: 'You have run it for years and want a clean exit on a known timeline.',
     illustration: <IllustrationBuildings />,
     tint: 'from-[#F5F7FB]',
   },
   {
-    title: 'Small PE and search funds',
-    description: 'Operate like a top tier firm from day one with institutional infrastructure.',
-    illustration: <IllustrationBriefcase />,
+    title: 'Family businesses',
+    description: 'No obvious successor inside the family, and a sale is the honest answer.',
+    illustration: <IllustrationTemple />,
     tint: 'from-[#FBF8F2]',
   },
   {
-    title: 'Emerging managers and micro funds',
-    description: 'Launch and scale funds with best in class operations and reporting.',
+    title: 'Founder-led companies',
+    description: 'Profitable, owner-dependent, and too small for the banks you have called.',
     illustration: <IllustrationSprout />,
     tint: 'from-[#F8FBF7]',
   },
   {
-    title: 'HoldCos and permanent capital firms',
-    description: 'Build and manage long term ownership platforms with compound advantage.',
-    illustration: <IllustrationTemple />,
+    title: 'Owners with an approach in hand',
+    description: 'Someone has offered to buy it and you want to know what it is really worth.',
+    illustration: <IllustrationBriefcase />,
     tint: 'from-[#F7F8FC]',
   },
 ];
@@ -134,7 +135,7 @@ export function WhoItsFor() {
     <section id="use-cases" className="scroll-mt-[84px] bg-au-cream">
       <div className="au-container pb-[27px]">
         <Reveal>
-          <SectionHeading title="Who it’s for" />
+          <SectionHeading title="Who we work with" />
         </Reveal>
 
         <div className="mt-2 grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-4 lg:gap-[14px]">

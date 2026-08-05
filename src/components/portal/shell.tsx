@@ -7,6 +7,7 @@ import {
   ChevronDown,
   Eye,
   FileText,
+  Inbox,
   LayoutDashboard,
   ListChecks,
   LogOut,
@@ -23,6 +24,7 @@ const NAV = [
   { label: 'Overview', href: '/portal', icon: LayoutDashboard, adminOnly: false },
   { label: 'Workstreams', href: '/portal/workstreams', icon: ListChecks, adminOnly: false },
   { label: 'Documents', href: '/portal/documents', icon: FileText, adminOnly: false },
+  { label: 'Interest forms', href: '/portal/admin/interests', icon: Inbox, adminOnly: true },
   { label: 'Client accounts', href: '/portal/admin/users', icon: Users, adminOnly: true },
 ];
 

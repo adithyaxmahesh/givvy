@@ -9,10 +9,10 @@ export function Services() {
     <section id="services" className="scroll-mt-[84px] bg-au-cream">
       <div className="au-container pb-11 pt-9 sm:pb-12 sm:pt-10">
         <Reveal>
-          <SectionHeading title="Services across the ownership lifecycle" sparkle />
+          <SectionHeading title="What we do" sparkle />
         </Reveal>
 
-        <div className="mt-7 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-5">
+        <div className="mt-7 grid grid-cols-1 gap-4 sm:grid-cols-2">
           {SERVICE_GROUPS.map((group, groupIndex) => (
             <Reveal key={group.label} delay={groupIndex * 0.06} className="h-full">
               <Link
@@ -32,7 +32,7 @@ export function Services() {
                 <span
                   className="mt-auto inline-flex items-center gap-2 pt-6 text-[12.5px] font-semibold text-au-navy"
                 >
-                  Explore services
+                  Read more
                   <ArrowRight className="h-3.5 w-3.5 transition-transform duration-200 group-hover:translate-x-1" />
                 </span>
               </Link>

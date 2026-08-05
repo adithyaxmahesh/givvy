@@ -27,6 +27,19 @@ export interface PortalAdminUser {
   project_ids: string[];
 }
 
+export interface PortalInterest {
+  id: string;
+  source: 'book-intro' | 'get-deck';
+  name: string;
+  email: string;
+  phone: string;
+  firm: string;
+  context: string;
+  status: 'new' | 'contacted' | 'archived';
+  created_at: string;
+  updated_at: string;
+}
+
 export interface PortalProject {
   id: string;
   name: string;
