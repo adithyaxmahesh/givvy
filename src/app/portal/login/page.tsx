@@ -6,6 +6,7 @@ import { Suspense, useState, type FormEvent } from 'react';
 import { ArrowRight } from '@/components/givvy/icons';
 import { Wordmark } from '@/components/givvy/wordmark';
 import { ErrorNotice } from '@/components/portal/ui';
+import { SITE } from '@/lib/site-config';
 
 function LoginForm() {
   const router = useRouter();
@@ -137,13 +138,16 @@ export default function PortalLoginPage() {
 
             <p className="mt-5 text-center text-[12px] leading-[1.6] text-au-ink-soft">
               Portal access is provisioned by your Givvy contact. Need an account?{' '}
-              <a href="mailto:hello@givvy.com" className="font-medium text-au-navy underline decoration-au-navy/30">
+              <a
+                href={`mailto:${SITE.contactEmail}`}
+                className="font-medium text-au-navy underline decoration-au-navy/30"
+              >
                 Get in touch
               </a>
               .
             </p>
             <p className="mt-3 text-center text-[11.5px] text-au-ink-soft/80">
-              Looking for the equity marketplace?{' '}
+              Looking for the other sign-in?{' '}
               <Link href="/login" className="underline decoration-au-ink-soft/40 hover:text-au-navy">
                 Sign in there
               </Link>

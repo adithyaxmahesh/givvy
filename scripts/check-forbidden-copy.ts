@@ -17,8 +17,23 @@
 
 const BASE_URL = process.env.BASE_URL ?? 'http://localhost:3000';
 
-/** Public marketing routes. Authenticated product routes are out of scope. */
-const PUBLIC_ROUTES = ['/', '/opportunities', '/buyers', '/services/ma', '/services/startups'];
+/**
+ * Every route a logged-out visitor can reach. That includes the sign-in and
+ * sign-up screens of the legacy product: they are unauthenticated and
+ * indexable, and they were still advertising the previous business long after
+ * the marketing pages stopped.
+ */
+const PUBLIC_ROUTES = [
+  '/',
+  '/opportunities',
+  '/buyers',
+  '/services/ma',
+  '/services/startups',
+  '/login',
+  '/signup',
+  '/pending',
+  '/portal/login',
+];
 
 /**
  * Legal pages are exempt as a whole: describing what the firm is not permitted

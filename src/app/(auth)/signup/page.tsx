@@ -100,13 +100,13 @@ export default function SignupPage() {
     {
       value: 'founder' as const,
       label: "I'm a Founder",
-      description: 'Hire with equity',
+      description: 'Post roles and review applicants',
       icon: Building2,
     },
     {
       value: 'talent' as const,
       label: "I'm Talent",
-      description: 'Work for equity',
+      description: 'Apply to roles and manage your profile',
       icon: Briefcase,
     },
   ];
@@ -148,7 +148,7 @@ export default function SignupPage() {
               Create your account
             </h1>
             <p className="text-sm text-gray-500 mt-1">
-              Join the equity-powered talent marketplace
+              Accounts are reviewed before they are activated
             </p>
           </div>
 
