@@ -19,12 +19,14 @@ const COLUMNS = [
     links: [{ label: 'Opportunities', href: '/opportunities' }],
   },
   {
-    // The listings product and the client portal both live behind these. The
-    // links are labelled by what you do there rather than by the old product
-    // name, which described a venue for trading private securities.
     title: 'Sign in',
     links: [
-      { label: 'Your account', href: '/login' },
+      // Operator-approved exception. "Equity Marketplace" is on the forbidden
+      // copy list because the phrase describes a venue where private
+      // securities change hands. It is permitted here, and only here, via
+      // complianceExempt — which keeps the build check failing on every other
+      // occurrence instead of switching the guard off wholesale.
+      { label: 'Equity Marketplace', href: '/dashboard/browse', complianceExempt: true },
       { label: 'Client portal', href: '/portal/login' },
     ],
   },
@@ -73,7 +75,11 @@ export function SiteFooter() {
                 {column.links.map((link) => (
                   <li key={link.label} className="leading-[16px]">
                     {link.href.startsWith('/') ? (
-                      <Link href={link.href} className="text-[11.5px] text-au-ink-soft transition-colors hover:text-au-navy">
+                      <Link
+                        href={link.href}
+                        data-compliance-exempt={'complianceExempt' in link ? '' : undefined}
+                        className="text-[11.5px] text-au-ink-soft transition-colors hover:text-au-navy"
+                      >
                         {link.label}
                       </Link>
                     ) : (

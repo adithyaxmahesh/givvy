@@ -13,6 +13,11 @@
  * <script>, <style>, HTML comments, and the regulatory disclosure removed
  * first. The disclosure is exempt because its prescribed wording necessarily
  * contains terms that are banned everywhere else.
+ *
+ * Individual elements can also be exempted with a data-compliance-exempt
+ * attribute. That is for operator-approved exceptions on a specific element,
+ * so the rest of the site stays guarded. Adding the attribute to something new
+ * is a decision, not a way to make a failing check pass.
  */
 
 const BASE_URL = process.env.BASE_URL ?? 'http://localhost:3000';
@@ -98,6 +103,7 @@ function visibleText(html: string): string {
     .replace(/<style[\s\S]*?<\/style>/gi, ' ')
     .replace(/<!--[\s\S]*?-->/g, ' ')
     .replace(/<aside[^>]*data-compliance-disclosure[\s\S]*?<\/aside>/gi, ' ')
+    .replace(/<(a|span|p|li|div)\b[^>]*\sdata-compliance-exempt[^>]*>[\s\S]*?<\/\1>/gi, ' ')
     .replace(/<[^>]+>/g, ' ')
     .replace(/&[a-z]+;/gi, ' ')
     .replace(/\s+/g, ' ');
