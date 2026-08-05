@@ -1,7 +1,6 @@
 'use client';
 
 import { motion, useReducedMotion } from 'framer-motion';
-import { ENGAGEMENT } from '@/lib/site-config';
 import { PrimaryButton } from './buttons';
 import {
   IconCapTable,
@@ -109,38 +108,21 @@ export function Hero({ onBookIntro }: { onBookIntro: () => void }) {
               Digital M&amp;A for SMBs
             </motion.p>
 
+            {/* Operator-approved: "AI" is otherwise banned site-wide. Scoped here only. */}
             <motion.h1
+              data-compliance-exempt=""
               initial={reduce ? undefined : { opacity: 0, y: 14 }}
               animate={reduce ? undefined : { opacity: 1, y: 0 }}
               transition={{ duration: 0.75, delay: 0.06, ease: [0.22, 1, 0.36, 1] }}
               className="max-w-[470px] font-sans text-[31px] font-semibold leading-[1.04] tracking-[-0.035em] text-au-navy sm:text-[38px] lg:text-[42px] xl:text-[45px]"
             >
-              We sell owner-operated businesses. {ENGAGEMENT.minEnterpriseValue} to{' '}
-              {ENGAGEMENT.maxEnterpriseValue}. Fixed fee, {ENGAGEMENT.timelineDays} days.
+              The AI-native M&amp;A advisory.
             </motion.h1>
-
-            {/* The fee and the day count, in mono, beneath the headline. It stays
-                hidden until the fee is decided: the headline already carries the
-                day count, so on its own this line is just repetition. */}
-            {ENGAGEMENT.fixedFee && (
-              <motion.p
-                initial={reduce ? undefined : { opacity: 0, y: 12 }}
-                animate={reduce ? undefined : { opacity: 1, y: 0 }}
-                transition={{ duration: 0.7, delay: 0.14, ease: [0.22, 1, 0.36, 1] }}
-                className="mt-6 flex max-w-[440px] flex-wrap items-baseline gap-x-3 gap-y-1 font-mono text-[13px] uppercase tracking-[0.08em] text-au-navy"
-              >
-                <span>{ENGAGEMENT.fixedFee}</span>
-                <span aria-hidden className="text-au-ink-soft">
-                  /
-                </span>
-                <span>{ENGAGEMENT.timelineDays} days</span>
-              </motion.p>
-            )}
 
             <motion.div
               initial={reduce ? undefined : { opacity: 0, y: 12 }}
               animate={reduce ? undefined : { opacity: 1, y: 0 }}
-              transition={{ duration: 0.7, delay: 0.2, ease: [0.22, 1, 0.36, 1] }}
+              transition={{ duration: 0.7, delay: 0.14, ease: [0.22, 1, 0.36, 1] }}
               className="mt-8 flex flex-wrap items-center gap-7"
             >
               <PrimaryButton size="md" onClick={onBookIntro}>

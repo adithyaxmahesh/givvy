@@ -105,7 +105,7 @@ function visibleText(html: string): string {
     .replace(/<style[\s\S]*?<\/style>/gi, ' ')
     .replace(/<!--[\s\S]*?-->/g, ' ')
     .replace(/<aside[^>]*data-compliance-disclosure[\s\S]*?<\/aside>/gi, ' ')
-    .replace(/<(a|span|p|li|div)\b[^>]*\sdata-compliance-exempt[^>]*>[\s\S]*?<\/\1>/gi, ' ')
+    .replace(/<(a|span|p|li|div|h1|h2|h3)\b[^>]*\sdata-compliance-exempt[^>]*>[\s\S]*?<\/\1>/gi, ' ')
     .replace(/<[^>]+>/g, ' ')
     .replace(/&[a-z]+;/gi, ' ')
     .replace(/\s+/g, ' ');
