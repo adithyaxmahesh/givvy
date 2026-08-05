@@ -2,7 +2,7 @@
 
 import { motion, useReducedMotion } from 'framer-motion';
 import { ENGAGEMENT } from '@/lib/site-config';
-import { LinkButton, PrimaryButton } from './buttons';
+import { PrimaryButton } from './buttons';
 import {
   IconCapTable,
   IconChecklist,
@@ -113,23 +113,29 @@ export function Hero({ onBookIntro }: { onBookIntro: () => void }) {
               initial={reduce ? undefined : { opacity: 0, y: 14 }}
               animate={reduce ? undefined : { opacity: 1, y: 0 }}
               transition={{ duration: 0.75, delay: 0.06, ease: [0.22, 1, 0.36, 1] }}
-              className="max-w-[470px] font-sans text-[36px] font-semibold leading-[1.02] tracking-[-0.04em] text-au-navy sm:text-[46px] lg:text-[52px] xl:text-[55px]"
+              className="max-w-[470px] font-sans text-[31px] font-semibold leading-[1.04] tracking-[-0.035em] text-au-navy sm:text-[38px] lg:text-[42px] xl:text-[45px]"
             >
-              We sell owner-operated businesses.
+              We sell owner-operated businesses. {ENGAGEMENT.minEnterpriseValue} to{' '}
+              {ENGAGEMENT.maxEnterpriseValue}. Fixed fee, {ENGAGEMENT.timelineDays} days.
             </motion.h1>
 
-            <motion.p
-              initial={reduce ? undefined : { opacity: 0, y: 12 }}
-              animate={reduce ? undefined : { opacity: 1, y: 0 }}
-              transition={{ duration: 0.7, delay: 0.14, ease: [0.22, 1, 0.36, 1] }}
-              className="mt-5 max-w-[440px] font-mono text-[14px] uppercase tracking-[0.06em] text-au-ink"
-            >
-              {ENGAGEMENT.minEnterpriseValue} to {ENGAGEMENT.maxEnterpriseValue} enterprise value
-              <span className="mx-2 text-au-ink-soft">/</span>
-              Fixed fee
-              <span className="mx-2 text-au-ink-soft">/</span>
-              {ENGAGEMENT.timelineDays} days
-            </motion.p>
+            {/* The fee and the day count, in mono, beneath the headline. It stays
+                hidden until the fee is decided: the headline already carries the
+                day count, so on its own this line is just repetition. */}
+            {ENGAGEMENT.fixedFee && (
+              <motion.p
+                initial={reduce ? undefined : { opacity: 0, y: 12 }}
+                animate={reduce ? undefined : { opacity: 1, y: 0 }}
+                transition={{ duration: 0.7, delay: 0.14, ease: [0.22, 1, 0.36, 1] }}
+                className="mt-6 flex max-w-[440px] flex-wrap items-baseline gap-x-3 gap-y-1 font-mono text-[13px] uppercase tracking-[0.08em] text-au-navy"
+              >
+                <span>{ENGAGEMENT.fixedFee}</span>
+                <span aria-hidden className="text-au-ink-soft">
+                  /
+                </span>
+                <span>{ENGAGEMENT.timelineDays} days</span>
+              </motion.p>
+            )}
 
             <motion.div
               initial={reduce ? undefined : { opacity: 0, y: 12 }}
@@ -140,9 +146,6 @@ export function Hero({ onBookIntro }: { onBookIntro: () => void }) {
               <PrimaryButton size="md" onClick={onBookIntro}>
                 See if we&rsquo;re a fit
               </PrimaryButton>
-              <LinkButton onClick={() => document.getElementById('services')?.scrollIntoView({ behavior: 'smooth' })}>
-                How it works
-              </LinkButton>
             </motion.div>
           </div>
 

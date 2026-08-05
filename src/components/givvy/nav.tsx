@@ -5,15 +5,17 @@ import { useEffect, useState } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
 import { PrimaryButton } from './buttons';
 import { IconClose, IconMenu } from './icons';
-import { SERVICE_GROUPS } from './services-data';
 import { Wordmark } from './wordmark';
 
-// Flat links only. The previous "Services" item was a button with no href that
-// opened a five-item mega-menu; three of those services no longer exist.
+// Flat links only, and only to pages that exist. The previous "Services" item
+// was a button with no href that opened a five-item mega-menu; three of those
+// services no longer exist. Process, Pricing, and About join this list when
+// those pages ship.
 const NAV_LINKS = [
+  { label: 'What you get', href: '/#what-you-get' },
+  { label: 'Who we take on', href: '/#fit' },
   { label: 'Opportunities', href: '/opportunities' },
-  ...SERVICE_GROUPS.map((group) => ({ label: group.name, href: `/services/${group.slug}` })),
-  { label: 'Process', href: '/#about' },
+  { label: 'Buyers', href: '/buyers' },
 ];
 
 export function Nav({ onBookIntro }: { onBookIntro: () => void }) {
